@@ -1,0 +1,11 @@
+# Exclude raw source photos (not needed for the website)
+02ccb89a-*.jpg
+33d32ef2-*.jpg
+6d80b0e9-*.jpg
+7ab2e4c0-*.jpg
+cb53a891-*.jpg
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini

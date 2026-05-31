@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSAW Admin - Membership Management</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="images/logo.jpg" alt="GSAW" class="sidebar-logo">
+            <div>
+                <h2>GSAW</h2>
+                <p>Admin Panel</p>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-view="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item" data-view="applications">
+                <i class="fas fa-users"></i> Applications
+            </a>
+            <a href="#" class="nav-item" data-view="approved">
+                <i class="fas fa-user-check"></i> Approved Members
+            </a>
+            <a href="#" class="nav-item" data-view="provinces">
+                <i class="fas fa-map"></i> By Province
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="index.html" class="nav-item back-link">
+                <i class="fas fa-arrow-left"></i> Back to Website
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="admin-topbar">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 id="page-title">Dashboard</h1>
+            <div class="topbar-actions">
+                <button class="btn-action" onclick="exportCSV()" title="Export to CSV">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <a href="index.html" class="btn-action btn-website" title="View Website">
+                    <i class="fas fa-globe"></i> Website
+                </a>
+            </div>
+        </header>
+
+        <!-- Dashboard View -->
+        <div class="view active" id="view-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card stat-total">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-total">0</h3>
+                        <p>Total Applications</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-pending">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-pending">0</h3>
+                        <p>Pending Review</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-approved">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-approved">0</h3>
+                        <p>Approved Members</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-provinces">
+                    <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-provinces">0</h3>
+                        <p>Provinces Reached</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Applications -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock"></i> Recent Applications</h2>
+                    <button class="btn-text-link" onclick="switchView('applications')">View All &rarr;</button>
+                </div>
+                <div id="recent-applications">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No applications yet</p>
+                        <small>Share the website to start receiving membership applications</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Province Breakdown -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-bar"></i> Members by Province</h2>
+                </div>
+                <div id="province-chart"></div>
+            </div>
+        </div>
+
+        <!-- Applications View -->
+        <div class="view" id="view-applications">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-users"></i> All Applications</h2>
+                    <div class="header-actions">
+                        <select id="filter-status" onchange="renderApplications()">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                        </select>
+                        <select id="filter-province" onchange="renderApplications()">
+                            <option value="all">All Provinces</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="applications-table"></div>
+            </div>
+        </div>
+
+        <!-- Approved Members View -->
+        <div class="view" id="view-approved">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-user-check"></i> Approved Members</h2>
+                    <span class="badge" id="approved-badge">0</span>
+                </div>
+                <div id="approved-table"></div>
+            </div>
+        </div>
+
+        <!-- Provinces View -->
+        <div class="view" id="view-provinces">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-map"></i> Members by Province</h2>
+                </div>
+                <div id="province-details"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Application Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="detail-modal">
+            <div class="modal-header">
+                <h3>Application Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer"></div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
