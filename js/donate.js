@@ -45,6 +45,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Make file upload area clickable
+    if (fileLabel) {
+        fileLabel.addEventListener('click', function () {
+            fileInput.click();
+        });
+    }
+    if (fileWrapper) {
+        fileWrapper.addEventListener('click', function (e) {
+            if (e.target === fileWrapper || e.target === fileLabel || fileLabel.contains(e.target)) {
+                fileInput.click();
+            }
+        });
+    }
+
     // File upload handling
     fileInput.addEventListener('change', function () {
         if (this.files && this.files[0]) {

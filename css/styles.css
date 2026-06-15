@@ -2031,25 +2031,7 @@ h1, h2, h3, h4, h5, h6 {
 ======================================== */
 
 /* Donor Type Toggle */
-.donor-type-options {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
 .donor-type-option {
-    flex: 1;
-    position: relative;
-}
-
-.donor-type-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.donor-type-option label {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2062,22 +2044,37 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
     text-align: center;
     background: var(--white);
+    flex: 1;
+    position: relative;
 }
 
-.donor-type-option label i {
+.donor-type-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.donor-type-option span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.donor-type-option span i {
     font-size: 1.2rem;
     color: var(--gray-400);
     transition: var(--transition);
 }
 
-.donor-type-option input[type="radio"]:checked + label {
+.donor-type-option:has(input:checked) {
     border-color: var(--green);
     background: rgba(27, 122, 61, 0.05);
     color: var(--green);
     box-shadow: 0 0 0 3px rgba(27, 122, 61, 0.1);
 }
 
-.donor-type-option input[type="radio"]:checked + label i {
+.donor-type-option:has(input:checked) span i {
     color: var(--green);
 }
 
@@ -2091,16 +2088,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .amount-option {
     position: relative;
-}
-
-.amount-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.amount-option label {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2114,7 +2101,14 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--white);
 }
 
-.amount-option input[type="radio"]:checked + label {
+.amount-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.amount-option:has(input:checked) {
     border-color: var(--orange);
     background: rgba(244, 121, 32, 0.06);
     color: var(--orange);
