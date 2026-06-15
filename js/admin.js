@@ -57,7 +57,8 @@ function switchView(viewId) {
         dashboard: 'Dashboard',
         applications: 'All Applications',
         approved: 'Approved Members',
-        provinces: 'Members by Province'
+        provinces: 'Members by Province',
+        donations: 'Donations (Treasurer)'
     };
 
     navItems.forEach(function (item) {
@@ -80,6 +81,7 @@ function switchView(viewId) {
     if (viewId === 'applications') renderApplications();
     if (viewId === 'approved') renderApproved();
     if (viewId === 'provinces') renderProvinces();
+    if (viewId === 'donations') renderDonations();
 }
 
 // ========================================
@@ -133,6 +135,9 @@ function refreshData() {
 
     // Province chart
     renderProvinceChart(apps);
+
+    // Donation summary on dashboard
+    refreshDonationStats();
 }
 
 // ========================================
@@ -455,4 +460,219 @@ function populateProvinceFilter() {
         opt.textContent = p;
         select.appendChild(opt);
     });
+}
+
+// ========================================
+// 15. DONATIONS - DATA HELPERS
+// ========================================
+function getDonations() {
+    return JSON.parse(localStorage.getItem('gsaw_donations') || '[]');
+}
+
+function saveDonations(donations) {
+    localStorage.setItem('gsaw_donations', JSON.stringify(donations));
+}
+
+function refreshDonationStats() {
+    var donations = getDonations();
+    var count = donations.length;
+    var total = 0;
+    var verified = 0;
+
+    donations.forEach(function (d) {
+        var amt = parseFloat(d.amount) || 0;
+        total += amt;
+        if (d.status === 'verified') verified++;
+    });
+
+    // Dashboard stats
+    var countEl = document.getElementById('stat-donations-count');
+    var totalEl = document.getElementById('stat-donations-total');
+    if (countEl) countEl.textContent = count;
+    if (totalEl) totalEl.textContent = 'R' + total.toLocaleString('en-ZA');
+
+    // Donations view stats
+    var donCountEl = document.getElementById('stat-don-count');
+    var donTotalEl = document.getElementById('stat-don-total');
+    var donVerifiedEl = document.getElementById('stat-don-verified');
+    if (donCountEl) donCountEl.textContent = count;
+    if (donTotalEl) donTotalEl.textContent = 'R' + total.toLocaleString('en-ZA');
+    if (donVerifiedEl) donVerifiedEl.textContent = verified;
+}
+
+// ========================================
+// 16. RENDER DONATIONS TABLE
+// ========================================
+function renderDonations() {
+    var container = document.getElementById('donations-table');
+    if (!container) return;
+
+    var donations = getDonations();
+    var statusFilter = document.getElementById('filter-donation-status').value;
+
+    var filtered = donations.filter(function (d) {
+        if (statusFilter === 'all') return true;
+        return (d.status || 'pending') === statusFilter;
+    });
+
+    refreshDonationStats();
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-hand-holding-usd"></i><p>No donations recorded yet</p><small>Donations submitted on the website will appear here</small></div>';
+        return;
+    }
+
+    var html = '<table><thead><tr><th>Donor</th><th>Type</th><th>Amount</th><th>Purpose</th><th>Email</th><th>Phone</th><th>POP</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+
+    filtered.forEach(function (donation, i) {
+        // Find real index
+        var realIndex = donations.indexOf(donation);
+        for (var j = 0; j < donations.length; j++) {
+            if (donations[j].submittedAt === donation.submittedAt && donations[j].email === donation.email) {
+                realIndex = j;
+                break;
+            }
+        }
+
+        var status = donation.status || 'pending';
+        var name = escapeHtml(donation.donorName || donation.firstName + ' ' + (donation.lastName || ''));
+        var amount = donation.amount ? 'R' + parseFloat(donation.amount).toLocaleString('en-ZA') : 'N/A';
+
+        html += '<tr>';
+        html += '<td><strong>' + name + '</strong></td>';
+        html += '<td><small>' + escapeHtml(donation.donorType || 'individual') + '</small></td>';
+        html += '<td><strong style="color:#f47920;">' + amount + '</strong></td>';
+        html += '<td><small>' + escapeHtml(donation.purpose || 'General') + '</small></td>';
+        html += '<td><small>' + escapeHtml(donation.email || '') + '</small></td>';
+        html += '<td>' + escapeHtml(donation.phone || '') + '</td>';
+        html += '<td>' + (donation.hasProofOfPayment ? '<span style="color:#1B7A3D;"><i class="fas fa-file-check"></i> ' + escapeHtml(donation.proofFileName || 'Yes') + '</span>' : '<span style="color:#9ca3af;">None</span>') + '</td>';
+        html += '<td><small>' + escapeHtml(donation.submittedAt || '') + '</small></td>';
+        html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
+        html += '<td class="action-btns">';
+        html += '<button class="btn-sm btn-view" onclick="viewDonation(' + realIndex + ')" title="View Details"><i class="fas fa-eye"></i></button>';
+        if (status === 'pending') {
+            html += '<button class="btn-sm btn-approve" onclick="verifyDonation(' + realIndex + ')" title="Verify"><i class="fas fa-check"></i></button>';
+        }
+        var phone = formatPhone(donation.phone || '');
+        html += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>';
+        html += '</td></tr>';
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+// ========================================
+// 17. VIEW DONATION DETAIL (Modal)
+// ========================================
+function viewDonation(index) {
+    var donations = getDonations();
+    var d = donations[index];
+    if (!d) return;
+
+    var body = document.getElementById('modal-body');
+    var footer = document.getElementById('modal-footer');
+
+    var fields = [
+        { label: 'Donor Name', value: d.donorName || (d.firstName + ' ' + (d.lastName || '')) },
+        { label: 'Donor Type', value: d.donorType || 'individual' },
+        { label: 'Organisation', value: d.orgName || 'N/A' },
+        { label: 'Contact Person', value: d.contactPerson || 'N/A' },
+        { label: 'Email', value: d.email },
+        { label: 'Phone', value: d.phone },
+        { label: 'Amount', value: d.amount ? 'R' + parseFloat(d.amount).toLocaleString('en-ZA') : 'N/A' },
+        { label: 'Purpose', value: d.purpose || 'General' },
+        { label: 'Message', value: d.message || 'None' },
+        { label: 'Proof of Payment', value: d.hasProofOfPayment ? d.proofFileName : 'Not uploaded' },
+        { label: 'Status', value: d.status || 'pending' },
+        { label: 'Submitted', value: d.submittedAt || 'N/A' },
+        { label: 'Verified At', value: d.verifiedAt || 'Not yet verified' }
+    ];
+
+    var html = '';
+    fields.forEach(function (f) {
+        html += '<div class="detail-row"><span class="detail-label">' + f.label + '</span><span class="detail-value">' + escapeHtml(f.value) + '</span></div>';
+    });
+
+    body.innerHTML = html;
+
+    var status = d.status || 'pending';
+    var phone = formatPhone(d.phone || '');
+    var footerHtml = '';
+
+    if (status === 'pending') {
+        footerHtml += '<button class="btn-sm btn-approve" onclick="verifyDonation(' + index + '); closeModal();"><i class="fas fa-check"></i> Verify</button>';
+    }
+    footerHtml += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
+    footerHtml += '<button class="btn-sm btn-danger" onclick="removeDonation(' + index + '); closeModal();"><i class="fas fa-trash"></i> Remove</button>';
+
+    footer.innerHTML = footerHtml;
+    document.getElementById('modal-overlay').classList.add('active');
+}
+
+// ========================================
+// 18. VERIFY DONATION
+// ========================================
+function verifyDonation(index) {
+    var donations = getDonations();
+    if (donations[index]) {
+        donations[index].status = 'verified';
+        donations[index].verifiedAt = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+        saveDonations(donations);
+        refreshDonationStats();
+        renderDonations();
+    }
+}
+
+// ========================================
+// 19. REMOVE DONATION
+// ========================================
+function removeDonation(index) {
+    if (!confirm('Are you sure you want to remove this donation record?')) return;
+    var donations = getDonations();
+    donations.splice(index, 1);
+    saveDonations(donations);
+    refreshDonationStats();
+    renderDonations();
+}
+
+// ========================================
+// 20. EXPORT DONATIONS CSV
+// ========================================
+function exportDonationsCSV() {
+    var donations = getDonations();
+    if (donations.length === 0) {
+        alert('No donations to export.');
+        return;
+    }
+
+    var headers = ['Donor Name', 'Donor Type', 'Organisation', 'Contact Person', 'Email', 'Phone', 'Amount (ZAR)', 'Purpose', 'Message', 'Proof of Payment', 'Status', 'Submitted At', 'Verified At'];
+    var csv = headers.join(',') + '\n';
+
+    donations.forEach(function (d) {
+        var row = [
+            d.donorName || (d.firstName + ' ' + (d.lastName || '')),
+            d.donorType || 'individual',
+            d.orgName || '',
+            d.contactPerson || '',
+            d.email || '',
+            d.phone || '',
+            d.amount || '',
+            d.purpose || 'General',
+            (d.message || '').replace(/"/g, '""'),
+            d.proofFileName || '',
+            d.status || 'pending',
+            d.submittedAt || '',
+            d.verifiedAt || ''
+        ];
+        csv += row.map(function (val) { return '"' + val + '"'; }).join(',') + '\n';
+    });
+
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'gsaw_donations_' + new Date().toISOString().slice(0, 10) + '.csv';
+    link.click();
+    URL.revokeObjectURL(url);
 }

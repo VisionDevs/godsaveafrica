@@ -32,6 +32,9 @@
             <a href="#" class="nav-item" data-view="provinces">
                 <i class="fas fa-map"></i> By Province
             </a>
+            <a href="#" class="nav-item" data-view="donations">
+                <i class="fas fa-hand-holding-usd"></i> Donations
+            </a>
         </nav>
         <div class="sidebar-footer">
             <a href="index.html" class="nav-item back-link">
@@ -87,6 +90,24 @@
                     <div class="stat-info">
                         <h3 id="stat-provinces">0</h3>
                         <p>Provinces Reached</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donation Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-hand-holding-usd"></i> Donation Summary</h2>
+                    <button class="btn-text-link" onclick="switchView('donations')">View All &rarr;</button>
+                </div>
+                <div class="stats-grid" style="padding: 15px 0;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f47920, #d4661a);">
+                        <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-coins" style="color:#fff;"></i></div>
+                        <div class="stat-info"><h3 id="stat-donations-count" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Total Donations</p></div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #1B7A3D, #145a2d);">
+                        <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-money-bill-wave" style="color:#fff;"></i></div>
+                        <div class="stat-info"><h3 id="stat-donations-total" style="color:#fff;">R0</h3><p style="color:rgba(255,255,255,0.85);">Total Amount</p></div>
                     </div>
                 </div>
             </div>
@@ -153,6 +174,38 @@
                     <h2><i class="fas fa-map"></i> Members by Province</h2>
                 </div>
                 <div id="province-details"></div>
+            </div>
+        </div>
+
+        <!-- Donations View -->
+        <div class="view" id="view-donations">
+            <div class="stats-grid">
+                <div class="stat-card" style="background: linear-gradient(135deg, #f47920, #d4661a);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-coins" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-don-count" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Total Donations</p></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #1B7A3D, #145a2d);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-money-bill-wave" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-don-total" style="color:#fff;">R0</h3><p style="color:rgba(255,255,255,0.85);">Total Amount</p></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #E31E24, #b8171c);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-file-invoice" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-don-verified" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Verified</p></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-hand-holding-usd"></i> All Donations</h2>
+                    <div class="header-actions">
+                        <select id="filter-donation-status" onchange="renderDonations()">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="verified">Verified</option>
+                        </select>
+                        <button class="btn-action" onclick="exportDonationsCSV()" title="Export Donations"><i class="fas fa-download"></i> Export</button>
+                    </div>
+                </div>
+                <div id="donations-table"></div>
             </div>
         </div>
     </main>
