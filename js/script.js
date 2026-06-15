@@ -417,25 +417,40 @@ document.addEventListener('DOMContentLoaded', function () {
         ============================================
         */
 
-        // Submit to Google Sheets
+        // Submit to Google Sheets via hidden form (bypasses CORS)
         var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
 
-        return fetch(GSAW_API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            cache: 'no-cache',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-                action: 'addMembership',
-                payload: data
-            }),
-            redirect: 'follow'
-        }).then(function () {
-            // Also store locally as backup
+        return new Promise(function (resolve) {
+            // Store locally first (always works)
             storeLocally(data);
-        }).catch(function () {
-            // Offline fallback - store locally
-            storeLocally(data);
+
+            // Send to Google Sheets via iframe form
+            var iframe = document.createElement('iframe');
+            iframe.name = 'gsaw_submit_frame';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GSAW_API_URL;
+            form.target = 'gsaw_submit_frame';
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'payload';
+            input.value = JSON.stringify({ action: 'addMembership', payload: data });
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            // Cleanup after 5 seconds
+            setTimeout(function () {
+                document.body.removeChild(form);
+                document.body.removeChild(iframe);
+            }, 5000);
+
+            setTimeout(resolve, 1500);
         });
     }
 

@@ -140,32 +140,56 @@ function fetchDonationsFromSheet() {
 
 // Update a membership record on Google Sheets
 function updateMembershipOnSheet(payload) {
-    return fetch(GSAW_API_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-            action: 'updateMembership',
-            payload: payload
-        }),
-        redirect: 'follow'
-    }).catch(function () { /* silent */ });
+    var iframe = document.createElement('iframe');
+    iframe.name = 'gsaw_update_frame_' + Date.now();
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GSAW_API_URL;
+    form.target = iframe.name;
+
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify({ action: 'updateMembership', payload: payload });
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    setTimeout(function () {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 5000);
 }
 
 // Update a donation record on Google Sheets
 function updateDonationOnSheet(payload) {
-    return fetch(GSAW_API_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-            action: 'updateDonation',
-            payload: payload
-        }),
-        redirect: 'follow'
-    }).catch(function () { /* silent */ });
+    var iframe = document.createElement('iframe');
+    iframe.name = 'gsaw_update_don_frame_' + Date.now();
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GSAW_API_URL;
+    form.target = iframe.name;
+
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify({ action: 'updateDonation', payload: payload });
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    setTimeout(function () {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 5000);
 }
 
 function escapeHtml(text) {

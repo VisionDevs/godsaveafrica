@@ -136,23 +136,33 @@ document.addEventListener('DOMContentLoaded', function () {
         var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
 
         function saveDonation(data) {
-            // Send to Google Sheets (without file data - too large for Sheets)
+            // Send to Google Sheets via hidden form (bypasses CORS)
             var sheetData = Object.assign({}, data);
-            delete sheetData.proofFileData; // Don't send base64 to Sheets
+            delete sheetData.proofFileData;
 
-            fetch(GSAW_API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({
-                    action: 'addDonation',
-                    payload: sheetData
-                }),
-                redirect: 'follow'
-            }).catch(function () {
-                // Silent fail - local backup handles it
-            });
+            var iframe = document.createElement('iframe');
+            iframe.name = 'gsaw_donate_frame';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+
+            var hiddenForm = document.createElement('form');
+            hiddenForm.method = 'POST';
+            hiddenForm.action = GSAW_API_URL;
+            hiddenForm.target = 'gsaw_donate_frame';
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'payload';
+            input.value = JSON.stringify({ action: 'addDonation', payload: sheetData });
+            hiddenForm.appendChild(input);
+
+            document.body.appendChild(hiddenForm);
+            hiddenForm.submit();
+
+            setTimeout(function () {
+                document.body.removeChild(hiddenForm);
+                document.body.removeChild(iframe);
+            }, 5000);
 
             // Also store locally (with file data for admin POP viewing)
             var donations = JSON.parse(localStorage.getItem('gsaw_donations') || '[]');
