@@ -422,11 +422,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return fetch(GSAW_API_URL, {
             method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'addMembership',
                 payload: data
-            })
+            }),
+            redirect: 'follow'
         }).then(function () {
             // Also store locally as backup
             storeLocally(data);

@@ -106,7 +106,7 @@ function saveApplications(apps) {
 
 // Fetch applications from Google Sheets
 function fetchApplicationsFromSheet() {
-    return fetch(GSAW_API_URL + '?action=getMemberships')
+    return fetch(GSAW_API_URL + '?action=getMemberships', { redirect: 'follow' })
         .then(function (r) { return r.json(); })
         .then(function (data) {
             if (Array.isArray(data)) {
@@ -123,7 +123,7 @@ function fetchApplicationsFromSheet() {
 
 // Fetch donations from Google Sheets
 function fetchDonationsFromSheet() {
-    return fetch(GSAW_API_URL + '?action=getDonations')
+    return fetch(GSAW_API_URL + '?action=getDonations', { redirect: 'follow' })
         .then(function (r) { return r.json(); })
         .then(function (data) {
             if (Array.isArray(data)) {
@@ -142,11 +142,14 @@ function fetchDonationsFromSheet() {
 function updateMembershipOnSheet(payload) {
     return fetch(GSAW_API_URL, {
         method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
             action: 'updateMembership',
             payload: payload
-        })
+        }),
+        redirect: 'follow'
     }).catch(function () { /* silent */ });
 }
 
@@ -154,11 +157,14 @@ function updateMembershipOnSheet(payload) {
 function updateDonationOnSheet(payload) {
     return fetch(GSAW_API_URL, {
         method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
             action: 'updateDonation',
             payload: payload
-        })
+        }),
+        redirect: 'follow'
     }).catch(function () { /* silent */ });
 }
 

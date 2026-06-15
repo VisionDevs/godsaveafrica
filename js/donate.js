@@ -142,11 +142,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             fetch(GSAW_API_URL, {
                 method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: 'addDonation',
                     payload: sheetData
-                })
+                }),
+                redirect: 'follow'
             }).catch(function () {
                 // Silent fail - local backup handles it
             });
