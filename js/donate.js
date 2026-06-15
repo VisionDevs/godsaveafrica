@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
             message: document.getElementById('donor-message').value.trim(),
             hasProofOfPayment: fileInput.files.length > 0,
             proofFileName: fileInput.files.length > 0 ? fileInput.files[0].name : '',
+            proofFileType: fileInput.files.length > 0 ? fileInput.files[0].type : '',
             submittedAt: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
         };
 
@@ -136,20 +137,40 @@ document.addEventListener('DOMContentLoaded', function () {
             donationData.donorName = donationData.orgName;
         }
 
-        // Store locally (same pattern as membership)
-        var donations = JSON.parse(localStorage.getItem('gsaw_donations') || '[]');
-        donations.push(donationData);
-        localStorage.setItem('gsaw_donations', JSON.stringify(donations));
+        // Read file as base64, then store
+        function saveDonation(data) {
+            var donations = JSON.parse(localStorage.getItem('gsaw_donations') || '[]');
+            donations.push(data);
+            try {
+                localStorage.setItem('gsaw_donations', JSON.stringify(donations));
+            } catch (e) {
+                // localStorage quota exceeded - save without file data
+                data.proofFileData = null;
+                data.proofStorageError = true;
+                donations[donations.length - 1] = data;
+                localStorage.setItem('gsaw_donations', JSON.stringify(donations));
+            }
 
-        // Simulate submission delay
-        setTimeout(function () {
-            form.style.display = 'none';
-            successDiv.style.display = 'block';
-            successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            btnText.style.display = 'inline-flex';
-            btnLoading.style.display = 'none';
-            submitBtn.disabled = false;
-        }, 1500);
+            setTimeout(function () {
+                form.style.display = 'none';
+                successDiv.style.display = 'block';
+                successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                btnText.style.display = 'inline-flex';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
+            }, 1500);
+        }
+
+        if (fileInput.files.length > 0) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                donationData.proofFileData = e.target.result;
+                saveDonation(donationData);
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            saveDonation(donationData);
+        }
     });
 
     function validateDonation() {

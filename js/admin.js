@@ -545,7 +545,7 @@ function renderDonations() {
         html += '<td><small>' + escapeHtml(donation.purpose || 'General') + '</small></td>';
         html += '<td><small>' + escapeHtml(donation.email || '') + '</small></td>';
         html += '<td>' + escapeHtml(donation.phone || '') + '</td>';
-        html += '<td>' + (donation.hasProofOfPayment ? '<span style="color:#1B7A3D;"><i class="fas fa-file-check"></i> ' + escapeHtml(donation.proofFileName || 'Yes') + '</span>' : '<span style="color:#9ca3af;">None</span>') + '</td>';
+        html += '<td>' + (donation.hasProofOfPayment ? '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + realIndex + ')" title="View POP" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-image"></i> View</button>' : '<span style="color:#9ca3af;">None</span>') + '</td>';
         html += '<td><small>' + escapeHtml(donation.submittedAt || '') + '</small></td>';
         html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
         html += '<td class="action-btns">';
@@ -594,6 +594,15 @@ function viewDonation(index) {
         html += '<div class="detail-row"><span class="detail-label">' + f.label + '</span><span class="detail-value">' + escapeHtml(f.value) + '</span></div>';
     });
 
+    // Add POP preview if available
+    if (d.proofFileData) {
+        if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
+            html += '<div class="detail-row" style="flex-direction:column;align-items:flex-start;"><span class="detail-label">Proof of Payment Preview</span><img src="' + d.proofFileData + '" style="max-width:100%;max-height:400px;border-radius:8px;margin-top:10px;border:1px solid #e5e7eb;" alt="Proof of Payment"></div>';
+        } else {
+            html += '<div class="detail-row"><span class="detail-label">Proof of Payment</span><button class="btn-sm btn-view" onclick="viewProofOfPayment(' + index + ')" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-pdf"></i> Open PDF</button></div>';
+        }
+    }
+
     body.innerHTML = html;
 
     var status = d.status || 'pending';
@@ -603,6 +612,9 @@ function viewDonation(index) {
     if (status === 'pending') {
         footerHtml += '<button class="btn-sm btn-approve" onclick="verifyDonation(' + index + '); closeModal();"><i class="fas fa-check"></i> Verify</button>';
     }
+    if (d.proofFileData) {
+        footerHtml += '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + index + ')" style="background:#1B7A3D;color:#fff;"><i class="fas fa-eye"></i> View POP</button>';
+    }
     footerHtml += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
     footerHtml += '<button class="btn-sm btn-danger" onclick="removeDonation(' + index + '); closeModal();"><i class="fas fa-trash"></i> Remove</button>';
 
@@ -611,8 +623,31 @@ function viewDonation(index) {
 }
 
 // ========================================
-// 18. VERIFY DONATION
+// 17b. VIEW PROOF OF PAYMENT
 // ========================================
+function viewProofOfPayment(index) {
+    var donations = getDonations();
+    var d = donations[index];
+    if (!d || !d.proofFileData) {
+        alert('No proof of payment file available for this donation.');
+        return;
+    }
+
+    // Open in new tab
+    var newWindow = window.open('', '_blank');
+    if (!newWindow) {
+        alert('Pop-up blocked. Please allow pop-ups to view the proof of payment.');
+        return;
+    }
+
+    if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
+        newWindow.document.write('<html><head><title>POP - ' + escapeHtml(d.donorName || 'Donor') + '</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a2e;} img{max-width:95%;max-height:95vh;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);}</style></head><body><img src="' + d.proofFileData + '" alt="Proof of Payment"></body></html>');
+    } else {
+        // PDF - embed in iframe
+        newWindow.document.write('<html><head><title>POP - ' + escapeHtml(d.donorName || 'Donor') + '</title></head><body style="margin:0;"><iframe src="' + d.proofFileData + '" style="width:100%;height:100vh;border:none;"></iframe></body></html>');
+    }
+    newWindow.document.close();
+}
 function verifyDonation(index) {
     var donations = getDonations();
     if (donations[index]) {
