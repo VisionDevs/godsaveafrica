@@ -700,7 +700,7 @@ function renderDonations() {
         html += '<td><small>' + escapeHtml(donation.purpose || 'General') + '</small></td>';
         html += '<td><small>' + escapeHtml(donation.email || '') + '</small></td>';
         html += '<td>' + escapeHtml(donation.phone || '') + '</td>';
-        html += '<td>' + (donation.hasProofOfPayment ? '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + realIndex + ')" title="View POP" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-image"></i> View</button>' : '<span style="color:#9ca3af;">None</span>') + '</td>';
+        html += '<td>' + (donation.proofFileData ? '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + realIndex + ')" title="View POP" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-image"></i> View</button>' : (donation.hasProofOfPayment ? '<span style="color:#f47920;"><i class="fas fa-check"></i> Uploaded</span>' : '<span style="color:#9ca3af;">None</span>')) + '</td>';
         html += '<td><small>' + escapeHtml(donation.submittedAt || '') + '</small></td>';
         html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
         html += '<td class="action-btns">';
@@ -784,7 +784,6 @@ function viewProofOfPayment(index) {
     var donations = getDonations();
     var d = donations[index];
     if (!d || !d.proofFileData) {
-        alert('This donation was submitted before the file storage update. Please ask the donor to re-submit, or clear old records and test with a new donation.\n\nTo clear old donations, open browser console (F12) and run:\nlocalStorage.removeItem("gsaw_donations")');
         return;
     }
 
