@@ -192,6 +192,60 @@ function updateDonationOnSheet(payload) {
     }, 5000);
 }
 
+// Delete a membership record from Google Sheets
+function deleteMembershipFromSheet(payload) {
+    var iframe = document.createElement('iframe');
+    iframe.name = 'gsaw_del_mem_frame_' + Date.now();
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GSAW_API_URL;
+    form.target = iframe.name;
+
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify({ action: 'deleteMembership', payload: payload });
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    setTimeout(function () {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 5000);
+}
+
+// Delete a donation record from Google Sheets
+function deleteDonationFromSheet(payload) {
+    var iframe = document.createElement('iframe');
+    iframe.name = 'gsaw_del_don_frame_' + Date.now();
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GSAW_API_URL;
+    form.target = iframe.name;
+
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify({ action: 'deleteDonation', payload: payload });
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    setTimeout(function () {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 5000);
+}
+
 function escapeHtml(text) {
     var div = document.createElement('div');
     div.appendChild(document.createTextNode(String(text || '')));
@@ -210,12 +264,36 @@ function formatPhone(phone) {
 // 4. REFRESH DATA (Dashboard)
 // ========================================
 function refreshData() {
+    var btn = document.getElementById('btn-refresh');
+    if (btn) {
+        btn.disabled = true;
+        btn.querySelector('i').className = 'fas fa-sync-alt fa-spin';
+        btn.querySelector('span').textContent = 'Refreshing...';
+    }
+
     // Fetch from Google Sheets first, then render
-    fetchApplicationsFromSheet().then(function (apps) {
+    var p1 = fetchApplicationsFromSheet().then(function (apps) {
         renderDashboard(apps);
+        renderApplications();
+        renderApproved();
     });
-    fetchDonationsFromSheet().then(function () {
+    var p2 = fetchDonationsFromSheet().then(function () {
         refreshDonationStats();
+        renderDonations();
+    });
+
+    Promise.all([p1, p2]).then(function () {
+        if (btn) {
+            btn.disabled = false;
+            btn.querySelector('i').className = 'fas fa-sync-alt';
+            btn.querySelector('span').textContent = 'Refresh';
+        }
+    }).catch(function () {
+        if (btn) {
+            btn.disabled = false;
+            btn.querySelector('i').className = 'fas fa-sync-alt';
+            btn.querySelector('span').textContent = 'Refresh';
+        }
     });
 }
 
@@ -561,8 +639,18 @@ function approveApplication(index) {
 function removeApplication(index) {
     if (!confirm('Are you sure you want to remove this application?')) return;
     var apps = getApplications();
+    var removed = apps[index];
     apps.splice(index, 1);
     saveApplications(apps);
+
+    // Delete from Google Sheets
+    if (removed) {
+        deleteMembershipFromSheet({
+            email: String(removed.email || ''),
+            idNumber: String(removed.idNumber || '')
+        });
+    }
+
     refreshData();
     renderApplications();
     renderApproved();
@@ -879,8 +967,18 @@ function verifyDonation(index) {
 function removeDonation(index) {
     if (!confirm('Are you sure you want to remove this donation record?')) return;
     var donations = getDonations();
+    var removed = donations[index];
     donations.splice(index, 1);
     saveDonations(donations);
+
+    // Delete from Google Sheets
+    if (removed) {
+        deleteDonationFromSheet({
+            email: String(removed.email || ''),
+            submittedAt: String(removed.submittedAt || '')
+        });
+    }
+
     refreshDonationStats();
     renderDonations();
 }

@@ -45,6 +45,10 @@ function doPost(e) {
       return updateMembership(payload);
     } else if (action === 'updateDonation') {
       return updateDonation(payload);
+    } else if (action === 'deleteMembership') {
+      return deleteMembership(payload);
+    } else if (action === 'deleteDonation') {
+      return deleteDonation(payload);
     }
     
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Unknown action' }))
@@ -317,5 +321,62 @@ function updateDonation(payload) {
   }
   
   return ContentService.createTextOutput(JSON.stringify({ success: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ========================================
+// DELETE MEMBERSHIP
+// ========================================
+function deleteMembership(payload) {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName(MEMBERSHIPS_TAB);
+  if (!sheet) return ContentService.createTextOutput(JSON.stringify({ success: false })).setMimeType(ContentService.MimeType.JSON);
+  
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var emailCol = headers.indexOf('email');
+  var idCol = headers.indexOf('idNumber');
+  
+  for (var i = data.length - 1; i >= 1; i--) {
+    var match = false;
+    if (payload.email && emailCol >= 0 && String(data[i][emailCol]) === String(payload.email)) match = true;
+    if (payload.idNumber && idCol >= 0 && String(data[i][idCol]) === String(payload.idNumber)) match = true;
+    
+    if (match) {
+      sheet.deleteRow(i + 1);
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Not found' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ========================================
+// DELETE DONATION
+// ========================================
+function deleteDonation(payload) {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName(DONATIONS_TAB);
+  if (!sheet) return ContentService.createTextOutput(JSON.stringify({ success: false })).setMimeType(ContentService.MimeType.JSON);
+  
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var emailCol = headers.indexOf('email');
+  var dateCol = headers.indexOf('submittedAt');
+  
+  for (var i = data.length - 1; i >= 1; i--) {
+    var matchEmail = payload.email && emailCol >= 0 && String(data[i][emailCol]) === String(payload.email);
+    var matchDate = payload.submittedAt && dateCol >= 0 && String(data[i][dateCol]) === String(payload.submittedAt);
+    
+    if (matchEmail && matchDate) {
+      sheet.deleteRow(i + 1);
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Not found' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
