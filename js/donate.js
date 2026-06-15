@@ -46,14 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Make file upload area clickable
-    if (fileLabel) {
-        fileLabel.addEventListener('click', function () {
-            fileInput.click();
-        });
-    }
     if (fileWrapper) {
         fileWrapper.addEventListener('click', function (e) {
-            if (e.target === fileWrapper || e.target === fileLabel || fileLabel.contains(e.target)) {
+            if (!fileWrapper.classList.contains('has-file')) {
                 fileInput.click();
             }
         });
