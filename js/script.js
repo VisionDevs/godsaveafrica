@@ -149,6 +149,61 @@ document.addEventListener('DOMContentLoaded', function () {
     var submitBtn = document.getElementById('submit-btn');
     var formSuccess = document.getElementById('form-success');
 
+    // ID Number → Date of Birth auto-populate
+    var idInput = document.getElementById('idNumber');
+    var dobInput = document.getElementById('dob');
+    if (idInput && dobInput) {
+        idInput.addEventListener('input', function () {
+            var id = this.value.replace(/\D/g, '');
+            this.value = id; // strip non-digits
+            if (id.length >= 6) {
+                var year = parseInt(id.substring(0, 2));
+                var month = id.substring(2, 4);
+                var day = id.substring(4, 6);
+                // Determine century: if year > 25, assume 1900s, else 2000s
+                var fullYear = year > 25 ? '19' + (year < 10 ? '0' + year : year) : '20' + (year < 10 ? '0' + year : year);
+                // Validate month and day
+                var monthNum = parseInt(month);
+                var dayNum = parseInt(day);
+                if (monthNum >= 1 && monthNum <= 12 && dayNum >= 1 && dayNum <= 31) {
+                    dobInput.value = fullYear + '-' + month + '-' + day;
+                }
+            }
+            // Validate Luhn check digit when full 13 digits entered
+            if (id.length === 13) {
+                if (!validateSAID(id)) {
+                    this.classList.add('error');
+                    showNotification('Invalid SA ID number. Please check and try again.', 'error');
+                } else {
+                    this.classList.remove('error');
+                    // Auto-detect gender from ID
+                    var genderDigits = parseInt(id.substring(6, 10));
+                    var genderSelect = document.getElementById('gender');
+                    if (genderSelect) {
+                        genderSelect.value = genderDigits >= 5000 ? 'Male' : 'Female';
+                    }
+                }
+            }
+        });
+    }
+
+    // SA ID Luhn validation
+    function validateSAID(id) {
+        if (id.length !== 13 || !/^\d{13}$/.test(id)) return false;
+        var sum = 0;
+        for (var i = 0; i < 12; i++) {
+            var digit = parseInt(id[i]);
+            if (i % 2 === 0) {
+                sum += digit;
+            } else {
+                var doubled = digit * 2;
+                sum += doubled > 9 ? doubled - 9 : doubled;
+            }
+        }
+        var checkDigit = (10 - (sum % 10)) % 10;
+        return checkDigit === parseInt(id[12]);
+    }
+
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -171,15 +226,23 @@ document.addEventListener('DOMContentLoaded', function () {
             submitBtn.disabled = true;
 
             // Collect data
+            var membershipNumber = generateMembershipNumber();
             var formData = {
+                membershipNumber: membershipNumber,
                 firstName: getValue('firstName'),
                 lastName: getValue('lastName'),
                 email: getValue('email'),
                 phone: getValue('phone'),
                 idNumber: getValue('idNumber'),
+                gender: getValue('gender'),
+                dob: getValue('dob'),
+                address: getValue('address'),
                 province: getValue('province'),
                 municipality: getValue('municipality'),
+                ward: getValue('ward'),
+                votingStation: getValue('votingStation'),
                 occupation: getValue('occupation'),
+                qualification: getValue('qualification'),
                 skills: getValue('skills'),
                 reason: getValue('reason'),
                 signature: window.signaturePad ? window.signaturePad.getData() : '',
@@ -214,35 +277,51 @@ document.addEventListener('DOMContentLoaded', function () {
         var valid = true;
 
         // Required text fields
-        var required = ['firstName', 'lastName', 'email', 'phone', 'idNumber', 'province', 'municipality'];
+        var required = ['firstName', 'lastName', 'email', 'phone', 'idNumber', 'gender', 'dob', 'address', 'province', 'municipality', 'occupation'];
         required.forEach(function (id) {
             var el = document.getElementById(id);
-            if (!el.value.trim()) {
-                el.classList.add('error');
+            if (!el || !el.value.trim()) {
+                if (el) el.classList.add('error');
                 valid = false;
             }
         });
+
+        if (!valid) {
+            showNotification('Please fill in all required fields.', 'error');
+            // Scroll to first error
+            var firstError = form.querySelector('.error');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
 
         // Email
         var email = document.getElementById('email');
         if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
             email.classList.add('error');
-            valid = false;
+            showNotification('Please enter a valid email address.', 'error');
+            return false;
         }
 
-        // SA ID (13 digits)
+        // SA ID (13 digits + Luhn check)
         var idNum = document.getElementById('idNumber');
-        if (idNum.value && !/^\d{13}$/.test(idNum.value.trim())) {
+        if (!idNum.value || !/^\d{13}$/.test(idNum.value.trim())) {
             idNum.classList.add('error');
-            valid = false;
+            showNotification('Please enter a valid 13-digit SA ID number.', 'error');
+            return false;
+        }
+        if (!validateSAID(idNum.value.trim())) {
+            idNum.classList.add('error');
+            showNotification('Invalid SA ID number. The check digit does not match.', 'error');
+            return false;
         }
 
         // Phone (at least 10 digits)
         var phone = document.getElementById('phone');
         var phoneClean = phone.value.replace(/[\s\-()]/g, '');
-        if (phoneClean && phoneClean.length < 10) {
+        if (phoneClean.length < 10) {
             phone.classList.add('error');
-            valid = false;
+            showNotification('Please enter a valid phone number (at least 10 digits).', 'error');
+            return false;
         }
 
         // Checkboxes
@@ -352,6 +431,18 @@ document.addEventListener('DOMContentLoaded', function () {
         var apps = JSON.parse(localStorage.getItem('gsaw_applications') || '[]');
         apps.push(data);
         localStorage.setItem('gsaw_applications', JSON.stringify(apps));
+    }
+
+    // ========================================
+    // 10b. GENERATE UNIQUE MEMBERSHIP NUMBER
+    // ========================================
+    function generateMembershipNumber() {
+        var apps = JSON.parse(localStorage.getItem('gsaw_applications') || '[]');
+        var year = new Date().getFullYear().toString().slice(-2);
+        var nextNum = apps.length + 1;
+        // Format: GSAW-YY-XXXX (e.g. GSAW-25-0001)
+        var padded = ('0000' + nextNum).slice(-4);
+        return 'GSAW-' + year + '-' + padded;
     }
 
     // ========================================

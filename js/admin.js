@@ -234,7 +234,7 @@ function renderApplications() {
         return;
     }
 
-    var html = '<table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    var html = '<table><thead><tr><th>Membership #</th><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
 
     filtered.forEach(function (app) {
         // Find real index
@@ -250,6 +250,7 @@ function renderApplications() {
         var phone = formatPhone(app.phone);
 
         html += '<tr>';
+        html += '<td><strong style="color:#1B7A3D; font-size:0.8rem;">' + escapeHtml(app.membershipNumber || 'Pending') + '</strong></td>';
         html += '<td><strong>' + escapeHtml(app.firstName + ' ' + app.lastName) + '</strong></td>';
         html += '<td><small>' + escapeHtml(app.email) + '</small></td>';
         html += '<td>' + escapeHtml(app.phone) + '</td>';
@@ -284,14 +285,15 @@ function renderApproved() {
         return;
     }
 
-    var html = '<table><thead><tr><th>Name</th><th>Phone (WhatsApp)</th><th>Province</th><th>Municipality</th><th>Skills</th><th>Actions</th></tr></thead><tbody>';
+    var html = '<table><thead><tr><th>Name</th><th>Membership #</th><th>Phone (WhatsApp)</th><th>Province</th><th>Municipality</th><th>Skills</th><th>Actions</th></tr></thead><tbody>';
 
     approved.forEach(function (app) {
         var phone = formatPhone(app.phone);
-        var whatsappMsg = encodeURIComponent('Welcome to GSAW, ' + app.firstName + '! Your membership has been approved. You will be added to our ' + app.province + ' WhatsApp group shortly. God bless!');
+        var whatsappMsg = encodeURIComponent('Hi ' + app.firstName + '! 👋\n\nThis is a follow-up from GSAW.\n\nYour Membership Number: *' + (app.membershipNumber || 'Pending') + '*\n\n📌 Join our Members Group: https://chat.whatsapp.com/IcZAlYCUtvi640wi2rin3o\n\nGod bless!\n#AllPowerBelongsToJesus');
 
         html += '<tr>';
         html += '<td><strong>' + escapeHtml(app.firstName + ' ' + app.lastName) + '</strong><br><small>' + escapeHtml(app.email) + '</small></td>';
+        html += '<td><strong style="color:#1B7A3D;">' + escapeHtml(app.membershipNumber || 'N/A') + '</strong></td>';
         html += '<td>' + escapeHtml(app.phone) + '</td>';
         html += '<td>' + escapeHtml(app.province) + '</td>';
         html += '<td>' + escapeHtml(app.municipality) + '</td>';
@@ -340,18 +342,26 @@ function viewApplication(index) {
     var footer = document.getElementById('modal-footer');
 
     var fields = [
+        { label: 'Membership #', value: app.membershipNumber || 'Pending Approval' },
         { label: 'First Name', value: app.firstName },
         { label: 'Last Name', value: app.lastName },
         { label: 'Email', value: app.email },
         { label: 'Phone', value: app.phone },
         { label: 'ID Number', value: app.idNumber },
+        { label: 'Gender', value: app.gender || 'Not specified' },
+        { label: 'Date of Birth', value: app.dob || 'Not specified' },
+        { label: 'Address', value: app.address || 'Not specified' },
         { label: 'Province', value: app.province },
         { label: 'Municipality', value: app.municipality },
+        { label: 'Ward', value: app.ward || 'Not specified' },
+        { label: 'Voting Station', value: app.votingStation || 'Not specified' },
         { label: 'Occupation', value: app.occupation || 'Not specified' },
+        { label: 'Qualification', value: app.qualification || 'Not specified' },
         { label: 'Skills', value: app.skills || 'Not specified' },
         { label: 'Reason', value: app.reason || 'Not specified' },
         { label: 'Status', value: app.status || 'pending' },
-        { label: 'Submitted', value: app.submittedAt || 'N/A' }
+        { label: 'Submitted', value: app.submittedAt || 'N/A' },
+        { label: 'Approved', value: app.approvedAt || 'Not yet' }
     ];
 
     var html = '';
@@ -394,10 +404,42 @@ function approveApplication(index) {
     if (apps[index]) {
         apps[index].status = 'approved';
         apps[index].approvedAt = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+
+        // Generate membership number if not already assigned
+        if (!apps[index].membershipNumber) {
+            var year = new Date().getFullYear().toString().slice(-2);
+            var approvedCount = apps.filter(function (a) { return a.status === 'approved'; }).length + 1;
+            apps[index].membershipNumber = 'GSAW-' + year + '-' + ('0000' + approvedCount).slice(-4);
+        }
+
         saveApplications(apps);
         refreshData();
         renderApplications();
         renderApproved();
+
+        // Open WhatsApp with welcome message
+        var app = apps[index];
+        var phone = formatPhone(app.phone);
+        var welcomeMsg = 'Dear ' + app.firstName + ' ' + app.lastName + ',\n\n' +
+            '🎉 *CONGRATULATIONS!*\n\n' +
+            'Your membership application to *God Save Africa & The World (GSAW)* has been *APPROVED*.\n\n' +
+            '📋 *Your Membership Details:*\n' +
+            '• Membership Number: *' + app.membershipNumber + '*\n' +
+            '• Province: ' + app.province + '\n' +
+            '• Municipality: ' + app.municipality + '\n' +
+            '• Date Approved: ' + app.approvedAt + '\n\n' +
+            '👉 *Join the GSAW Members WhatsApp Group:*\n' +
+            'https://chat.whatsapp.com/IcZAlYCUtvi640wi2rin3o\n\n' +
+            '📌 *Next Steps:*\n' +
+            '1. Join the group above\n' +
+            '2. Your branch leader will contact you regarding membership fees\n' +
+            '3. Start participating in your branch activities\n\n' +
+            'Welcome to the family! Together we serve under God.\n\n' +
+            '*#AllPowerBelongsToJesus*\n' +
+            '— GSAW National Office';
+
+        var whatsappUrl = 'https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(welcomeMsg);
+        window.open(whatsappUrl, '_blank');
     }
 }
 
@@ -424,14 +466,15 @@ function exportCSV() {
         return;
     }
 
-    var headers = ['First Name', 'Last Name', 'Email', 'Phone', 'ID Number', 'Province', 'Municipality', 'Occupation', 'Skills', 'Reason', 'Status', 'Submitted At', 'Approved At'];
+    var headers = ['Membership #', 'First Name', 'Last Name', 'Email', 'Phone', 'ID Number', 'Gender', 'DOB', 'Address', 'Province', 'Municipality', 'Ward', 'Voting Station', 'Occupation', 'Qualification', 'Skills', 'Reason', 'Status', 'Submitted At', 'Approved At'];
     var csv = headers.join(',') + '\n';
 
     apps.forEach(function (app) {
         var row = [
-            app.firstName, app.lastName, app.email, app.phone,
-            app.idNumber, app.province, app.municipality,
-            app.occupation || '', app.skills || '', (app.reason || '').replace(/"/g, '""'),
+            app.membershipNumber || '', app.firstName, app.lastName, app.email, app.phone,
+            app.idNumber, app.gender || '', app.dob || '', app.address || '',
+            app.province, app.municipality, app.ward || '', app.votingStation || '',
+            app.occupation || '', app.qualification || '', app.skills || '', (app.reason || '').replace(/"/g, '""'),
             app.status || 'pending', app.submittedAt || '', app.approvedAt || ''
         ];
         csv += row.map(function (val) { return '"' + val + '"'; }).join(',') + '\n';
