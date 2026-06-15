@@ -629,7 +629,7 @@ function viewProofOfPayment(index) {
     var donations = getDonations();
     var d = donations[index];
     if (!d || !d.proofFileData) {
-        alert('No proof of payment file available for this donation.');
+        alert('This donation was submitted before the file storage update. Please ask the donor to re-submit, or clear old records and test with a new donation.\n\nTo clear old donations, open browser console (F12) and run:\nlocalStorage.removeItem("gsaw_donations")');
         return;
     }
 
