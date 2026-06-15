@@ -194,12 +194,12 @@ function updateDonationOnSheet(payload) {
 
 function escapeHtml(text) {
     var div = document.createElement('div');
-    div.appendChild(document.createTextNode(text || ''));
+    div.appendChild(document.createTextNode(String(text || '')));
     return div.innerHTML;
 }
 
 function formatPhone(phone) {
-    var clean = (phone || '').replace(/[\s\-()]/g, '');
+    var clean = String(phone || '').replace(/[\s\-()]/g, '');
     if (!clean.startsWith('+')) {
         clean = '+27' + clean.replace(/^0/, '');
     }
@@ -689,8 +689,8 @@ function renderDonations() {
             }
         }
 
-        var status = donation.status || 'pending';
-        var name = escapeHtml(donation.donorName || donation.firstName + ' ' + (donation.lastName || ''));
+        var status = (donation.status || 'pending').toString();
+        var name = escapeHtml(donation.donorName || ((donation.firstName || '') + ' ' + (donation.lastName || '')).trim() || 'Unknown');
         var amount = donation.amount ? 'R' + parseFloat(donation.amount).toLocaleString('en-ZA') : 'N/A';
 
         html += '<tr>';
