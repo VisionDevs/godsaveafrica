@@ -422,8 +422,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return fetch(GSAW_API_URL, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'addMembership',
                 payload: data
@@ -432,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Also store locally as backup
             storeLocally(data);
         }).catch(function () {
-            // Offline fallback
+            // Offline fallback - store locally
             storeLocally(data);
         });
     }
