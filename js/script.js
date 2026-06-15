@@ -417,15 +417,28 @@ document.addEventListener('DOMContentLoaded', function () {
         ============================================
         */
 
-        // DEFAULT: Store locally (works offline, leader views via admin.html)
-        return new Promise(function (resolve) {
+        // Submit to Google Sheets
+        var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
+
+        return fetch(GSAW_API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'addMembership',
+                payload: data
+            })
+        }).then(function () {
+            // Also store locally as backup
             storeLocally(data);
-            setTimeout(resolve, 1200);
+        }).catch(function () {
+            // Offline fallback
+            storeLocally(data);
         });
     }
 
     // ========================================
-    // 10. LOCAL STORAGE
+    // 10. LOCAL STORAGE (backup)
     // ========================================
     function storeLocally(data) {
         var apps = JSON.parse(localStorage.getItem('gsaw_applications') || '[]');

@@ -85,14 +85,83 @@ function switchView(viewId) {
 }
 
 // ========================================
-// 3. DATA HELPERS
+// 3. DATA HELPERS (Google Sheets + localStorage fallback)
 // ========================================
+var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
+
+// Cache for sheet data
+var cachedApplications = null;
+var cachedDonations = null;
+
 function getApplications() {
+    // Return cached if available, otherwise localStorage fallback
+    if (cachedApplications) return cachedApplications;
     return JSON.parse(localStorage.getItem('gsaw_applications') || '[]');
 }
 
 function saveApplications(apps) {
+    cachedApplications = apps;
     localStorage.setItem('gsaw_applications', JSON.stringify(apps));
+}
+
+// Fetch applications from Google Sheets
+function fetchApplicationsFromSheet() {
+    return fetch(GSAW_API_URL + '?action=getMemberships')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (Array.isArray(data)) {
+                cachedApplications = data;
+                localStorage.setItem('gsaw_applications', JSON.stringify(data));
+                return data;
+            }
+            return getApplications();
+        })
+        .catch(function () {
+            return getApplications();
+        });
+}
+
+// Fetch donations from Google Sheets
+function fetchDonationsFromSheet() {
+    return fetch(GSAW_API_URL + '?action=getDonations')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (Array.isArray(data)) {
+                cachedDonations = data;
+                localStorage.setItem('gsaw_donations', JSON.stringify(data));
+                return data;
+            }
+            return getDonations();
+        })
+        .catch(function () {
+            return getDonations();
+        });
+}
+
+// Update a membership record on Google Sheets
+function updateMembershipOnSheet(payload) {
+    return fetch(GSAW_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'updateMembership',
+            payload: payload
+        })
+    }).catch(function () { /* silent */ });
+}
+
+// Update a donation record on Google Sheets
+function updateDonationOnSheet(payload) {
+    return fetch(GSAW_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'updateDonation',
+            payload: payload
+        })
+    }).catch(function () { /* silent */ });
 }
 
 function escapeHtml(text) {
@@ -113,8 +182,16 @@ function formatPhone(phone) {
 // 4. REFRESH DATA (Dashboard)
 // ========================================
 function refreshData() {
-    var apps = getApplications();
+    // Fetch from Google Sheets first, then render
+    fetchApplicationsFromSheet().then(function (apps) {
+        renderDashboard(apps);
+    });
+    fetchDonationsFromSheet().then(function () {
+        refreshDonationStats();
+    });
+}
 
+function renderDashboard(apps) {
     var total = apps.length;
     var pending = apps.filter(function (a) { return a.status !== 'approved'; }).length;
     var approved = apps.filter(function (a) { return a.status === 'approved'; }).length;
@@ -135,9 +212,6 @@ function refreshData() {
 
     // Province chart
     renderProvinceChart(apps);
-
-    // Donation summary on dashboard
-    refreshDonationStats();
 }
 
 // ========================================
@@ -413,6 +487,16 @@ function approveApplication(index) {
         }
 
         saveApplications(apps);
+
+        // Update on Google Sheets
+        updateMembershipOnSheet({
+            email: apps[index].email,
+            submittedAt: apps[index].submittedAt,
+            status: 'approved',
+            approvedAt: apps[index].approvedAt,
+            membershipNumber: apps[index].membershipNumber
+        });
+
         refreshData();
         renderApplications();
         renderApproved();
@@ -697,6 +781,15 @@ function verifyDonation(index) {
         donations[index].status = 'verified';
         donations[index].verifiedAt = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
         saveDonations(donations);
+
+        // Update on Google Sheets
+        updateDonationOnSheet({
+            email: donations[index].email,
+            submittedAt: donations[index].submittedAt,
+            status: 'verified',
+            verifiedAt: donations[index].verifiedAt
+        });
+
         refreshDonationStats();
         renderDonations();
     }

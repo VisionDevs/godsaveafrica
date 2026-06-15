@@ -133,13 +133,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Read file as base64, then store
+        var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
+
         function saveDonation(data) {
+            // Send to Google Sheets (without file data - too large for Sheets)
+            var sheetData = Object.assign({}, data);
+            delete sheetData.proofFileData; // Don't send base64 to Sheets
+
+            fetch(GSAW_API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'addDonation',
+                    payload: sheetData
+                })
+            }).catch(function () {
+                // Silent fail - local backup handles it
+            });
+
+            // Also store locally (with file data for admin POP viewing)
             var donations = JSON.parse(localStorage.getItem('gsaw_donations') || '[]');
             donations.push(data);
             try {
                 localStorage.setItem('gsaw_donations', JSON.stringify(donations));
             } catch (e) {
-                // localStorage quota exceeded - save without file data
                 data.proofFileData = null;
                 data.proofStorageError = true;
                 donations[donations.length - 1] = data;
