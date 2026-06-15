@@ -2025,3 +2025,307 @@ h1, h2, h3, h4, h5, h6 {
         padding: 25px 20px;
     }
 }
+
+/* ========================================
+   DONATION PAGE STYLES
+======================================== */
+
+/* Donor Type Toggle */
+.donor-type-options {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.donor-type-option {
+    flex: 1;
+    position: relative;
+}
+
+.donor-type-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.donor-type-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+    text-align: center;
+    background: var(--white);
+}
+
+.donor-type-option label i {
+    font-size: 1.2rem;
+    color: var(--gray-400);
+    transition: var(--transition);
+}
+
+.donor-type-option input[type="radio"]:checked + label {
+    border-color: var(--green);
+    background: rgba(27, 122, 61, 0.05);
+    color: var(--green);
+    box-shadow: 0 0 0 3px rgba(27, 122, 61, 0.1);
+}
+
+.donor-type-option input[type="radio"]:checked + label i {
+    color: var(--green);
+}
+
+/* Amount Selection */
+.amount-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.amount-option {
+    position: relative;
+}
+
+.amount-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.amount-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 12px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+    font-size: 1rem;
+    background: var(--white);
+}
+
+.amount-option input[type="radio"]:checked + label {
+    border-color: var(--orange);
+    background: rgba(244, 121, 32, 0.06);
+    color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(244, 121, 32, 0.1);
+}
+
+#custom-amount {
+    display: none;
+    margin-top: 10px;
+}
+
+/* Banking Details Table */
+.banking-details {
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 25px;
+    margin: 10px 0;
+    border: 1px solid var(--gray-200);
+}
+
+.banking-details h4 {
+    color: var(--dark);
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.banking-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.banking-table tr {
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.banking-table tr:last-child {
+    border-bottom: none;
+}
+
+.banking-table td {
+    padding: 10px 5px;
+    font-size: 0.9rem;
+}
+
+.banking-table td:first-child {
+    font-weight: 600;
+    color: var(--gray-700);
+    width: 40%;
+}
+
+.banking-table td:last-child {
+    color: var(--dark);
+}
+
+/* File Upload */
+.file-upload-wrapper {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius);
+    padding: 25px;
+    text-align: center;
+    transition: var(--transition);
+    position: relative;
+}
+
+.file-upload-wrapper:hover {
+    border-color: var(--green);
+    background: rgba(27, 122, 61, 0.02);
+}
+
+.file-upload-wrapper.has-file {
+    border-color: var(--green);
+    border-style: solid;
+    background: rgba(27, 122, 61, 0.03);
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--gray-500);
+}
+
+.file-upload-label i {
+    font-size: 2rem;
+    color: var(--gray-400);
+}
+
+.file-upload-label span {
+    font-size: 0.9rem;
+}
+
+.file-upload-label .file-types {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+}
+
+#pop-upload {
+    display: none;
+}
+
+.file-upload-preview {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.file-upload-preview i {
+    color: var(--green);
+    font-size: 1.3rem;
+}
+
+.file-upload-preview .file-name {
+    font-weight: 500;
+    color: var(--dark);
+    font-size: 0.9rem;
+}
+
+.file-remove-btn {
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: var(--transition);
+}
+
+.file-remove-btn:hover {
+    background: var(--red-dark);
+    transform: scale(1.1);
+}
+
+/* Donation Purpose */
+.purpose-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    background: var(--white);
+    transition: var(--transition);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+}
+
+.purpose-select:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(27, 122, 61, 0.1);
+}
+
+/* Donation Success */
+.donation-success {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.donation-success .success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    animation: scaleIn 0.5s ease;
+}
+
+.donation-success .success-icon i {
+    font-size: 2rem;
+    color: var(--white);
+}
+
+.donation-success h3 {
+    color: var(--green);
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.donation-success p {
+    color: var(--gray-600);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 500px;
+    margin: 0 auto 25px;
+}
+
+@media (max-width: 768px) {
+    .donor-type-options {
+        flex-direction: column;
+    }
+
+    .amount-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .banking-table td:first-child {
+        width: 35%;
+    }
+}
