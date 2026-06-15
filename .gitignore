@@ -5,6 +5,10 @@
 7ab2e4c0-*.jpg
 cb53a891-*.jpg
 
+# Temp extracted text files
+constitution_text.txt
+nec_policy_text.txt
+
 # OS files
 Thumbs.db
 .DS_Store
