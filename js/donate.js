@@ -137,8 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function saveDonation(data) {
             // Send to Google Sheets via hidden form (bypasses CORS)
+            // Include proofFileData so Apps Script can save it to Google Drive
             var sheetData = Object.assign({}, data);
-            delete sheetData.proofFileData;
 
             var iframe = document.createElement('iframe');
             iframe.name = 'gsaw_donate_frame';

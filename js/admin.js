@@ -700,7 +700,7 @@ function renderDonations() {
         html += '<td><small>' + escapeHtml(donation.purpose || 'General') + '</small></td>';
         html += '<td><small>' + escapeHtml(donation.email || '') + '</small></td>';
         html += '<td>' + escapeHtml(donation.phone || '') + '</td>';
-        html += '<td>' + (donation.proofFileData ? '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + realIndex + ')" title="View POP" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-image"></i> View</button>' : (donation.hasProofOfPayment ? '<span style="color:#f47920;"><i class="fas fa-check"></i> Uploaded</span>' : '<span style="color:#9ca3af;">None</span>')) + '</td>';
+        html += '<td>' + ((donation.proofFileData || donation.proofFileUrl) ? '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + realIndex + ')" title="View POP" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-image"></i> View</button>' : (donation.hasProofOfPayment ? '<span style="color:#f47920;"><i class="fas fa-check"></i> Uploaded</span>' : '<span style="color:#9ca3af;">None</span>')) + '</td>';
         html += '<td><small>' + escapeHtml(donation.submittedAt || '') + '</small></td>';
         html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
         html += '<td class="action-btns">';
@@ -750,11 +750,13 @@ function viewDonation(index) {
     });
 
     // Add POP preview if available
-    if (d.proofFileData) {
-        if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
+    if (d.proofFileData || d.proofFileUrl) {
+        if (d.proofFileUrl) {
+            html += '<div class="detail-row" style="flex-direction:column;align-items:flex-start;"><span class="detail-label">Proof of Payment Preview</span><iframe src="' + escapeHtml(d.proofFileUrl) + '" style="width:100%;height:400px;border-radius:8px;margin-top:10px;border:1px solid #e5e7eb;" allowfullscreen></iframe></div>';
+        } else if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
             html += '<div class="detail-row" style="flex-direction:column;align-items:flex-start;"><span class="detail-label">Proof of Payment Preview</span><img src="' + d.proofFileData + '" style="max-width:100%;max-height:400px;border-radius:8px;margin-top:10px;border:1px solid #e5e7eb;" alt="Proof of Payment"></div>';
         } else {
-            html += '<div class="detail-row"><span class="detail-label">Proof of Payment</span><button class="btn-sm btn-view" onclick="viewProofOfPayment(' + index + ')" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-pdf"></i> Open PDF</button></div>';
+            html += '<div class="detail-row"><span class="detail-label">Proof of Payment</span><button class="btn-sm btn-view" onclick="viewProofOfPayment(' + index + ')" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-pdf"></i> View POP</button></div>';
         }
     }
 
@@ -767,7 +769,7 @@ function viewDonation(index) {
     if (status === 'pending') {
         footerHtml += '<button class="btn-sm btn-approve" onclick="verifyDonation(' + index + '); closeModal();"><i class="fas fa-check"></i> Verify</button>';
     }
-    if (d.proofFileData) {
+    if (d.proofFileData || d.proofFileUrl) {
         footerHtml += '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + index + ')" style="background:#1B7A3D;color:#fff;"><i class="fas fa-eye"></i> View POP</button>';
     }
     footerHtml += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
@@ -778,29 +780,78 @@ function viewDonation(index) {
 }
 
 // ========================================
-// 17b. VIEW PROOF OF PAYMENT
+// 17b. VIEW PROOF OF PAYMENT (iframe modal)
 // ========================================
 function viewProofOfPayment(index) {
     var donations = getDonations();
     var d = donations[index];
-    if (!d || !d.proofFileData) {
+    if (!d || (!d.proofFileData && !d.proofFileUrl)) {
         return;
     }
 
-    // Open in new tab
-    var newWindow = window.open('', '_blank');
-    if (!newWindow) {
-        alert('Pop-up blocked. Please allow pop-ups to view the proof of payment.');
-        return;
-    }
+    // Create fullscreen iframe modal overlay
+    var overlay = document.createElement('div');
+    overlay.id = 'pop-viewer-overlay';
+    overlay.className = 'pop-viewer-overlay';
 
-    if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
-        newWindow.document.write('<html><head><title>POP - ' + escapeHtml(d.donorName || 'Donor') + '</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a2e;} img{max-width:95%;max-height:95vh;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);}</style></head><body><img src="' + d.proofFileData + '" alt="Proof of Payment"></body></html>');
+    var container = document.createElement('div');
+    container.className = 'pop-viewer-container';
+
+    // Header bar
+    var header = document.createElement('div');
+    header.className = 'pop-viewer-header';
+    header.innerHTML = '<span><i class="fas fa-file-image"></i> POP - ' + escapeHtml(d.donorName || 'Donor') + '</span><button class="pop-viewer-close" onclick="closePOPViewer()"><i class="fas fa-times"></i></button>';
+    container.appendChild(header);
+
+    // Content area
+    var content = document.createElement('div');
+    content.className = 'pop-viewer-content';
+
+    if (d.proofFileUrl) {
+        // Google Drive file - use iframe
+        var iframe = document.createElement('iframe');
+        iframe.src = d.proofFileUrl;
+        iframe.style.cssText = 'width:100%;height:100%;border:none;';
+        iframe.setAttribute('allowfullscreen', 'true');
+        content.appendChild(iframe);
+    } else if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
+        // Base64 image
+        var img = document.createElement('img');
+        img.src = d.proofFileData;
+        img.alt = 'Proof of Payment';
+        img.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;';
+        content.appendChild(img);
     } else {
-        // PDF - embed in iframe
-        newWindow.document.write('<html><head><title>POP - ' + escapeHtml(d.donorName || 'Donor') + '</title></head><body style="margin:0;"><iframe src="' + d.proofFileData + '" style="width:100%;height:100vh;border:none;"></iframe></body></html>');
+        // Base64 PDF - use iframe with data URI
+        var iframe = document.createElement('iframe');
+        iframe.src = d.proofFileData;
+        iframe.style.cssText = 'width:100%;height:100%;border:none;';
+        content.appendChild(iframe);
     }
-    newWindow.document.close();
+
+    container.appendChild(content);
+    overlay.appendChild(container);
+    document.body.appendChild(overlay);
+
+    // Close on overlay click (outside content)
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closePOPViewer();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', popViewerEscHandler);
+}
+
+function popViewerEscHandler(e) {
+    if (e.key === 'Escape') closePOPViewer();
+}
+
+function closePOPViewer() {
+    var overlay = document.getElementById('pop-viewer-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+    document.removeEventListener('keydown', popViewerEscHandler);
 }
 function verifyDonation(index) {
     var donations = getDonations();

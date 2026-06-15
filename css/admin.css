@@ -625,3 +625,104 @@ tr:hover td {
         padding: 15px;
     }
 }
+
+/* ========================================
+   POP VIEWER MODAL (Iframe)
+======================================== */
+.pop-viewer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    animation: popFadeIn 0.2s ease;
+}
+
+@keyframes popFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.pop-viewer-container {
+    width: 100%;
+    max-width: 900px;
+    height: 85vh;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+}
+
+.pop-viewer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: var(--dark, #1a1a2e);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.pop-viewer-header span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pop-viewer-close {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.pop-viewer-close:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.pop-viewer-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    background: #f0f0f0;
+}
+
+.pop-viewer-content iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.pop-viewer-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .pop-viewer-container {
+        height: 95vh;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    .pop-viewer-overlay {
+        padding: 0;
+    }
+}
