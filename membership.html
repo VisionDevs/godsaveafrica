@@ -250,6 +250,17 @@
                             </div>
                         </div>
 
+                        <!-- Digital Signature -->
+                        <div class="form-group">
+                            <label>Digital Signature *</label>
+                            <p style="font-size: 0.78rem; color: var(--gray-500); margin-bottom: 8px;">Use your mouse or finger to sign below.</p>
+                            <div class="signature-pad-wrapper">
+                                <canvas id="signature-pad" width="500" height="150"></canvas>
+                                <button type="button" class="signature-clear" id="clear-signature" title="Clear signature"><i class="fas fa-eraser"></i> Clear</button>
+                            </div>
+                            <input type="hidden" id="signatureData" name="signatureData">
+                        </div>
+
                         <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
                             <span class="btn-text"><i class="fas fa-paper-plane"></i> Submit Membership Application</span>
                             <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Submitting...</span>
@@ -258,8 +269,19 @@
                     <div id="form-success" class="form-success" style="display:none;">
                         <div class="success-icon"><i class="fas fa-check-circle"></i></div>
                         <h3>Application Submitted Successfully!</h3>
-                        <p>Thank you for joining GSAW. Your application will be reviewed by your branch/regional executive committee. You will be contacted via WhatsApp within 24&ndash;48 hours.</p>
-                        <p class="success-note"><i class="fas fa-info-circle"></i> Remember: membership is confirmed after payment of the membership fee.</p>
+                        <p>Thank you for joining GSAW. Your application will be reviewed by your branch/regional executive committee.</p>
+                        
+                        <div style="background: rgba(244, 121, 32, 0.06); border: 1px solid rgba(244, 121, 32, 0.2); border-radius: 8px; padding: 20px; margin: 20px 0; text-align: left;">
+                            <h4 style="font-size: 0.95rem; color: var(--orange); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> What Happens Next?</h4>
+                            <ul style="font-size: 0.85rem; color: var(--gray-600); line-height: 2;">
+                                <li><i class="fas fa-check" style="color: var(--green); margin-right: 8px;"></i> A branch member or leader will contact you via WhatsApp within 24&ndash;48 hours.</li>
+                                <li><i class="fas fa-check" style="color: var(--green); margin-right: 8px;"></i> They will provide you with <strong>membership fee details</strong> and <strong>payment methods</strong> available.</li>
+                                <li><i class="fas fa-check" style="color: var(--green); margin-right: 8px;"></i> Your membership is officially confirmed once payment is received and recorded.</li>
+                                <li><i class="fas fa-check" style="color: var(--green); margin-right: 8px;"></i> You will then be added to your branch WhatsApp group to begin participating.</li>
+                            </ul>
+                        </div>
+
+                        <p class="success-note"><i class="fas fa-clock"></i> Please be patient &mdash; our branch leaders are volunteers serving their communities.</p>
                         <button class="btn btn-outline-dark" onclick="resetForm()">Submit Another Application</button>
                     </div>
                 </div>

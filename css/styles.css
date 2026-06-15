@@ -1444,6 +1444,53 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
 }
 
+/* Signature Pad */
+.signature-pad-wrapper {
+    position: relative;
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+    overflow: hidden;
+}
+
+.signature-pad-wrapper canvas {
+    width: 100%;
+    height: 150px;
+    display: block;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.signature-pad-wrapper.signed {
+    border-color: var(--green);
+    border-style: solid;
+}
+
+.signature-pad-wrapper.error {
+    border-color: var(--red);
+}
+
+.signature-clear {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    cursor: pointer;
+    font-family: var(--font-main);
+    transition: var(--transition);
+}
+
+.signature-clear:hover {
+    background: var(--red);
+    color: var(--white);
+    border-color: var(--red);
+}
+
 .form-group textarea {
     resize: vertical;
     min-height: 80px;
