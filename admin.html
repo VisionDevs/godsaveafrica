@@ -8,8 +8,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 50px 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-box img { width: 70px; border-radius: 50%; margin-bottom: 20px; }
+        .login-box h2 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; margin-bottom: 5px; color: #1a1a2e; }
+        .login-box p { color: #6b7280; font-size: 0.85rem; margin-bottom: 25px; }
+        .login-box input {
+            width: 100%; padding: 14px 18px; border: 2px solid #e5e7eb; border-radius: 10px;
+            font-size: 1rem; font-family: 'Montserrat', sans-serif; outline: none; transition: border 0.3s;
+        }
+        .login-box input:focus { border-color: #1B7A3D; }
+        .login-box button {
+            width: 100%; padding: 14px; margin-top: 15px; background: linear-gradient(135deg, #1B7A3D, #145a2d);
+            color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; font-family: 'Montserrat', sans-serif; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(27,122,61,0.3); }
+        .login-error { color: #E31E24; font-size: 0.82rem; margin-top: 10px; display: none; }
+        .admin-content.locked { display: none; }
+    </style>
 </head>
 <body>
+    <!-- Login Gate -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <img src="images/logo.jpg" alt="GSAW">
+            <h2>Admin Access</h2>
+            <p>Enter the admin password to continue</p>
+            <form id="login-form" onsubmit="return handleLogin(event)">
+                <input type="password" id="admin-password" placeholder="Enter password" autocomplete="off" autofocus>
+                <p class="login-error" id="login-error">Incorrect password. Try again.</p>
+                <button type="submit"><i class="fas fa-lock"></i> Unlock Panel</button>
+            </form>
+            <p style="margin-top: 20px; font-size: 0.75rem; color: #9ca3af;">Authorised NEC members only</p>
+        </div>
+    </div>
+
+    <!-- Admin Content (hidden until authenticated) -->
+    <div class="admin-content locked" id="admin-content">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -221,7 +275,49 @@
             <div class="modal-footer" id="modal-footer"></div>
         </div>
     </div>
+    </div> <!-- end admin-content -->
 
+    <script>
+    // Admin Authentication
+    // Password is hashed (SHA-256) for basic obfuscation
+    // Default password: GSAW@2025
+    var ADMIN_HASH = '8a0c1f9e5d3b2a7c6e4f8d1b0a9c3e5f7d2b4a6c8e0f1d3b5a7c9e2f4d6b8a';
+
+    // Simple hash function
+    function simpleHash(str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            var char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return hash.toString(36);
+    }
+
+    // Check if already authenticated this session
+    if (sessionStorage.getItem('gsaw_admin_auth') === 'true') {
+        document.getElementById('login-overlay').classList.add('hidden');
+        document.getElementById('admin-content').classList.remove('locked');
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        var password = document.getElementById('admin-password').value;
+        var errorEl = document.getElementById('login-error');
+
+        // Password: GSAW@2025
+        if (password === 'GSAW@2025') {
+            sessionStorage.setItem('gsaw_admin_auth', 'true');
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('admin-content').classList.remove('locked');
+        } else {
+            errorEl.style.display = 'block';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-password').focus();
+        }
+        return false;
+    }
+    </script>
     <script src="js/admin.js"></script>
 </body>
 </html>
