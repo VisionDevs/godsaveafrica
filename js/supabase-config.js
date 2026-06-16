@@ -4,8 +4,8 @@
    Found at: https://supabase.com/dashboard > Settings > API
 ======================================== */
 
-var SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-var SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+var SUPABASE_URL = 'https://nvgoaikzidtpyvmffmxq.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable__cGi8xiV0Il-9tAan7QUAQ_wqQY_Q0K';
 
 // ========================================
 // SUPABASE CLIENT HELPER
