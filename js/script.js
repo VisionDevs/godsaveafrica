@@ -424,9 +424,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // ========================================
     function generateMembershipNumber() {
         var year = new Date().getFullYear().toString().slice(-2);
-        var random = Math.floor(Math.random() * 9000) + 1000;
-        var timestamp = Date.now().toString().slice(-4);
-        return 'GSAW-' + year + '-' + timestamp;
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var code = '';
+        for (var i = 0; i < 5; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return 'GSAW-' + year + '-' + code;
     }
 
     // ========================================
