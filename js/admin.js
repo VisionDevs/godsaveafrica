@@ -1,30 +1,30 @@
 /* ========================================
    GSAW Admin Panel - JavaScript
-   Handles: Navigation, Data Display, Approval, Export, Charts, Dark Mode
+   Handles: Navigation, Data Display, Approval, Export, Charts
 ======================================== */
 
 // ========================================
-// DARK MODE
+// BULK ACTIONS TOGGLE
 // ========================================
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    var isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('gsaw_dark_mode', isDark ? '1' : '0');
-    var btn = document.getElementById('dark-mode-btn');
-    if (btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-}
-
-// Apply saved dark mode preference
-if (localStorage.getItem('gsaw_dark_mode') === '1') {
-    document.body.classList.add('dark-mode');
+var bulkActionsVisible = false;
+function toggleBulkActions() {
+    bulkActionsVisible = !bulkActionsVisible;
+    var bar = document.getElementById('bulk-actions');
+    if (bar) bar.style.display = bulkActionsVisible ? 'flex' : 'none';
+    // Show/hide checkbox column in table
+    var checkboxCells = document.querySelectorAll('.app-checkbox-cell');
+    checkboxCells.forEach(function(c) { c.style.display = bulkActionsVisible ? '' : 'none'; });
+    // Uncheck all when hiding
+    if (!bulkActionsVisible) {
+        var allCbs = document.querySelectorAll('.app-select-checkbox');
+        allCbs.forEach(function(cb) { cb.checked = false; });
+        var selectAll = document.getElementById('select-all-apps');
+        if (selectAll) selectAll.checked = false;
+        updateSelectedCount();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Update dark mode button icon
-    var btn = document.getElementById('dark-mode-btn');
-    if (btn && document.body.classList.contains('dark-mode')) {
-        btn.innerHTML = '<i class="fas fa-sun"></i>';
-    }
 
     // ========================================
     // 1. SIDEBAR NAVIGATION
@@ -215,9 +215,6 @@ function renderDashboard(apps) {
 
     // Recent applications (last 5)
     renderRecent(apps.slice(-5).reverse());
-
-    // Province chart
-    renderProvinceChart(apps);
 
     // Growth chart
     renderGrowthChart(apps);
@@ -425,7 +422,8 @@ function renderApplications() {
     var start = (appCurrentPage - 1) * APP_PAGE_SIZE;
     var paged = filtered.slice(start, start + APP_PAGE_SIZE);
 
-    var html = '<table><thead><tr><th style="width:30px;"><input type="checkbox" id="select-all-header" onchange="toggleSelectAll(this)"></th><th>Membership #</th><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    var cbDisplay = bulkActionsVisible ? '' : 'display:none;';
+    var html = '<table><thead><tr><th class="app-checkbox-cell" style="width:30px;' + cbDisplay + '"><input type="checkbox" id="select-all-header" onchange="toggleSelectAll(this)"></th><th>Membership #</th><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
 
     paged.forEach(function (app) {
         // Find real index by ID
@@ -445,7 +443,7 @@ function renderApplications() {
         var submittedAt = app.submitted_at ? new Date(app.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : '';
 
         html += '<tr>';
-        html += '<td><input type="checkbox" class="app-select-checkbox" data-id="' + app.id + '" onchange="updateSelectedCount()"></td>';
+        html += '<td class="app-checkbox-cell" style="' + cbDisplay + '"><input type="checkbox" class="app-select-checkbox" data-id="' + app.id + '" onchange="updateSelectedCount()"></td>';
         html += '<td><strong style="color:#1B7A3D; font-size:0.8rem;">' + escapeHtml(membershipNum) + '</strong></td>';
         html += '<td><strong>' + escapeHtml(firstName + ' ' + lastName) + '</strong></td>';
         html += '<td><small>' + escapeHtml(app.email || '') + '</small></td>';

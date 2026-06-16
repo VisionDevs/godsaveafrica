@@ -625,13 +625,13 @@ document.addEventListener('DOMContentLoaded', function () {
         el.className = 'gsaw-notification';
         el.innerHTML = '<i class="fas ' + style.icon + '"></i> <span>' + message + '</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:' + style.text + ';font-size:1.2rem;cursor:pointer;margin-left:10px;padding:0 5px;">&times;</button>';
         el.style.cssText =
-            'position:fixed; top:20px; left:50%; transform:translateX(-50%); ' +
+            'position:fixed; top:80px; left:50%; transform:translateX(-50%); ' +
             'background:' + style.bg + '; color:' + style.text + '; ' +
-            'padding:16px 20px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); ' +
-            'z-index:99999; font-size:0.9rem; font-weight:600; ' +
+            'padding:16px 20px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.25); ' +
+            'z-index:99999; font-size:1rem; font-weight:600; ' +
             'display:flex; align-items:center; gap:10px; ' +
             'border:2px solid ' + style.border + '; ' +
-            'animation:slideDown 0.3s ease; max-width:90vw;';
+            'animation:slideDown 0.3s ease; max-width:90vw; min-width:280px;';
 
         document.body.appendChild(el);
 
