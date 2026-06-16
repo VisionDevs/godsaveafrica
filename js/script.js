@@ -225,48 +225,128 @@ document.addEventListener('DOMContentLoaded', function () {
             btnLoading.style.display = 'inline-flex';
             submitBtn.disabled = true;
 
-            // Collect data
-            var membershipNumber = generateMembershipNumber();
-            var formData = {
-                membershipNumber: membershipNumber,
-                firstName: getValue('firstName'),
-                lastName: getValue('lastName'),
-                email: getValue('email'),
-                phone: getValue('phone'),
-                idNumber: getValue('idNumber'),
-                gender: getValue('gender'),
-                dob: getValue('dob'),
-                address: getValue('address'),
-                province: getValue('province'),
-                municipality: getValue('municipality'),
-                ward: getValue('ward'),
-                votingStation: getValue('votingStation'),
-                occupation: getValue('occupation'),
-                qualification: getValue('qualification'),
-                skills: getValue('skills'),
-                reason: getValue('reason'),
-                signature: window.signaturePad ? window.signaturePad.getData() : '',
-                status: 'pending',
-                submittedAt: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
-            };
+            // Check for duplicates before submitting
+            var idNumber = getValue('idNumber');
+            var email = getValue('email');
+            var phone = getValue('phone').replace(/[\s\-()]/g, '');
 
-            // Submit
-            submitApplication(formData)
-                .then(function () {
-                    form.style.display = 'none';
-                    formSuccess.style.display = 'block';
-                    formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                })
-                .catch(function () {
-                    storeLocally(formData);
-                    form.style.display = 'none';
-                    formSuccess.style.display = 'block';
-                })
-                .finally(function () {
-                    btnText.style.display = 'inline-flex';
-                    btnLoading.style.display = 'none';
-                    submitBtn.disabled = false;
-                });
+            Promise.all([
+                gsawDB.checkMembershipExists('id_number', idNumber),
+                gsawDB.checkMembershipExists('email', email),
+                gsawDB.checkMembershipExists('phone', phone)
+            ]).then(function (results) {
+                var idExists = results[0];
+                var emailExists = results[1];
+                var phoneExists = results[2];
+
+                if (idExists) {
+                    document.getElementById('idNumber').classList.add('error');
+                    showNotification('This ID number is already registered. You are already a member!', 'error');
+                    resetButton();
+                    return;
+                }
+                if (emailExists) {
+                    document.getElementById('email').classList.add('error');
+                    showNotification('This email address is already registered. Please use a different email.', 'error');
+                    resetButton();
+                    return;
+                }
+                if (phoneExists) {
+                    document.getElementById('phone').classList.add('error');
+                    showNotification('This phone number is already registered. Please use a different number.', 'error');
+                    resetButton();
+                    return;
+                }
+
+                // No duplicates — proceed with submission
+                var membershipNumber = generateMembershipNumber();
+                var formData = {
+                    membershipNumber: membershipNumber,
+                    firstName: getValue('firstName'),
+                    lastName: getValue('lastName'),
+                    email: email,
+                    phone: phone,
+                    idNumber: idNumber,
+                    gender: getValue('gender'),
+                    dob: getValue('dob'),
+                    address: getValue('address'),
+                    province: getValue('province'),
+                    municipality: getValue('municipality'),
+                    ward: getValue('ward'),
+                    votingStation: getValue('votingStation'),
+                    occupation: getValue('occupation'),
+                    qualification: getValue('qualification'),
+                    skills: getValue('skills'),
+                    reason: getValue('reason'),
+                    signature: window.signaturePad ? window.signaturePad.getData() : '',
+                    status: 'pending',
+                    submittedAt: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
+                };
+
+                submitApplication(formData)
+                    .then(function (result) {
+                        if (result && result.error) {
+                            showNotification('Submission failed: ' + result.message, 'error');
+                            return;
+                        }
+                        form.style.display = 'none';
+                        formSuccess.style.display = 'block';
+                        formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    })
+                    .catch(function () {
+                        storeLocally(formData);
+                        form.style.display = 'none';
+                        formSuccess.style.display = 'block';
+                    })
+                    .finally(function () {
+                        resetButton();
+                    });
+            }).catch(function () {
+                // If duplicate check fails (network), proceed anyway and let DB handle it
+                var membershipNumber = generateMembershipNumber();
+                var formData = {
+                    membershipNumber: membershipNumber,
+                    firstName: getValue('firstName'),
+                    lastName: getValue('lastName'),
+                    email: email,
+                    phone: phone,
+                    idNumber: idNumber,
+                    gender: getValue('gender'),
+                    dob: getValue('dob'),
+                    address: getValue('address'),
+                    province: getValue('province'),
+                    municipality: getValue('municipality'),
+                    ward: getValue('ward'),
+                    votingStation: getValue('votingStation'),
+                    occupation: getValue('occupation'),
+                    qualification: getValue('qualification'),
+                    skills: getValue('skills'),
+                    reason: getValue('reason'),
+                    signature: window.signaturePad ? window.signaturePad.getData() : '',
+                    status: 'pending',
+                    submittedAt: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
+                };
+
+                submitApplication(formData)
+                    .then(function () {
+                        form.style.display = 'none';
+                        formSuccess.style.display = 'block';
+                    })
+                    .catch(function () {
+                        storeLocally(formData);
+                        form.style.display = 'none';
+                        formSuccess.style.display = 'block';
+                    })
+                    .finally(function () {
+                        resetButton();
+                    });
+            });
+
+            function resetButton() {
+                btnText.style.display = 'inline-flex';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
         });
     }
 

@@ -96,5 +96,13 @@ var gsawDB = {
 
     getFileUrl: function (bucket, filePath) {
         return SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + filePath;
+    },
+
+    // ---- DUPLICATE CHECKS ----
+    checkMembershipExists: function (field, value) {
+        return fetch(SUPABASE_URL + '/rest/v1/memberships?select=id&' + field + '=eq.' + encodeURIComponent(value), {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); })
+          .then(function (rows) { return rows.length > 0; });
     }
 };
