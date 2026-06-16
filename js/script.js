@@ -465,9 +465,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!valid) {
             showNotification('Please fill in all required fields.', 'error');
-            // Scroll to first error
-            var firstError = form.querySelector('.error');
-            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return false;
         }
 
@@ -618,32 +615,34 @@ document.addEventListener('DOMContentLoaded', function () {
         if (existing) existing.remove();
 
         var colors = {
-            error: { bg: '#fff', border: '#E31E24', text: '#E31E24', icon: 'fa-exclamation-circle' },
-            success: { bg: '#fff', border: '#1B7A3D', text: '#1B7A3D', icon: 'fa-check-circle' }
+            error: { bg: '#fff5f5', border: '#E31E24', text: '#E31E24', icon: 'fa-exclamation-circle' },
+            success: { bg: '#f0fdf4', border: '#1B7A3D', text: '#1B7A3D', icon: 'fa-check-circle' }
         };
 
         var style = colors[type] || colors.error;
 
         var el = document.createElement('div');
         el.className = 'gsaw-notification';
-        el.innerHTML = '<i class="fas ' + style.icon + '"></i> ' + message;
+        el.innerHTML = '<i class="fas ' + style.icon + '"></i> <span>' + message + '</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:' + style.text + ';font-size:1.2rem;cursor:pointer;margin-left:10px;padding:0 5px;">&times;</button>';
         el.style.cssText =
-            'position:fixed; top:100px; left:50%; transform:translateX(-50%); ' +
+            'position:fixed; top:20px; left:50%; transform:translateX(-50%); ' +
             'background:' + style.bg + '; color:' + style.text + '; ' +
-            'padding:14px 24px; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.15); ' +
-            'z-index:9999; font-size:0.88rem; font-weight:500; ' +
+            'padding:16px 20px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); ' +
+            'z-index:99999; font-size:0.9rem; font-weight:600; ' +
             'display:flex; align-items:center; gap:10px; ' +
-            'border-left:4px solid ' + style.border + '; ' +
+            'border:2px solid ' + style.border + '; ' +
             'animation:slideDown 0.3s ease; max-width:90vw;';
 
         document.body.appendChild(el);
 
         setTimeout(function () {
-            el.style.opacity = '0';
-            el.style.transform = 'translateX(-50%) translateY(-10px)';
-            el.style.transition = 'all 0.3s ease';
-            setTimeout(function () { el.remove(); }, 300);
-        }, 4000);
+            if (el.parentElement) {
+                el.style.opacity = '0';
+                el.style.transform = 'translateX(-50%) translateY(-10px)';
+                el.style.transition = 'all 0.3s ease';
+                setTimeout(function () { if (el.parentElement) el.remove(); }, 300);
+            }
+        }, 6000);
     }
 
     // Add animation keyframes
