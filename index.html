@@ -5,8 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GSAW - God Save Africa & The World | Official Political Party</title>
     <meta name="description" content="GSAW - God Save Africa & The World. A Christ-centered political party founded in 2025, committed to quality service delivery, eradication of corruption, and transformation in South Africa.">
+    <meta property="og:title" content="GSAW - God Save Africa & The World">
+    <meta property="og:description" content="A Christ-centered political party committed to quality service delivery and Godly governance in South Africa.">
+    <meta property="og:image" content="https://visiondevs.github.io/godsaveafrica/images/logo.jpg">
+    <meta property="og:url" content="https://visiondevs.github.io/godsaveafrica/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1B7A3D">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -23,6 +31,12 @@
                 <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
             </div>
         </div>
+    </div>
+
+    <!-- Announcement Banner -->
+    <div class="announcement-banner" id="announcement-banner" style="background:linear-gradient(90deg,#E31E24,#F47920);color:#fff;text-align:center;padding:10px 20px;font-size:0.82rem;font-weight:600;position:relative;font-family:'Montserrat',sans-serif;">
+        <span><i class="fas fa-bullhorn"></i> VOTER REGISTRATION WEEKEND: 20-21 June 2026 — <a href="events.html" style="color:#fff;text-decoration:underline;">Register at your nearest voting station!</a></span>
+        <button onclick="this.parentElement.style.display='none'" style="position:absolute;right:15px;top:50%;transform:translateY(-50%);background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;opacity:0.8;">&times;</button>
     </div>
 
     <!-- Navigation -->
@@ -314,5 +328,11 @@
     <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
     <script src="js/supabase-config.js"></script>
     <script src="js/script.js"></script>
+    <script>
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/godsaveafrica/sw.js').catch(function() {});
+    }
+    </script>
 </body>
 </html>

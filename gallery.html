@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - GSAW</title>
+    <meta name="description" content="Photos from GSAW events, rallies, community outreach, and prayer meetings.">
+    <meta property="og:title" content="Gallery - God Save Africa & The World">
+    <meta property="og:description" content="Photos from GSAW events, rallies, and community outreach.">
+    <meta property="og:image" content="images/logo.jpg">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .gallery-item { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 4/3; cursor: pointer; background: #f0f0f0; transition: transform 0.3s; }
+        .gallery-item:hover { transform: scale(1.02); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-item .gallery-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 50%, rgba(0,0,0,0.7)); display: flex; align-items: flex-end; padding: 20px; opacity: 0; transition: opacity 0.3s; }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+        .gallery-overlay p { color: #fff; font-size: 0.85rem; font-weight: 500; }
+        .gallery-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fa, #e9ecef); color: #6c757d; }
+        .gallery-placeholder i { font-size: 2.5rem; margin-bottom: 10px; color: #1B7A3D; opacity: 0.5; }
+        .gallery-placeholder span { font-size: 0.82rem; }
+        .gallery-filters { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .gallery-filter-btn { padding: 7px 16px; border-radius: 20px; border: 1.5px solid #e5e7eb; background: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Montserrat', sans-serif; }
+        .gallery-filter-btn.active, .gallery-filter-btn:hover { background: #1B7A3D; color: #fff; border-color: #1B7A3D; }
+        .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 90%; max-height: 85vh; border-radius: 8px; object-fit: contain; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 2rem; cursor: pointer; background: none; border: none; }
+        .lightbox-caption { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 0.9rem; text-align: center; }
+        @media (max-width: 600px) { .gallery-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone"></i> +27 XX XXX XXXX</span>
+                <span><i class="fas fa-envelope"></i> info@gsaw.org.za</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.jpg" alt="GSAW Logo">
+                <div class="nav-logo-text">
+                    <span class="logo-name">GSAW</span>
+                    <span class="logo-tagline">God Save Africa &amp; The World</span>
+                </div>
+            </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="manifesto.html" class="nav-link">Manifesto</a></li>
+                <li><a href="leadership.html" class="nav-link">Leadership</a></li>
+                <li><a href="constitution.html" class="nav-link">Constitution</a></li>
+                <li><a href="news.html" class="nav-link">News</a></li>
+                <li><a href="events.html" class="nav-link">Events</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="donate.html" class="nav-link">Donate</a></li>
+                <li><a href="membership.html" class="nav-link nav-cta">Join GSAW</a></li>
+            </ul>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> <span>Gallery</span></div>
+            <h1>Photo Gallery</h1>
+            <p>Moments from GSAW events, rallies, community outreach, and prayer meetings across South Africa.</p>
+        </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <section class="section">
+        <div class="container">
+            <div class="gallery-filters">
+                <button class="gallery-filter-btn active" onclick="filterGallery('all',this)">All</button>
+                <button class="gallery-filter-btn" onclick="filterGallery('events',this)">Events</button>
+                <button class="gallery-filter-btn" onclick="filterGallery('outreach',this)">Outreach</button>
+                <button class="gallery-filter-btn" onclick="filterGallery('leadership',this)">Leadership</button>
+            </div>
+
+            <div class="gallery-grid">
+                <div class="gallery-item gallery-placeholder" data-category="leadership" onclick="openLightbox(this)">
+                    <i class="fas fa-users"></i>
+                    <span>GSAW Leadership Team</span>
+                </div>
+                <div class="gallery-item gallery-placeholder" data-category="events" onclick="openLightbox(this)">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Party Launch Event</span>
+                </div>
+                <div class="gallery-item gallery-placeholder" data-category="outreach" onclick="openLightbox(this)">
+                    <i class="fas fa-hands-helping"></i>
+                    <span>Community Feeding Scheme</span>
+                </div>
+                <div class="gallery-item gallery-placeholder" data-category="events" onclick="openLightbox(this)">
+                    <i class="fas fa-pray"></i>
+                    <span>National Prayer Meeting</span>
+                </div>
+                <div class="gallery-item gallery-placeholder" data-category="outreach" onclick="openLightbox(this)">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <span>Door-to-Door Campaign</span>
+                </div>
+                <div class="gallery-item gallery-placeholder" data-category="leadership" onclick="openLightbox(this)">
+                    <i class="fas fa-handshake"></i>
+                    <span>NEC Meeting</span>
+                </div>
+                <div class="gallery-item gallery-placeholder" data-category="events" onclick="openLightbox(this)">
+                    <i class="fas fa-flag"></i>
+                    <span>Branch Inauguration</span>
+                </div>
+                <div class="gallery-item gallery-placeholder" data-category="outreach" onclick="openLightbox(this)">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Youth Development Programme</span>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:40px; padding:30px; background:rgba(244,121,32,0.05); border-radius:12px; border:1px solid rgba(244,121,32,0.15);">
+                <p style="font-size:0.9rem; color:#6c757d;"><i class="fas fa-camera" style="color:#F47920;margin-right:8px;"></i> Photos from upcoming events will be added here. Follow us on <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" style="color:#1B7A3D;font-weight:600;">Facebook</a> and <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" style="color:#1B7A3D;font-weight:600;">TikTok</a> for live updates.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightbox-img" src="" alt="">
+        <p class="lightbox-caption" id="lightbox-caption"></p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="GSAW Logo" class="footer-logo">
+                    <h3>God Save Africa &amp; The World</h3>
+                    <p class="footer-tagline">Founded 2025 | Restoring God's will through quality service delivery.</p>
+                </div>
+                <div class="footer-links"><h4>Quick Links</h4><a href="about.html">About</a><a href="membership.html">Join</a><a href="donate.html">Donate</a><a href="events.html">Events</a></div>
+                <div class="footer-links"><h4>Resources</h4><a href="constitution.html">Constitution</a><a href="faq.html">FAQ</a><a href="status.html">Check Status</a><a href="contact.html">Contact</a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2025 God Save Africa &amp; The World. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+    function filterGallery(cat, btn) {
+        document.querySelectorAll('.gallery-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.querySelectorAll('.gallery-item').forEach(function(item) {
+            if (cat === 'all' || item.getAttribute('data-category') === cat) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    function openLightbox(el) {
+        var img = el.querySelector('img');
+        if (img) {
+            document.getElementById('lightbox-img').src = img.src;
+            document.getElementById('lightbox-caption').textContent = el.querySelector('.gallery-overlay p') ? el.querySelector('.gallery-overlay p').textContent : '';
+            document.getElementById('lightbox').classList.add('active');
+        }
+    }
+    function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+    </script>
+</body>
+</html>

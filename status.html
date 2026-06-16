@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Application Status - GSAW</title>
+    <meta name="description" content="Check the status of your GSAW membership application using your ID number or membership number.">
+    <meta property="og:title" content="Check Application Status - GSAW">
+    <meta property="og:description" content="Check your GSAW membership application status.">
+    <meta property="og:image" content="images/logo.jpg">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .status-checker { max-width: 600px; margin: 0 auto; }
+        .status-box { background: #fff; border-radius: 16px; padding: 40px; box-shadow: 0 8px 40px rgba(0,0,0,0.08); border: 1px solid #f0f0f0; }
+        .status-box h2 { font-size: 1.4rem; margin-bottom: 8px; color: #1a1a2e; }
+        .status-box p { color: #6c757d; font-size: 0.88rem; margin-bottom: 25px; }
+        .status-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .status-input-group input { flex: 1; padding: 14px 18px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; font-family: 'Montserrat', sans-serif; outline: none; transition: border 0.3s; }
+        .status-input-group input:focus { border-color: #1B7A3D; }
+        .status-input-group button { padding: 14px 24px; background: linear-gradient(135deg, #1B7A3D, #145a2d); color: #fff; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: 'Montserrat', sans-serif; white-space: nowrap; transition: transform 0.2s; }
+        .status-input-group button:hover { transform: translateY(-2px); }
+        .status-result { display: none; margin-top: 20px; padding: 25px; border-radius: 12px; }
+        .status-result.found { display: block; background: rgba(27,122,61,0.06); border: 1.5px solid rgba(27,122,61,0.2); }
+        .status-result.not-found { display: block; background: rgba(227,30,36,0.06); border: 1.5px solid rgba(227,30,36,0.2); }
+        .status-result h3 { font-size: 1.1rem; margin-bottom: 15px; }
+        .status-detail { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.88rem; }
+        .status-detail:last-child { border-bottom: none; }
+        .status-detail .label { color: #6c757d; }
+        .status-detail .value { font-weight: 600; color: #1a1a2e; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; }
+        .badge-pending { background: rgba(244,121,32,0.15); color: #F47920; }
+        .badge-approved { background: rgba(27,122,61,0.15); color: #1B7A3D; }
+        .status-spinner { display: none; text-align: center; padding: 20px; color: #6c757d; }
+        @media (max-width: 600px) { .status-input-group { flex-direction: column; } .status-box { padding: 25px; } }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone"></i> +27 XX XXX XXXX</span>
+                <span><i class="fas fa-envelope"></i> info@gsaw.org.za</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.jpg" alt="GSAW Logo">
+                <div class="nav-logo-text">
+                    <span class="logo-name">GSAW</span>
+                    <span class="logo-tagline">God Save Africa &amp; The World</span>
+                </div>
+            </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="manifesto.html" class="nav-link">Manifesto</a></li>
+                <li><a href="leadership.html" class="nav-link">Leadership</a></li>
+                <li><a href="constitution.html" class="nav-link">Constitution</a></li>
+                <li><a href="news.html" class="nav-link">News</a></li>
+                <li><a href="events.html" class="nav-link">Events</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="donate.html" class="nav-link">Donate</a></li>
+                <li><a href="membership.html" class="nav-link nav-cta">Join GSAW</a></li>
+            </ul>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> <span>Check Status</span></div>
+            <h1>Check Application Status</h1>
+            <p>Enter your SA ID number or membership number to check the status of your membership application.</p>
+        </div>
+    </div>
+
+    <!-- Status Checker -->
+    <section class="section">
+        <div class="container">
+            <div class="status-checker">
+                <div class="status-box">
+                    <h2><i class="fas fa-search" style="color:#1B7A3D;margin-right:8px;"></i> Find My Application</h2>
+                    <p>Enter your 13-digit SA ID number or your GSAW membership number (e.g. GSAW-25-AB3K7)</p>
+                    <div class="status-input-group">
+                        <input type="text" id="status-query" placeholder="ID number or Membership #" maxlength="20" autocomplete="off">
+                        <button onclick="checkStatus()"><i class="fas fa-search"></i> Check</button>
+                    </div>
+                    <div class="status-spinner" id="status-spinner"><i class="fas fa-spinner fa-spin"></i> Searching...</div>
+                    <div id="status-result"></div>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: rgba(244,121,32,0.05); border-radius: 12px; border: 1px solid rgba(244,121,32,0.15);">
+                    <h4 style="font-size: 0.9rem; color: #F47920; margin-bottom: 8px;"><i class="fas fa-info-circle"></i> Application Status Guide</h4>
+                    <ul style="font-size: 0.82rem; color: #6c757d; line-height: 2; list-style: none; padding: 0;">
+                        <li><span class="status-badge badge-pending">Pending</span> — Your application is being reviewed by your branch executive</li>
+                        <li style="margin-top:8px;"><span class="status-badge badge-approved">Approved</span> — You are an official GSAW member! Check WhatsApp for your welcome message</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="GSAW Logo" class="footer-logo">
+                    <h3>God Save Africa &amp; The World</h3>
+                    <p class="footer-tagline">Founded 2025 | Restoring God's will through quality service delivery.</p>
+                </div>
+                <div class="footer-links"><h4>Quick Links</h4><a href="about.html">About</a><a href="membership.html">Join</a><a href="donate.html">Donate</a><a href="events.html">Events</a></div>
+                <div class="footer-links"><h4>Resources</h4><a href="constitution.html">Constitution</a><a href="faq.html">FAQ</a><a href="status.html">Check Status</a><a href="contact.html">Contact</a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2025 God Save Africa &amp; The World. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+    function checkStatus() {
+        var query = document.getElementById('status-query').value.trim();
+        var resultDiv = document.getElementById('status-result');
+        var spinner = document.getElementById('status-spinner');
+
+        if (!query) {
+            resultDiv.innerHTML = '';
+            resultDiv.className = 'status-result not-found';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<h3 style="color:#E31E24;"><i class="fas fa-exclamation-circle"></i> Please enter your ID or membership number</h3>';
+            return;
+        }
+
+        spinner.style.display = 'block';
+        resultDiv.style.display = 'none';
+
+        // Determine search field
+        var field = query.toUpperCase().indexOf('GSAW') === 0 ? 'membership_number' : 'id_number';
+        var url = SUPABASE_URL + '/rest/v1/memberships?select=first_name,last_name,membership_number,province,status,submitted_at,approved_at&' + field + '=eq.' + encodeURIComponent(query);
+
+        fetch(url, { headers: gsawDB.headers() })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                spinner.style.display = 'none';
+                if (data.length === 0) {
+                    resultDiv.className = 'status-result not-found';
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = '<h3 style="color:#E31E24;"><i class="fas fa-times-circle"></i> No Application Found</h3><p style="font-size:0.85rem;color:#6c757d;">We could not find an application with that number. Please check and try again, or <a href="membership.html" style="color:#1B7A3D;font-weight:600;">apply now</a>.</p>';
+                } else {
+                    var app = data[0];
+                    var status = app.status || 'pending';
+                    var badgeClass = status === 'approved' ? 'badge-approved' : 'badge-pending';
+                    var html = '<h3 style="color:#1B7A3D;"><i class="fas fa-check-circle"></i> Application Found</h3>';
+                    html += '<div class="status-detail"><span class="label">Name</span><span class="value">' + (app.first_name || '') + ' ' + (app.last_name || '') + '</span></div>';
+                    html += '<div class="status-detail"><span class="label">Membership #</span><span class="value">' + (app.membership_number || 'Pending assignment') + '</span></div>';
+                    html += '<div class="status-detail"><span class="label">Province</span><span class="value">' + (app.province || 'N/A') + '</span></div>';
+                    html += '<div class="status-detail"><span class="label">Status</span><span class="value"><span class="status-badge ' + badgeClass + '">' + status + '</span></span></div>';
+                    html += '<div class="status-detail"><span class="label">Submitted</span><span class="value">' + (app.submitted_at ? new Date(app.submitted_at).toLocaleDateString('en-ZA') : 'N/A') + '</span></div>';
+                    if (app.approved_at) {
+                        html += '<div class="status-detail"><span class="label">Approved</span><span class="value">' + new Date(app.approved_at).toLocaleDateString('en-ZA') + '</span></div>';
+                    }
+                    resultDiv.className = 'status-result found';
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = html;
+                }
+            })
+            .catch(function() {
+                spinner.style.display = 'none';
+                resultDiv.className = 'status-result not-found';
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<h3 style="color:#E31E24;"><i class="fas fa-wifi"></i> Connection Error</h3><p style="font-size:0.85rem;color:#6c757d;">Please check your internet connection and try again.</p>';
+            });
+    }
+
+    // Allow Enter key
+    document.getElementById('status-query').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') checkStatus();
+    });
+    </script>
+</body>
+</html>

@@ -761,3 +761,88 @@ tr:hover td {
         padding: 0;
     }
 }
+
+/* ========================================
+   DARK MODE
+======================================== */
+body.dark-mode {
+    background: #0f0f1a;
+    color: #e0e0e0;
+}
+body.dark-mode .sidebar {
+    background: #111122;
+    border-color: #1e1e3a;
+}
+body.dark-mode .admin-topbar {
+    background: #151528;
+    border-color: #1e1e3a;
+}
+body.dark-mode .card {
+    background: #1a1a30;
+    border-color: #2a2a4a;
+}
+body.dark-mode .stat-card {
+    border-color: #2a2a4a;
+}
+body.dark-mode table thead {
+    background: #151528;
+}
+body.dark-mode table tbody tr {
+    border-color: #2a2a4a;
+}
+body.dark-mode table tbody tr:hover {
+    background: #1e1e38;
+}
+body.dark-mode .modal {
+    background: #1a1a30;
+    color: #e0e0e0;
+}
+body.dark-mode .modal-header {
+    border-color: #2a2a4a;
+}
+body.dark-mode .detail-row {
+    border-color: #2a2a4a;
+}
+body.dark-mode .detail-value {
+    color: #e0e0e0;
+}
+body.dark-mode input,
+body.dark-mode select {
+    background: #151528;
+    border-color: #2a2a4a;
+    color: #e0e0e0;
+}
+body.dark-mode .btn-action {
+    border-color: #2a2a4a;
+    color: #e0e0e0;
+}
+body.dark-mode .page-info {
+    color: #9ca3af;
+}
+body.dark-mode .sidebar-nav .nav-item {
+    color: #c0c0d0;
+}
+body.dark-mode .sidebar-nav .nav-item:hover,
+body.dark-mode .sidebar-nav .nav-item.active {
+    background: rgba(27,122,61,0.2);
+}
+body.dark-mode .empty-state {
+    color: #6c757d;
+}
+body.dark-mode .bulk-actions {
+    background: #1a2e1a !important;
+    border-color: #2a4a2a !important;
+}
+
+/* ========================================
+   BULK ACTIONS BAR
+======================================== */
+.bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: #f0fdf4;
+    border-bottom: 1px solid #dcfce7;
+    flex-wrap: wrap;
+}

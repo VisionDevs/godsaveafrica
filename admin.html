@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         .login-overlay {
             position: fixed;
@@ -112,6 +113,9 @@
                 <button class="btn-action" onclick="exportCSV()" title="Export to CSV">
                     <i class="fas fa-download"></i> Export
                 </button>
+                <button class="btn-action" onclick="toggleDarkMode()" title="Toggle Dark Mode" id="dark-mode-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <a href="index.html" class="btn-action btn-website" title="View Website">
                     <i class="fas fa-globe"></i> Website
                 </a>
@@ -191,6 +195,22 @@
                 </div>
                 <div id="province-chart"></div>
             </div>
+
+            <!-- Growth Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Membership Growth</h2>
+                </div>
+                <div style="padding:15px;"><canvas id="growth-chart" height="200"></canvas></div>
+            </div>
+
+            <!-- Donation Trends -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-area"></i> Donation Trends</h2>
+                </div>
+                <div style="padding:15px;"><canvas id="donation-chart" height="200"></canvas></div>
+            </div>
         </div>
 
         <!-- Applications View -->
@@ -209,6 +229,12 @@
                             <option value="all">All Provinces</option>
                         </select>
                     </div>
+                </div>
+                <div class="bulk-actions" id="bulk-actions" style="padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <label style="font-size:0.82rem;color:#1B7A3D;font-weight:600;"><input type="checkbox" id="select-all-apps" onchange="toggleSelectAll(this)"> Select All</label>
+                    <button class="btn-sm btn-approve" onclick="bulkApprove()" style="font-size:0.78rem;"><i class="fas fa-check"></i> Approve Selected</button>
+                    <button class="btn-sm btn-danger" onclick="bulkDelete()" style="font-size:0.78rem;"><i class="fas fa-trash"></i> Delete Selected</button>
+                    <span id="selected-count" style="font-size:0.78rem;color:#6c757d;"></span>
                 </div>
                 <div id="applications-table"></div>
             </div>

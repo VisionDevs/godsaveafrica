@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - GSAW | Frequently Asked Questions</title>
+    <meta name="description" content="Frequently asked questions about joining GSAW, membership fees, branches, and how to get involved.">
+    <meta property="og:title" content="FAQ - God Save Africa & The World">
+    <meta property="og:description" content="Common questions about GSAW membership, branches, and getting involved.">
+    <meta property="og:image" content="images/logo.jpg">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-item { background: #fff; border-radius: 12px; margin-bottom: 12px; border: 1px solid #f0f0f0; overflow: hidden; transition: box-shadow 0.3s; }
+        .faq-item:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        .faq-question { padding: 20px 25px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 15px; font-weight: 600; font-size: 0.95rem; color: #1a1a2e; transition: background 0.2s; }
+        .faq-question:hover { background: rgba(27,122,61,0.03); }
+        .faq-question i.chevron { transition: transform 0.3s; color: #1B7A3D; font-size: 0.85rem; }
+        .faq-item.open .faq-question i.chevron { transform: rotate(180deg); }
+        .faq-answer { padding: 0 25px 0 25px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; font-size: 0.88rem; color: #6c757d; line-height: 1.8; }
+        .faq-item.open .faq-answer { max-height: 500px; padding: 0 25px 20px 25px; }
+        .faq-category { font-size: 1.1rem; font-weight: 700; color: #1B7A3D; margin: 30px 0 15px; padding-left: 5px; }
+        .faq-category:first-child { margin-top: 0; }
+        .faq-category i { margin-right: 8px; }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone"></i> +27 XX XXX XXXX</span>
+                <span><i class="fas fa-envelope"></i> info@gsaw.org.za</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.jpg" alt="GSAW Logo">
+                <div class="nav-logo-text">
+                    <span class="logo-name">GSAW</span>
+                    <span class="logo-tagline">God Save Africa &amp; The World</span>
+                </div>
+            </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="manifesto.html" class="nav-link">Manifesto</a></li>
+                <li><a href="leadership.html" class="nav-link">Leadership</a></li>
+                <li><a href="constitution.html" class="nav-link">Constitution</a></li>
+                <li><a href="news.html" class="nav-link">News</a></li>
+                <li><a href="events.html" class="nav-link">Events</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="donate.html" class="nav-link">Donate</a></li>
+                <li><a href="membership.html" class="nav-link nav-cta">Join GSAW</a></li>
+            </ul>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> <span>FAQ</span></div>
+            <h1>Frequently Asked Questions</h1>
+            <p>Find answers to common questions about GSAW membership, branches, donations, and more.</p>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <section class="section">
+        <div class="container">
+            <div class="faq-container">
+                <h3 class="faq-category"><i class="fas fa-users"></i> Membership</h3>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Who can join GSAW?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Membership of GSAW is open to all people of the world irrespective of colour, race and creed who accept its principles, policy, programmes and all rules. You must be 18 years or older and hold a valid SA ID number.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How much is the membership fee?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Membership fees are determined by your branch executive. After your application is approved, your branch leader will contact you via WhatsApp with payment details. Fees are typically affordable and help fund local branch activities.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How long does approval take?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Applications are typically reviewed within 24-48 hours. You will receive a WhatsApp message from your branch leader with your membership number and a link to join the members group. You can <a href="status.html" style="color:#1B7A3D;font-weight:600;">check your status here</a>.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Can I belong to another political party?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">No. As per the GSAW Constitution (Article 4), members shall not belong to any other political party. Dual membership is not permitted. If you are currently a member of another party, you must resign before joining GSAW.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How do I check my application status?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Visit our <a href="status.html" style="color:#1B7A3D;font-weight:600;">Status Checker page</a> and enter your 13-digit SA ID number or your membership number (e.g., GSAW-25-AB3K7). You'll see your current status immediately.</div>
+                </div>
+
+                <h3 class="faq-category"><i class="fas fa-sitemap"></i> Branches & Structure</h3>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What is a branch?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">A branch is the basic unit of GSAW. Every member belongs to a branch in their area. A branch requires a minimum of 20 members and must be registered with the Provincial Executive Committee. Branches meet at least once per month.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How do I find my branch?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">When your membership is approved, you'll be assigned to a branch based on your ward and municipality. Your branch leader will contact you via WhatsApp and add you to the branch group. If there's no branch in your area yet, you may be asked to help establish one!</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Can I start a branch in my area?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Yes! If there are at least 20 members in your ward/area, you can apply to form a branch. Contact your Provincial Executive Committee through the party's WhatsApp group or <a href="contact.html" style="color:#1B7A3D;font-weight:600;">contact us</a> for guidance.</div>
+                </div>
+
+                <h3 class="faq-category"><i class="fas fa-hand-holding-usd"></i> Donations</h3>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>How can I donate to GSAW?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Visit our <a href="donate.html" style="color:#1B7A3D;font-weight:600;">Donations page</a> to make a contribution. You can choose a preset amount or enter a custom amount. Upload your proof of payment (EFT receipt) and our treasurer will verify it.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Do I need to be a member to donate?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">No. Anyone — individuals and organisations — can donate to GSAW. All donations are used for party operations, community outreach, and election campaigns. We are transparent about how funds are used.</div>
+                </div>
+
+                <h3 class="faq-category"><i class="fas fa-vote-yea"></i> Elections & Voting</h3>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is GSAW registered with the IEC?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">GSAW is in the process of registration with the Independent Electoral Commission (IEC). Once registered, we will contest local government and national elections. Join now to be part of building the party from the ground up.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Can I stand as a candidate?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Yes! All members in good standing have the right to be elected or appointed to any committee, and to stand as a candidate for ward, municipal, provincial, or national elections. Candidates are nominated through branch and provincial structures.</div>
+                </div>
+
+                <h3 class="faq-category"><i class="fas fa-shield-alt"></i> Discipline & Rules</h3>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>What can get me expelled?</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="faq-answer">Grounds for discipline include: any action against the Constitution, policy, decisions, rules or regulations of GSAW; unlawful or criminal offences; insults and fighting (regarded as self-dismissal); and joining another political party while being a GSAW member.</div>
+                </div>
+
+                <!-- CTA -->
+                <div style="text-align:center; margin-top:40px; padding:30px; background:linear-gradient(135deg, rgba(27,122,61,0.05), rgba(244,121,32,0.05)); border-radius:16px;">
+                    <h3 style="margin-bottom:8px;">Still have questions?</h3>
+                    <p style="color:#6c757d; font-size:0.88rem; margin-bottom:20px;">Reach out to us and we'll get back to you.</p>
+                    <a href="contact.html" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;"><i class="fas fa-envelope"></i> Contact Us</a>
+                    <a href="membership.html" class="btn btn-outline-dark" style="display:inline-flex;align-items:center;gap:8px;margin-left:10px;"><i class="fas fa-user-plus"></i> Join Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="GSAW Logo" class="footer-logo">
+                    <h3>God Save Africa &amp; The World</h3>
+                    <p class="footer-tagline">Founded 2025 | Restoring God's will through quality service delivery.</p>
+                </div>
+                <div class="footer-links"><h4>Quick Links</h4><a href="about.html">About</a><a href="membership.html">Join</a><a href="donate.html">Donate</a><a href="events.html">Events</a></div>
+                <div class="footer-links"><h4>Resources</h4><a href="constitution.html">Constitution</a><a href="faq.html">FAQ</a><a href="status.html">Check Status</a><a href="contact.html">Contact</a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2025 God Save Africa &amp; The World. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+    function toggleFaq(el) {
+        var item = el.parentElement;
+        var wasOpen = item.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+        // Toggle clicked
+        if (!wasOpen) item.classList.add('open');
+    }
+    </script>
+</body>
+</html>

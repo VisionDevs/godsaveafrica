@@ -287,6 +287,15 @@ document.addEventListener('DOMContentLoaded', function () {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
+            // Honeypot anti-bot check
+            var honeypot = document.getElementById('honeypot-field');
+            if (honeypot && honeypot.value) {
+                // Bot detected - silently reject
+                form.style.display = 'none';
+                formSuccess.style.display = 'block';
+                return;
+            }
+
             // Rate limiting check
             var now = Date.now();
             if (now - lastSubmitTime < SUBMIT_COOLDOWN) {

@@ -1,9 +1,30 @@
 /* ========================================
    GSAW Admin Panel - JavaScript
-   Handles: Navigation, Data Display, Approval, Export
+   Handles: Navigation, Data Display, Approval, Export, Charts, Dark Mode
 ======================================== */
 
+// ========================================
+// DARK MODE
+// ========================================
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    var isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('gsaw_dark_mode', isDark ? '1' : '0');
+    var btn = document.getElementById('dark-mode-btn');
+    if (btn) btn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+}
+
+// Apply saved dark mode preference
+if (localStorage.getItem('gsaw_dark_mode') === '1') {
+    document.body.classList.add('dark-mode');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+    // Update dark mode button icon
+    var btn = document.getElementById('dark-mode-btn');
+    if (btn && document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '<i class="fas fa-sun"></i>';
+    }
 
     // ========================================
     // 1. SIDEBAR NAVIGATION
@@ -197,6 +218,99 @@ function renderDashboard(apps) {
 
     // Province chart
     renderProvinceChart(apps);
+
+    // Growth chart
+    renderGrowthChart(apps);
+
+    // Donation trends
+    renderDonationTrendsChart();
+}
+
+// ========================================
+// GROWTH CHART (Chart.js)
+// ========================================
+var growthChartInstance = null;
+function renderGrowthChart(apps) {
+    var canvas = document.getElementById('growth-chart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    // Group by week
+    var weekData = {};
+    apps.forEach(function (app) {
+        if (!app.submitted_at) return;
+        var d = new Date(app.submitted_at);
+        var weekStart = new Date(d);
+        weekStart.setDate(d.getDate() - d.getDay());
+        var key = weekStart.toISOString().slice(0, 10);
+        weekData[key] = (weekData[key] || 0) + 1;
+    });
+
+    var labels = Object.keys(weekData).sort().slice(-12);
+    var data = labels.map(function (k) { return weekData[k]; });
+    var cumulative = [];
+    var sum = 0;
+    data.forEach(function (v) { sum += v; cumulative.push(sum); });
+
+    if (growthChartInstance) growthChartInstance.destroy();
+    growthChartInstance = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: labels.map(function (l) { return new Date(l).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' }); }),
+            datasets: [{
+                label: 'New Members',
+                data: data,
+                borderColor: '#1B7A3D',
+                backgroundColor: 'rgba(27,122,61,0.1)',
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Cumulative',
+                data: cumulative,
+                borderColor: '#F47920',
+                borderDash: [5, 5],
+                fill: false,
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+    });
+}
+
+// ========================================
+// DONATION TRENDS CHART
+// ========================================
+var donationChartInstance = null;
+function renderDonationTrendsChart() {
+    var canvas = document.getElementById('donation-chart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    var donations = getDonations();
+    var monthData = {};
+    donations.forEach(function (d) {
+        if (!d.submitted_at) return;
+        var key = new Date(d.submitted_at).toISOString().slice(0, 7);
+        monthData[key] = (monthData[key] || 0) + (parseFloat(d.amount) || 0);
+    });
+
+    var labels = Object.keys(monthData).sort().slice(-12);
+    var data = labels.map(function (k) { return monthData[k]; });
+
+    if (donationChartInstance) donationChartInstance.destroy();
+    donationChartInstance = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels.map(function (l) { return new Date(l + '-01').toLocaleDateString('en-ZA', { month: 'short', year: '2-digit' }); }),
+            datasets: [{
+                label: 'Donations (ZAR)',
+                data: data,
+                backgroundColor: 'rgba(244,121,32,0.7)',
+                borderColor: '#F47920',
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
 }
 
 // ========================================
@@ -311,7 +425,7 @@ function renderApplications() {
     var start = (appCurrentPage - 1) * APP_PAGE_SIZE;
     var paged = filtered.slice(start, start + APP_PAGE_SIZE);
 
-    var html = '<table><thead><tr><th>Membership #</th><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    var html = '<table><thead><tr><th style="width:30px;"><input type="checkbox" id="select-all-header" onchange="toggleSelectAll(this)"></th><th>Membership #</th><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
 
     paged.forEach(function (app) {
         // Find real index by ID
@@ -331,6 +445,7 @@ function renderApplications() {
         var submittedAt = app.submitted_at ? new Date(app.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : '';
 
         html += '<tr>';
+        html += '<td><input type="checkbox" class="app-select-checkbox" data-id="' + app.id + '" onchange="updateSelectedCount()"></td>';
         html += '<td><strong style="color:#1B7A3D; font-size:0.8rem;">' + escapeHtml(membershipNum) + '</strong></td>';
         html += '<td><strong>' + escapeHtml(firstName + ' ' + lastName) + '</strong></td>';
         html += '<td><small>' + escapeHtml(app.email || '') + '</small></td>';
@@ -1080,4 +1195,64 @@ function downloadMembershipCard(index) {
     link.href = dataUrl;
     link.download = 'GSAW_Card_' + membershipNum + '.png';
     link.click();
+}
+
+// ========================================
+// 22. BULK ACTIONS
+// ========================================
+function toggleSelectAll(checkbox) {
+    var checkboxes = document.querySelectorAll('.app-select-checkbox');
+    checkboxes.forEach(function (cb) { cb.checked = checkbox.checked; });
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    var checked = document.querySelectorAll('.app-select-checkbox:checked');
+    var countEl = document.getElementById('selected-count');
+    if (countEl) countEl.textContent = checked.length + ' selected';
+}
+
+function getSelectedIds() {
+    var checked = document.querySelectorAll('.app-select-checkbox:checked');
+    var ids = [];
+    checked.forEach(function (cb) { ids.push(cb.getAttribute('data-id')); });
+    return ids;
+}
+
+function bulkApprove() {
+    var ids = getSelectedIds();
+    if (ids.length === 0) { alert('No applications selected.'); return; }
+    if (!confirm('Approve ' + ids.length + ' application(s)?')) return;
+
+    var apps = getApplications();
+    var approvedAt = new Date().toISOString();
+    var promises = ids.map(function (id) {
+        return gsawDB.updateMembership(id, { status: 'approved', approved_at: approvedAt });
+    });
+
+    Promise.all(promises).then(function () {
+        // Update local cache
+        ids.forEach(function (id) {
+            var app = apps.find(function (a) { return a.id === id; });
+            if (app) { app.status = 'approved'; app.approved_at = approvedAt; }
+        });
+        refreshData();
+    });
+}
+
+function bulkDelete() {
+    var ids = getSelectedIds();
+    if (ids.length === 0) { alert('No applications selected.'); return; }
+    if (!confirm('DELETE ' + ids.length + ' application(s)? This cannot be undone!')) return;
+
+    var promises = ids.map(function (id) {
+        return gsawDB.deleteMembership(id);
+    });
+
+    Promise.all(promises).then(function () {
+        cachedApplications = cachedApplications.filter(function (a) {
+            return ids.indexOf(a.id) === -1;
+        });
+        refreshData();
+    });
 }

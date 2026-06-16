@@ -1,0 +1,21 @@
+{
+    "name": "GSAW - God Save Africa & The World",
+    "short_name": "GSAW",
+    "description": "Official political party app - membership, donations, news & events",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1a1a2e",
+    "theme_color": "#1B7A3D",
+    "icons": [
+        {
+            "src": "images/logo.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "images/logo.jpg",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
+}
