@@ -627,6 +627,41 @@ tr:hover td {
 }
 
 /* ========================================
+   PAGINATION CONTROLS
+======================================== */
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 20px;
+    border-top: 1px solid var(--gray-200);
+}
+.pagination-controls button {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+.pagination-controls button:hover:not(:disabled) {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+}
+.pagination-controls button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.pagination-controls .page-info {
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    padding: 0 10px;
+}
+
+/* ========================================
    POP VIEWER MODAL (Iframe)
 ======================================== */
 .pop-viewer-overlay {

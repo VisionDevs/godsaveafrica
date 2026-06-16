@@ -276,18 +276,27 @@ function renderProvinceChart(apps) {
 }
 
 // ========================================
-// 7. ALL APPLICATIONS VIEW
+// 7. ALL APPLICATIONS VIEW (with search + pagination)
 // ========================================
+var APP_PAGE_SIZE = 20;
+var appCurrentPage = 1;
+
 function renderApplications() {
     var container = document.getElementById('applications-table');
     var apps = getApplications();
     var statusFilter = document.getElementById('filter-status').value;
     var provinceFilter = document.getElementById('filter-province').value;
+    var searchInput = document.getElementById('search-applications');
+    var searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
     // Filter
-    var filtered = apps.filter(function (app, i) {
+    var filtered = apps.filter(function (app) {
         if (statusFilter !== 'all' && (app.status || 'pending') !== statusFilter) return false;
         if (provinceFilter !== 'all' && app.province !== provinceFilter) return false;
+        if (searchTerm) {
+            var searchable = ((app.first_name || '') + ' ' + (app.last_name || '') + ' ' + (app.email || '') + ' ' + (app.phone || '') + ' ' + (app.id_number || '') + ' ' + (app.membership_number || '')).toLowerCase();
+            if (searchable.indexOf(searchTerm) === -1) return false;
+        }
         return true;
     });
 
@@ -296,9 +305,15 @@ function renderApplications() {
         return;
     }
 
+    // Pagination
+    var totalPages = Math.ceil(filtered.length / APP_PAGE_SIZE);
+    if (appCurrentPage > totalPages) appCurrentPage = 1;
+    var start = (appCurrentPage - 1) * APP_PAGE_SIZE;
+    var paged = filtered.slice(start, start + APP_PAGE_SIZE);
+
     var html = '<table><thead><tr><th>Membership #</th><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
 
-    filtered.forEach(function (app) {
+    paged.forEach(function (app) {
         // Find real index by ID
         var realIndex = 0;
         for (var j = 0; j < apps.length; j++) {
@@ -328,11 +343,24 @@ function renderApplications() {
         if (status === 'pending') {
             html += '<button class="btn-sm btn-approve" onclick="approveApplication(' + realIndex + ')" title="Approve"><i class="fas fa-check"></i> Approve</button>';
         }
+        html += '<button class="btn-sm btn-danger" onclick="removeApplication(' + realIndex + ')" title="Delete"><i class="fas fa-trash"></i></button>';
         html += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>';
         html += '</td></tr>';
     });
 
     html += '</tbody></table>';
+
+    // Pagination controls
+    if (totalPages > 1) {
+        html += '<div class="pagination-controls">';
+        html += '<button class="btn-sm" onclick="appCurrentPage=1;renderApplications();" ' + (appCurrentPage === 1 ? 'disabled' : '') + '><i class="fas fa-angle-double-left"></i></button>';
+        html += '<button class="btn-sm" onclick="appCurrentPage--;renderApplications();" ' + (appCurrentPage === 1 ? 'disabled' : '') + '><i class="fas fa-angle-left"></i></button>';
+        html += '<span class="page-info">Page ' + appCurrentPage + ' of ' + totalPages + ' (' + filtered.length + ' total)</span>';
+        html += '<button class="btn-sm" onclick="appCurrentPage++;renderApplications();" ' + (appCurrentPage === totalPages ? 'disabled' : '') + '><i class="fas fa-angle-right"></i></button>';
+        html += '<button class="btn-sm" onclick="appCurrentPage=' + totalPages + ';renderApplications();" ' + (appCurrentPage === totalPages ? 'disabled' : '') + '><i class="fas fa-angle-double-right"></i></button>';
+        html += '</div>';
+    }
+
     container.innerHTML = html;
 }
 
@@ -354,6 +382,13 @@ function renderApproved() {
     var html = '<table><thead><tr><th>Name</th><th>Membership #</th><th>Phone (WhatsApp)</th><th>Province</th><th>Municipality</th><th>Skills</th><th>Actions</th></tr></thead><tbody>';
 
     approved.forEach(function (app) {
+        // Find real index
+        var realIndex = 0;
+        var allApps = getApplications();
+        for (var j = 0; j < allApps.length; j++) {
+            if (allApps[j].id === app.id) { realIndex = j; break; }
+        }
+
         var firstName = app.first_name || app.firstName || '';
         var lastName = app.last_name || app.lastName || '';
         var membershipNum = app.membership_number || app.membershipNumber || 'N/A';
@@ -368,7 +403,9 @@ function renderApproved() {
         html += '<td>' + escapeHtml(app.municipality || '') + '</td>';
         html += '<td><small>' + escapeHtml(app.skills || 'Not specified') + '</small></td>';
         html += '<td class="action-btns">';
+        html += '<button class="btn-sm btn-view" onclick="downloadMembershipCard(' + realIndex + ')" title="Download Card" style="background:#F47920;color:#fff;"><i class="fas fa-id-card"></i> Card</button>';
         html += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '?text=' + whatsappMsg + '" target="_blank"><i class="fab fa-whatsapp"></i> Message</a>';
+        html += '<button class="btn-sm btn-danger" onclick="removeApplication(' + realIndex + ')" title="Delete"><i class="fas fa-trash"></i></button>';
         html += '</td></tr>';
     });
 
@@ -447,6 +484,9 @@ function viewApplication(index) {
 
     if (status === 'pending') {
         footerHtml += '<button class="btn-sm btn-approve" onclick="approveApplication(' + index + '); closeModal();"><i class="fas fa-check"></i> Approve</button>';
+    }
+    if (status === 'approved') {
+        footerHtml += '<button class="btn-sm" onclick="downloadMembershipCard(' + index + ')" style="background:#F47920;color:#fff;"><i class="fas fa-id-card"></i> Download Card</button>';
     }
     footerHtml += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
     footerHtml += '<button class="btn-sm btn-danger" onclick="removeApplication(' + index + '); closeModal();"><i class="fas fa-trash"></i> Remove</button>';
@@ -547,7 +587,7 @@ function removeApplication(index) {
 }
 
 // ========================================
-// 13. EXPORT TO CSV
+// 13. EXPORT TO CSV (Excel-friendly with BOM)
 // ========================================
 function exportCSV() {
     var apps = getApplications();
@@ -557,14 +597,14 @@ function exportCSV() {
     }
 
     var headers = ['Membership #', 'First Name', 'Last Name', 'Email', 'Phone', 'ID Number', 'Gender', 'DOB', 'Address', 'Province', 'Municipality', 'Ward', 'Voting Station', 'Occupation', 'Qualification', 'Skills', 'Reason', 'Status', 'Submitted At', 'Approved At'];
-    var csv = headers.join(',') + '\n';
+    var csv = '\uFEFF' + headers.join(',') + '\n';
 
     apps.forEach(function (app) {
         var row = [
             app.membership_number || '', app.first_name || '', app.last_name || '', app.email || '', app.phone || '',
-            app.id_number || '', app.gender || '', app.date_of_birth || '', app.address || '',
+            app.id_number || '', app.gender || '', app.date_of_birth || '', (app.address || '').replace(/"/g, '""'),
             app.province || '', app.municipality || '', app.ward || '', app.voting_station || '',
-            app.occupation || '', app.qualification || '', app.skills || '', (app.reason || '').replace(/"/g, '""'),
+            app.occupation || '', app.qualification || '', (app.skills || '').replace(/"/g, '""'), (app.reason || '').replace(/"/g, '""').replace(/\n/g, ' '),
             app.status || 'pending', app.submitted_at || '', app.approved_at || ''
         ];
         csv += row.map(function (val) { return '"' + String(val) + '"'; }).join(',') + '\n';
@@ -627,32 +667,47 @@ function refreshDonationStats() {
 }
 
 // ========================================
-// 16. RENDER DONATIONS TABLE
+// 16. RENDER DONATIONS TABLE (with search + pagination)
 // ========================================
+var DON_PAGE_SIZE = 20;
+var donCurrentPage = 1;
+
 function renderDonations() {
     var container = document.getElementById('donations-table');
     if (!container) return;
 
     var donations = getDonations();
     var statusFilter = document.getElementById('filter-donation-status').value;
+    var searchInput = document.getElementById('search-donations');
+    var searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
     var filtered = donations.filter(function (d) {
-        if (statusFilter === 'all') return true;
-        return (d.status || 'pending') === statusFilter;
+        if (statusFilter !== 'all' && (d.status || 'pending') !== statusFilter) return false;
+        if (searchTerm) {
+            var searchable = ((d.donor_name || '') + ' ' + (d.first_name || '') + ' ' + (d.last_name || '') + ' ' + (d.email || '') + ' ' + (d.phone || '')).toLowerCase();
+            if (searchable.indexOf(searchTerm) === -1) return false;
+        }
+        return true;
     });
 
     refreshDonationStats();
 
     if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-hand-holding-usd"></i><p>No donations recorded yet</p><small>Donations submitted on the website will appear here</small></div>';
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-hand-holding-usd"></i><p>No donations match your filters</p><small>Donations submitted on the website will appear here</small></div>';
         return;
     }
 
+    // Pagination
+    var totalPages = Math.ceil(filtered.length / DON_PAGE_SIZE);
+    if (donCurrentPage > totalPages) donCurrentPage = 1;
+    var start = (donCurrentPage - 1) * DON_PAGE_SIZE;
+    var paged = filtered.slice(start, start + DON_PAGE_SIZE);
+
     var html = '<table><thead><tr><th>Donor</th><th>Type</th><th>Amount</th><th>Purpose</th><th>Email</th><th>Phone</th><th>POP</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
 
-    filtered.forEach(function (donation, i) {
+    paged.forEach(function (donation) {
         // Find real index
-        var realIndex = donations.indexOf(donation);
+        var realIndex = 0;
         for (var j = 0; j < donations.length; j++) {
             if (donations[j].id === donation.id) {
                 realIndex = j;
@@ -679,12 +734,25 @@ function renderDonations() {
         if (status === 'pending') {
             html += '<button class="btn-sm btn-approve" onclick="verifyDonation(' + realIndex + ')" title="Verify"><i class="fas fa-check"></i></button>';
         }
+        html += '<button class="btn-sm btn-danger" onclick="removeDonation(' + realIndex + ')" title="Delete"><i class="fas fa-trash"></i></button>';
         var phone = formatPhone(donation.phone || '');
         html += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>';
         html += '</td></tr>';
     });
 
     html += '</tbody></table>';
+
+    // Pagination controls
+    if (totalPages > 1) {
+        html += '<div class="pagination-controls">';
+        html += '<button class="btn-sm" onclick="donCurrentPage=1;renderDonations();" ' + (donCurrentPage === 1 ? 'disabled' : '') + '><i class="fas fa-angle-double-left"></i></button>';
+        html += '<button class="btn-sm" onclick="donCurrentPage--;renderDonations();" ' + (donCurrentPage === 1 ? 'disabled' : '') + '><i class="fas fa-angle-left"></i></button>';
+        html += '<span class="page-info">Page ' + donCurrentPage + ' of ' + totalPages + ' (' + filtered.length + ' total)</span>';
+        html += '<button class="btn-sm" onclick="donCurrentPage++;renderDonations();" ' + (donCurrentPage === totalPages ? 'disabled' : '') + '><i class="fas fa-angle-right"></i></button>';
+        html += '<button class="btn-sm" onclick="donCurrentPage=' + totalPages + ';renderDonations();" ' + (donCurrentPage === totalPages ? 'disabled' : '') + '><i class="fas fa-angle-double-right"></i></button>';
+        html += '</div>';
+    }
+
     container.innerHTML = html;
 }
 
@@ -862,7 +930,7 @@ function exportDonationsCSV() {
     }
 
     var headers = ['Donor Name', 'Donor Type', 'Organisation', 'Contact Person', 'Email', 'Phone', 'Amount (ZAR)', 'Purpose', 'Message', 'Proof of Payment', 'Status', 'Submitted At', 'Verified At'];
-    var csv = headers.join(',') + '\n';
+    var csv = '\uFEFF' + headers.join(',') + '\n';
 
     donations.forEach(function (d) {
         var row = [
@@ -874,7 +942,7 @@ function exportDonationsCSV() {
             d.phone || '',
             d.amount || '',
             d.purpose || 'General',
-            (d.message || '').replace(/"/g, '""'),
+            (d.message || '').replace(/"/g, '""').replace(/\n/g, ' '),
             d.proof_file_name || '',
             d.status || 'pending',
             d.submitted_at || '',
@@ -890,4 +958,126 @@ function exportDonationsCSV() {
     link.download = 'gsaw_donations_' + new Date().toISOString().slice(0, 10) + '.csv';
     link.click();
     URL.revokeObjectURL(url);
+}
+
+// ========================================
+// 21. MEMBERSHIP CARD PDF DOWNLOAD
+// ========================================
+function downloadMembershipCard(index) {
+    var apps = getApplications();
+    var app = apps[index];
+    if (!app || app.status !== 'approved') {
+        alert('Only approved members can get a membership card.');
+        return;
+    }
+
+    var firstName = app.first_name || '';
+    var lastName = app.last_name || '';
+    var membershipNum = app.membership_number || '';
+    var province = app.province || '';
+    var approvedDate = app.approved_at ? new Date(app.approved_at).toLocaleDateString('en-ZA') : new Date().toLocaleDateString('en-ZA');
+
+    // Create card using canvas and download as image
+    var canvas = document.createElement('canvas');
+    canvas.width = 900;
+    canvas.height = 550;
+    var ctx = canvas.getContext('2d');
+
+    // Background gradient
+    var grad = ctx.createLinearGradient(0, 0, 900, 550);
+    grad.addColorStop(0, '#1a1a2e');
+    grad.addColorStop(1, '#16213e');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 900, 550);
+
+    // Green accent bar
+    ctx.fillStyle = '#1B7A3D';
+    ctx.fillRect(0, 0, 900, 8);
+    ctx.fillRect(0, 542, 900, 8);
+
+    // Red accent line
+    ctx.fillStyle = '#E31E24';
+    ctx.fillRect(0, 8, 900, 3);
+
+    // Party name
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px Montserrat, Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('GOD SAVE AFRICA & THE WORLD', 450, 60);
+
+    // Subtitle
+    ctx.fillStyle = '#F47920';
+    ctx.font = '16px Montserrat, Arial, sans-serif';
+    ctx.fillText('OFFICIAL MEMBERSHIP CARD', 450, 90);
+
+    // Divider
+    ctx.strokeStyle = '#1B7A3D';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(150, 110);
+    ctx.lineTo(750, 110);
+    ctx.stroke();
+
+    // Member details
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px Montserrat, Arial, sans-serif';
+    ctx.fillText('MEMBER NAME', 80, 160);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 26px Montserrat, Arial, sans-serif';
+    ctx.fillText(firstName + ' ' + lastName, 80, 195);
+
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px Montserrat, Arial, sans-serif';
+    ctx.fillText('MEMBERSHIP NUMBER', 80, 250);
+    ctx.fillStyle = '#1B7A3D';
+    ctx.font = 'bold 24px Montserrat, Arial, sans-serif';
+    ctx.fillText(membershipNum, 80, 285);
+
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px Montserrat, Arial, sans-serif';
+    ctx.fillText('PROVINCE', 80, 340);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '20px Montserrat, Arial, sans-serif';
+    ctx.fillText(province, 80, 370);
+
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px Montserrat, Arial, sans-serif';
+    ctx.fillText('DATE APPROVED', 80, 420);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '20px Montserrat, Arial, sans-serif';
+    ctx.fillText(approvedDate, 80, 450);
+
+    // Right side - ID Number
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px Montserrat, Arial, sans-serif';
+    ctx.fillText('ID NUMBER', 500, 160);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '18px Montserrat, Arial, sans-serif';
+    var idDisplay = (app.id_number || '').substring(0, 6) + '*******';
+    ctx.fillText(idDisplay, 500, 190);
+
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '14px Montserrat, Arial, sans-serif';
+    ctx.fillText('STATUS', 500, 250);
+    ctx.fillStyle = '#1B7A3D';
+    ctx.font = 'bold 20px Montserrat, Arial, sans-serif';
+    ctx.fillText('✓ ACTIVE MEMBER', 500, 280);
+
+    // Footer
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#F47920';
+    ctx.font = 'bold 14px Montserrat, Arial, sans-serif';
+    ctx.fillText('#AllPowerBelongsToJesus', 450, 510);
+
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '11px Montserrat, Arial, sans-serif';
+    ctx.fillText('This card is the property of GSAW. Report loss to your branch leader.', 450, 530);
+
+    // Download
+    var dataUrl = canvas.toDataURL('image/png');
+    var link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = 'GSAW_Card_' + membershipNum + '.png';
+    link.click();
 }

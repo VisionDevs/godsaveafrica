@@ -149,6 +149,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var submitBtn = document.getElementById('submit-btn');
     var formSuccess = document.getElementById('form-success');
 
+    // Rate limiting: prevent spam submissions (max 1 per 60 seconds)
+    var lastSubmitTime = 0;
+    var SUBMIT_COOLDOWN = 60000; // 60 seconds
+
     // ID Number → Date of Birth auto-populate
     var idInput = document.getElementById('idNumber');
     var dobInput = document.getElementById('dob');
@@ -182,8 +186,83 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (genderSelect) {
                         genderSelect.value = genderDigits >= 5000 ? 'Male' : 'Female';
                     }
+                    // Check if ID already registered (on blur)
+                    checkDuplicateOnBlur('id_number', id, idInput, 'This ID number is already registered. You are already a member!');
                 }
             }
+        });
+    }
+
+    // ========================================
+    // DUPLICATE CHECK ON BLUR (instant feedback)
+    // ========================================
+    var duplicateCheckTimer = null;
+    function checkDuplicateOnBlur(field, value, inputEl, message) {
+        if (!value) return;
+        gsawDB.checkMembershipExists(field, value).then(function (exists) {
+            if (exists) {
+                inputEl.classList.add('error');
+                showNotification(message, 'error');
+            }
+        }).catch(function () { /* ignore network errors */ });
+    }
+
+    // Email blur check
+    var emailInput = document.getElementById('email');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function () {
+            var val = this.value.trim();
+            if (val && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                checkDuplicateOnBlur('email', val, this, 'This email address is already registered. Please use a different email.');
+            }
+        });
+    }
+
+    // Phone blur check
+    var phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('blur', function () {
+            var val = this.value.replace(/[\s\-()]/g, '');
+            if (val.length >= 10) {
+                checkDuplicateOnBlur('phone', val, this, 'This phone number is already registered. Please use a different number.');
+            }
+        });
+    }
+
+    // ========================================
+    // PROVINCE → MUNICIPALITY CASCADE
+    // ========================================
+    var provinceMunicipalities = {
+        'Eastern Cape': ['Alfred Nzo', 'Amathole', 'Buffalo City', 'Chris Hani', 'Joe Gqabi', 'Nelson Mandela Bay', 'OR Tambo', 'Sarah Baartman'],
+        'Free State': ['Fezile Dabi', 'Lejweleputswa', 'Mangaung', 'Thabo Mofutsanyana', 'Xhariep'],
+        'Gauteng': ['City of Ekurhuleni', 'City of Johannesburg', 'City of Tshwane', 'Sedibeng', 'West Rand'],
+        'KwaZulu-Natal': ['Amajuba', 'eThekwini', 'Harry Gwala', 'iLembe', 'King Cetshwayo', 'Ugu', 'uMgungundlovu', 'uMkhanyakude', 'uMzinyathi', 'uThukela', 'Zululand'],
+        'Limpopo': ['Capricorn', 'Mopani', 'Sekhukhune', 'Vhembe', 'Waterberg'],
+        'Mpumalanga': ['Ehlanzeni', 'Gert Sibande', 'Nkangala'],
+        'North West': ['Bojanala Platinum', 'Dr Kenneth Kaunda', 'Dr Ruth Segomotsi Mompati', 'Ngaka Modiri Molema'],
+        'Northern Cape': ['Frances Baard', 'John Taolo Gaetsewe', 'Namakwa', 'Pixley ka Seme', 'ZF Mgcawu'],
+        'Western Cape': ['Cape Winelands', 'Central Karoo', 'City of Cape Town', 'Garden Route', 'Overberg', 'West Coast']
+    };
+
+    var provinceSelect = document.getElementById('province');
+    var municipalityInput = document.getElementById('municipality');
+    if (provinceSelect && municipalityInput) {
+        // Replace text input with select dropdown
+        var municipalitySelect = document.createElement('select');
+        municipalitySelect.id = 'municipality';
+        municipalitySelect.name = 'municipality';
+        municipalitySelect.required = true;
+        municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+        municipalityInput.parentNode.replaceChild(municipalitySelect, municipalityInput);
+
+        provinceSelect.addEventListener('change', function () {
+            var province = this.value;
+            var municipalities = provinceMunicipalities[province] || [];
+            var html = '<option value="">Select Municipality</option>';
+            municipalities.forEach(function (m) {
+                html += '<option value="' + m + '">' + m + '</option>';
+            });
+            municipalitySelect.innerHTML = html;
         });
     }
 
@@ -207,6 +286,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
+
+            // Rate limiting check
+            var now = Date.now();
+            if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+                var waitSecs = Math.ceil((SUBMIT_COOLDOWN - (now - lastSubmitTime)) / 1000);
+                showNotification('Please wait ' + waitSecs + ' seconds before submitting again.', 'error');
+                return;
+            }
+            lastSubmitTime = now;
 
             // Clear previous errors
             form.querySelectorAll('.error').forEach(function (el) {

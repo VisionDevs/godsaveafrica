@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events & Rallies - GSAW</title>
+    <meta name="description" content="Upcoming events, rallies, prayer meetings, and community outreach programmes from God Save Africa & The World.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
+        .event-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #f0f0f0; }
+        .event-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+        .event-header { padding: 20px 25px; background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; position: relative; }
+        .event-date-badge { position: absolute; top: 15px; right: 15px; background: #E31E24; color: #fff; border-radius: 10px; padding: 8px 14px; text-align: center; font-weight: 700; font-size: 0.85rem; line-height: 1.3; }
+        .event-date-badge .day { display: block; font-size: 1.4rem; }
+        .event-type { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #F47920; font-weight: 600; margin-bottom: 6px; }
+        .event-header h3 { font-size: 1.1rem; margin: 0; padding-right: 70px; }
+        .event-body { padding: 20px 25px; }
+        .event-meta-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.85rem; color: #6c757d; }
+        .event-meta-item i { color: #1B7A3D; width: 18px; text-align: center; }
+        .event-description { font-size: 0.88rem; color: #495057; line-height: 1.7; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
+        .event-footer { padding: 15px 25px; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; }
+        .event-btn { padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif; }
+        .event-btn-primary { background: #1B7A3D; color: #fff; }
+        .event-btn-primary:hover { background: #145a2d; }
+        .event-btn-outline { background: transparent; border: 1.5px solid #1B7A3D; color: #1B7A3D; }
+        .event-btn-outline:hover { background: #1B7A3D; color: #fff; }
+        .event-status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+        .status-upcoming { background: rgba(27,122,61,0.1); color: #1B7A3D; }
+        .status-today { background: rgba(244,121,32,0.15); color: #F47920; }
+        .status-past { background: rgba(108,117,125,0.1); color: #6c757d; }
+        .events-filter { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 18px; border-radius: 25px; border: 1.5px solid #e5e7eb; background: #fff; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Montserrat', sans-serif; }
+        .filter-btn.active, .filter-btn:hover { background: #1B7A3D; color: #fff; border-color: #1B7A3D; }
+        @media (max-width: 768px) { .events-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone"></i> +27 XX XXX XXXX</span>
+                <span><i class="fas fa-envelope"></i> info@gsaw.org.za</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="images/logo.jpg" alt="GSAW Logo">
+                <div class="nav-logo-text">
+                    <span class="logo-name">GSAW</span>
+                    <span class="logo-tagline">God Save Africa &amp; The World</span>
+                </div>
+            </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="manifesto.html" class="nav-link">Manifesto</a></li>
+                <li><a href="leadership.html" class="nav-link">Leadership</a></li>
+                <li><a href="constitution.html" class="nav-link">Constitution</a></li>
+                <li><a href="news.html" class="nav-link">News</a></li>
+                <li><a href="events.html" class="nav-link active">Events</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="donate.html" class="nav-link">Donate</a></li>
+                <li><a href="membership.html" class="nav-link nav-cta">Join GSAW</a></li>
+            </ul>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> <span>Events</span></div>
+            <h1>Events &amp; Rallies</h1>
+            <p>Join us at upcoming prayer rallies, community outreach, voter registration drives, and branch meetings across South Africa.</p>
+        </div>
+    </div>
+
+    <!-- Events Section -->
+    <section class="section">
+        <div class="container">
+            <!-- Filters -->
+            <div class="events-filter">
+                <button class="filter-btn active" onclick="filterEvents('all', this)">All Events</button>
+                <button class="filter-btn" onclick="filterEvents('rally', this)">Rallies</button>
+                <button class="filter-btn" onclick="filterEvents('prayer', this)">Prayer Meetings</button>
+                <button class="filter-btn" onclick="filterEvents('outreach', this)">Community Outreach</button>
+                <button class="filter-btn" onclick="filterEvents('registration', this)">Voter Registration</button>
+                <button class="filter-btn" onclick="filterEvents('branch', this)">Branch Meetings</button>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="events-grid" id="events-grid">
+                <!-- Event 1 -->
+                <div class="event-card" data-type="registration">
+                    <div class="event-header">
+                        <div class="event-date-badge"><span class="day">20-21</span>Jun</div>
+                        <span class="event-type">Voter Registration</span>
+                        <h3>National Voter Registration Weekend</h3>
+                    </div>
+                    <div class="event-body">
+                        <div class="event-meta-item"><i class="fas fa-calendar"></i> 20 - 21 June 2026</div>
+                        <div class="event-meta-item"><i class="fas fa-clock"></i> 08:00 - 17:00</div>
+                        <div class="event-meta-item"><i class="fas fa-map-marker-alt"></i> All voting stations nationwide</div>
+                        <div class="event-meta-item"><i class="fas fa-users"></i> All South Africans 18+</div>
+                        <p class="event-description">GSAW calls all eligible South Africans to register or check their registration at their nearest voting station. Your vote is your power. Bring your ID book or smart card.</p>
+                    </div>
+                    <div class="event-footer">
+                        <span class="event-status status-upcoming">Upcoming</span>
+                        <a href="https://www.elections.org.za/pw/Voter/How-Do-I-Register-To-Vote" target="_blank" class="event-btn event-btn-primary"><i class="fas fa-external-link-alt"></i> IEC Info</a>
+                    </div>
+                </div>
+
+                <!-- Event 2 -->
+                <div class="event-card" data-type="prayer">
+                    <div class="event-header">
+                        <div class="event-date-badge"><span class="day">28</span>Jun</div>
+                        <span class="event-type">Prayer Meeting</span>
+                        <h3>National Day of Prayer for South Africa</h3>
+                    </div>
+                    <div class="event-body">
+                        <div class="event-meta-item"><i class="fas fa-calendar"></i> 28 June 2026</div>
+                        <div class="event-meta-item"><i class="fas fa-clock"></i> 09:00 - 12:00</div>
+                        <div class="event-meta-item"><i class="fas fa-map-marker-alt"></i> All branches (virtual & in-person)</div>
+                        <div class="event-meta-item"><i class="fas fa-users"></i> Open to all members & public</div>
+                        <p class="event-description">Join GSAW members across all 9 provinces for a day of united prayer. We pray for our nation, leadership, economy, safety, and future elections. All are welcome.</p>
+                    </div>
+                    <div class="event-footer">
+                        <span class="event-status status-upcoming">Upcoming</span>
+                        <a href="https://wa.me/27000000000?text=I%20want%20to%20join%20the%20prayer%20meeting" class="event-btn event-btn-outline"><i class="fab fa-whatsapp"></i> RSVP</a>
+                    </div>
+                </div>
+
+                <!-- Event 3 -->
+                <div class="event-card" data-type="outreach">
+                    <div class="event-header">
+                        <div class="event-date-badge"><span class="day">05</span>Jul</div>
+                        <span class="event-type">Community Outreach</span>
+                        <h3>Feeding the Hungry Campaign</h3>
+                    </div>
+                    <div class="event-body">
+                        <div class="event-meta-item"><i class="fas fa-calendar"></i> 05 July 2026</div>
+                        <div class="event-meta-item"><i class="fas fa-clock"></i> 10:00 - 14:00</div>
+                        <div class="event-meta-item"><i class="fas fa-map-marker-alt"></i> Gauteng (Soweto, Alexandra, Tembisa)</div>
+                        <div class="event-meta-item"><i class="fas fa-users"></i> Volunteers welcome</div>
+                        <p class="event-description">GSAW believes in action, not just words. Join us as we distribute food parcels and supplies to communities in need. "Faith without works is dead." (James 2:26)</p>
+                    </div>
+                    <div class="event-footer">
+                        <span class="event-status status-upcoming">Upcoming</span>
+                        <a href="https://wa.me/27000000000?text=I%20want%20to%20volunteer%20for%20the%20feeding%20scheme" class="event-btn event-btn-primary"><i class="fab fa-whatsapp"></i> Volunteer</a>
+                    </div>
+                </div>
+
+                <!-- Event 4 -->
+                <div class="event-card" data-type="rally">
+                    <div class="event-header">
+                        <div class="event-date-badge"><span class="day">12</span>Jul</div>
+                        <span class="event-type">Rally</span>
+                        <h3>GSAW Provincial Launch - KwaZulu-Natal</h3>
+                    </div>
+                    <div class="event-body">
+                        <div class="event-meta-item"><i class="fas fa-calendar"></i> 12 July 2026</div>
+                        <div class="event-meta-item"><i class="fas fa-clock"></i> 10:00 - 15:00</div>
+                        <div class="event-meta-item"><i class="fas fa-map-marker-alt"></i> Durban (Venue TBC)</div>
+                        <div class="event-meta-item"><i class="fas fa-users"></i> All members & public invited</div>
+                        <p class="event-description">Official launch of GSAW's KwaZulu-Natal provincial structure. Meet the provincial leadership, hear the vision, and unite for Godly governance in KZN.</p>
+                    </div>
+                    <div class="event-footer">
+                        <span class="event-status status-upcoming">Upcoming</span>
+                        <a href="https://wa.me/27000000000?text=I%20will%20attend%20the%20KZN%20launch" class="event-btn event-btn-outline"><i class="fab fa-whatsapp"></i> Attend</a>
+                    </div>
+                </div>
+
+                <!-- Event 5 -->
+                <div class="event-card" data-type="branch">
+                    <div class="event-header">
+                        <div class="event-date-badge"><span class="day">Every</span>Sat</div>
+                        <span class="event-type">Branch Meeting</span>
+                        <h3>Weekly Branch Meetings</h3>
+                    </div>
+                    <div class="event-body">
+                        <div class="event-meta-item"><i class="fas fa-calendar"></i> Every Saturday</div>
+                        <div class="event-meta-item"><i class="fas fa-clock"></i> 10:00 - 12:00</div>
+                        <div class="event-meta-item"><i class="fas fa-map-marker-alt"></i> Contact your branch leader for venue</div>
+                        <div class="event-meta-item"><i class="fas fa-users"></i> Branch members only</div>
+                        <p class="event-description">Regular branch meetings are held weekly. Discuss community issues, plan activities, and grow together. Contact your branch leader via WhatsApp for venue details.</p>
+                    </div>
+                    <div class="event-footer">
+                        <span class="event-status status-upcoming">Ongoing</span>
+                    </div>
+                </div>
+
+                <!-- Event 6 -->
+                <div class="event-card" data-type="rally">
+                    <div class="event-header">
+                        <div class="event-date-badge"><span class="day">09</span>Aug</div>
+                        <span class="event-type">Rally</span>
+                        <h3>Women's Day Celebration Rally</h3>
+                    </div>
+                    <div class="event-body">
+                        <div class="event-meta-item"><i class="fas fa-calendar"></i> 09 August 2026</div>
+                        <div class="event-meta-item"><i class="fas fa-clock"></i> 09:00 - 14:00</div>
+                        <div class="event-meta-item"><i class="fas fa-map-marker-alt"></i> Multiple provinces (TBC)</div>
+                        <div class="event-meta-item"><i class="fas fa-users"></i> All women members & guests</div>
+                        <p class="event-description">Celebrating the strength and faith of South African women. Special guest speakers, worship, and a call for women to rise in leadership and governance.</p>
+                    </div>
+                    <div class="event-footer">
+                        <span class="event-status status-upcoming">Upcoming</span>
+                        <a href="membership.html" class="event-btn event-btn-primary"><i class="fas fa-user-plus"></i> Join First</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div style="text-align: center; margin-top: 50px; padding: 40px; background: linear-gradient(135deg, rgba(27,122,61,0.05), rgba(244,121,32,0.05)); border-radius: 16px;">
+                <h3 style="margin-bottom: 10px;">Want to Organise an Event?</h3>
+                <p style="color: #6c757d; margin-bottom: 20px; font-size: 0.9rem;">Branch leaders can organise local events. Contact your Provincial Executive Committee for approval.</p>
+                <a href="contact.html" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;"><i class="fas fa-envelope"></i> Contact Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="GSAW Logo" class="footer-logo">
+                    <h3>God Save Africa &amp; The World</h3>
+                    <p class="footer-tagline">Founded 2025 | Restoring God's will through quality service delivery.</p>
+                    <p style="font-size: 0.85rem; font-weight: 700; color: var(--orange); margin-bottom: 10px;">#AllPowerBelongsToJesus</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="about.html">About GSAW</a>
+                    <a href="manifesto.html">Our Manifesto</a>
+                    <a href="constitution.html">Constitution</a>
+                    <a href="membership.html">Join the Party</a>
+                    <a href="events.html">Events</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Get Involved</h4>
+                    <a href="membership.html">Become a Member</a>
+                    <a href="donate.html">Donate</a>
+                    <a href="contact.html">Contact Us</a>
+                    <a href="news.html">Latest News</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 God Save Africa &amp; The World. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+    // Event filter functionality
+    function filterEvents(type, btn) {
+        var cards = document.querySelectorAll('.event-card');
+        var buttons = document.querySelectorAll('.filter-btn');
+
+        buttons.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+
+        cards.forEach(function(card) {
+            if (type === 'all' || card.getAttribute('data-type') === type) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    </script>
+</body>
+</html>
