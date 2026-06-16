@@ -132,70 +132,60 @@ document.addEventListener('DOMContentLoaded', function () {
             donationData.donorName = donationData.orgName;
         }
 
-        // Read file as base64, then store
-        var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
+        // Save donation to Supabase
+        function saveDonation(data, file) {
+            var dbRecord = {
+                donor_name: data.donorName || '',
+                donor_type: data.donorType || 'individual',
+                first_name: data.firstName || '',
+                last_name: data.lastName || '',
+                org_name: data.orgName || '',
+                contact_person: data.contactPerson || '',
+                amount: parseFloat(data.amount) || 0,
+                purpose: data.purpose || 'General',
+                email: data.email || '',
+                phone: data.phone || '',
+                message: data.message || '',
+                has_proof_of_payment: !!file,
+                proof_file_name: file ? file.name : '',
+                proof_file_type: file ? file.type : '',
+                status: 'pending'
+            };
 
-        function saveDonation(data) {
-            // Send to Google Sheets via hidden form (bypasses CORS)
-            // Include proofFileData so Apps Script can save it to Google Drive
-            var sheetData = Object.assign({}, data);
+            // Upload file first if exists
+            var uploadPromise;
+            if (file) {
+                var timestamp = Date.now();
+                var safeName = (data.donorName || 'donor').replace(/[^a-zA-Z0-9]/g, '_');
+                var filePath = 'pop/' + safeName + '_' + timestamp + '_' + file.name;
 
-            var iframe = document.createElement('iframe');
-            iframe.name = 'gsaw_donate_frame';
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-
-            var hiddenForm = document.createElement('form');
-            hiddenForm.method = 'POST';
-            hiddenForm.action = GSAW_API_URL;
-            hiddenForm.target = 'gsaw_donate_frame';
-
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'payload';
-            input.value = JSON.stringify({ action: 'addDonation', payload: sheetData });
-            hiddenForm.appendChild(input);
-
-            document.body.appendChild(hiddenForm);
-            hiddenForm.submit();
-
-            setTimeout(function () {
-                document.body.removeChild(hiddenForm);
-                document.body.removeChild(iframe);
-            }, 5000);
-
-            // Also store locally (with file data for admin POP viewing)
-            var donations = JSON.parse(localStorage.getItem('gsaw_donations') || '[]');
-            donations.push(data);
-            try {
-                localStorage.setItem('gsaw_donations', JSON.stringify(donations));
-            } catch (e) {
-                data.proofFileData = null;
-                data.proofStorageError = true;
-                donations[donations.length - 1] = data;
-                localStorage.setItem('gsaw_donations', JSON.stringify(donations));
+                uploadPromise = gsawDB.uploadFile('documents', filePath, file).then(function (result) {
+                    if (!result.error) {
+                        dbRecord.proof_file_url = gsawDB.getFileUrl('documents', filePath);
+                    }
+                }).catch(function () { /* continue without file */ });
+            } else {
+                uploadPromise = Promise.resolve();
             }
 
-            setTimeout(function () {
+            uploadPromise.then(function () {
+                return gsawDB.addDonation(dbRecord);
+            }).then(function () {
                 form.style.display = 'none';
                 successDiv.style.display = 'block';
                 successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }).catch(function (err) {
+                console.error('Donation save error:', err);
+                showNotification('Submission failed. Please try again.', 'error');
+            }).finally(function () {
                 btnText.style.display = 'inline-flex';
                 btnLoading.style.display = 'none';
                 submitBtn.disabled = false;
-            }, 1500);
+            });
         }
 
-        if (fileInput.files.length > 0) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                donationData.proofFileData = e.target.result;
-                saveDonation(donationData);
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        } else {
-            saveDonation(donationData);
-        }
+        var file = fileInput.files.length > 0 ? fileInput.files[0] : null;
+        saveDonation(donationData, file);
     });
 
     function validateDonation() {

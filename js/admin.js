@@ -87,163 +87,42 @@ function switchView(viewId) {
 // ========================================
 // 3. DATA HELPERS (Google Sheets + localStorage fallback)
 // ========================================
-var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
-
-// Cache for sheet data
-var cachedApplications = null;
-var cachedDonations = null;
+// ========================================
+// DATA LAYER (Supabase)
+// ========================================
+var cachedApplications = [];
+var cachedDonations = [];
 
 function getApplications() {
-    // Return cached if available, otherwise localStorage fallback
-    if (cachedApplications) return cachedApplications;
-    return JSON.parse(localStorage.getItem('gsaw_applications') || '[]');
+    return cachedApplications;
 }
 
-function saveApplications(apps) {
-    cachedApplications = apps;
-    localStorage.setItem('gsaw_applications', JSON.stringify(apps));
+function getDonations() {
+    return cachedDonations;
 }
 
-// Fetch applications from Google Sheets
 function fetchApplicationsFromSheet() {
-    return fetch(GSAW_API_URL + '?action=getMemberships', { redirect: 'follow' })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if (Array.isArray(data)) {
-                cachedApplications = data;
-                localStorage.setItem('gsaw_applications', JSON.stringify(data));
-                return data;
-            }
-            return getApplications();
-        })
-        .catch(function () {
-            return getApplications();
-        });
+    return gsawDB.getMemberships().then(function (data) {
+        if (Array.isArray(data)) {
+            cachedApplications = data;
+            return data;
+        }
+        return cachedApplications;
+    }).catch(function () {
+        return cachedApplications;
+    });
 }
 
-// Fetch donations from Google Sheets
 function fetchDonationsFromSheet() {
-    return fetch(GSAW_API_URL + '?action=getDonations', { redirect: 'follow' })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if (Array.isArray(data)) {
-                cachedDonations = data;
-                localStorage.setItem('gsaw_donations', JSON.stringify(data));
-                return data;
-            }
-            return getDonations();
-        })
-        .catch(function () {
-            return getDonations();
-        });
-}
-
-// Update a membership record on Google Sheets
-function updateMembershipOnSheet(payload) {
-    var iframe = document.createElement('iframe');
-    iframe.name = 'gsaw_update_frame_' + Date.now();
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GSAW_API_URL;
-    form.target = iframe.name;
-
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify({ action: 'updateMembership', payload: payload });
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
-
-    setTimeout(function () {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 5000);
-}
-
-// Update a donation record on Google Sheets
-function updateDonationOnSheet(payload) {
-    var iframe = document.createElement('iframe');
-    iframe.name = 'gsaw_update_don_frame_' + Date.now();
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GSAW_API_URL;
-    form.target = iframe.name;
-
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify({ action: 'updateDonation', payload: payload });
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
-
-    setTimeout(function () {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 5000);
-}
-
-// Delete a membership record from Google Sheets
-function deleteMembershipFromSheet(payload) {
-    var iframe = document.createElement('iframe');
-    iframe.name = 'gsaw_del_mem_frame_' + Date.now();
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GSAW_API_URL;
-    form.target = iframe.name;
-
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify({ action: 'deleteMembership', payload: payload });
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
-
-    setTimeout(function () {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 5000);
-}
-
-// Delete a donation record from Google Sheets
-function deleteDonationFromSheet(payload) {
-    var iframe = document.createElement('iframe');
-    iframe.name = 'gsaw_del_don_frame_' + Date.now();
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GSAW_API_URL;
-    form.target = iframe.name;
-
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify({ action: 'deleteDonation', payload: payload });
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-    form.submit();
-
-    setTimeout(function () {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 5000);
+    return gsawDB.getDonations().then(function (data) {
+        if (Array.isArray(data)) {
+            cachedDonations = data;
+            return data;
+        }
+        return cachedDonations;
+    }).catch(function () {
+        return cachedDonations;
+    });
 }
 
 function escapeHtml(text) {
@@ -335,20 +214,23 @@ function renderRecent(apps) {
 
     apps.forEach(function (app, i) {
         var allApps = getApplications();
-        var realIndex = allApps.indexOf(app);
-        // Find actual index
+        var realIndex = 0;
         for (var j = 0; j < allApps.length; j++) {
-            if (allApps[j].submittedAt === app.submittedAt && allApps[j].email === app.email) {
+            if (allApps[j].id === app.id) {
                 realIndex = j;
                 break;
             }
         }
 
         var status = app.status || 'pending';
+        var firstName = app.first_name || app.firstName || '';
+        var lastName = app.last_name || app.lastName || '';
+        var submittedAt = app.submitted_at ? new Date(app.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : '';
+
         html += '<tr>';
-        html += '<td><strong>' + escapeHtml(app.firstName + ' ' + app.lastName) + '</strong></td>';
+        html += '<td><strong>' + escapeHtml(firstName + ' ' + lastName) + '</strong></td>';
         html += '<td>' + escapeHtml(app.province || 'N/A') + '</td>';
-        html += '<td><small>' + escapeHtml(app.submittedAt || 'N/A') + '</small></td>';
+        html += '<td><small>' + escapeHtml(submittedAt) + '</small></td>';
         html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
         html += '<td class="action-btns">';
         html += '<button class="btn-sm btn-view" onclick="viewApplication(' + realIndex + ')"><i class="fas fa-eye"></i></button>';
@@ -417,10 +299,10 @@ function renderApplications() {
     var html = '<table><thead><tr><th>Membership #</th><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
 
     filtered.forEach(function (app) {
-        // Find real index
-        var realIndex = apps.indexOf(app);
+        // Find real index by ID
+        var realIndex = 0;
         for (var j = 0; j < apps.length; j++) {
-            if (apps[j].submittedAt === app.submittedAt && apps[j].email === app.email && apps[j].firstName === app.firstName) {
+            if (apps[j].id === app.id) {
                 realIndex = j;
                 break;
             }
@@ -428,14 +310,18 @@ function renderApplications() {
 
         var status = app.status || 'pending';
         var phone = formatPhone(app.phone);
+        var firstName = app.first_name || app.firstName || '';
+        var lastName = app.last_name || app.lastName || '';
+        var membershipNum = app.membership_number || app.membershipNumber || 'Pending';
+        var submittedAt = app.submitted_at ? new Date(app.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : '';
 
         html += '<tr>';
-        html += '<td><strong style="color:#1B7A3D; font-size:0.8rem;">' + escapeHtml(app.membershipNumber || 'Pending') + '</strong></td>';
-        html += '<td><strong>' + escapeHtml(app.firstName + ' ' + app.lastName) + '</strong></td>';
-        html += '<td><small>' + escapeHtml(app.email) + '</small></td>';
-        html += '<td>' + escapeHtml(app.phone) + '</td>';
-        html += '<td>' + escapeHtml(app.province) + '</td>';
-        html += '<td><small>' + escapeHtml(app.submittedAt || '') + '</small></td>';
+        html += '<td><strong style="color:#1B7A3D; font-size:0.8rem;">' + escapeHtml(membershipNum) + '</strong></td>';
+        html += '<td><strong>' + escapeHtml(firstName + ' ' + lastName) + '</strong></td>';
+        html += '<td><small>' + escapeHtml(app.email || '') + '</small></td>';
+        html += '<td>' + escapeHtml(app.phone || '') + '</td>';
+        html += '<td>' + escapeHtml(app.province || '') + '</td>';
+        html += '<td><small>' + escapeHtml(submittedAt) + '</small></td>';
         html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
         html += '<td class="action-btns">';
         html += '<button class="btn-sm btn-view" onclick="viewApplication(' + realIndex + ')" title="View Details"><i class="fas fa-eye"></i></button>';
@@ -468,15 +354,18 @@ function renderApproved() {
     var html = '<table><thead><tr><th>Name</th><th>Membership #</th><th>Phone (WhatsApp)</th><th>Province</th><th>Municipality</th><th>Skills</th><th>Actions</th></tr></thead><tbody>';
 
     approved.forEach(function (app) {
+        var firstName = app.first_name || app.firstName || '';
+        var lastName = app.last_name || app.lastName || '';
+        var membershipNum = app.membership_number || app.membershipNumber || 'N/A';
         var phone = formatPhone(app.phone);
-        var whatsappMsg = encodeURIComponent('Hi ' + app.firstName + '! 👋\n\nThis is a follow-up from GSAW.\n\nYour Membership Number: *' + (app.membershipNumber || 'Pending') + '*\n\n📌 Join our Members Group: https://chat.whatsapp.com/IcZAlYCUtvi640wi2rin3o\n\nGod bless!\n#AllPowerBelongsToJesus');
+        var whatsappMsg = encodeURIComponent('Hi ' + firstName + '! 👋\n\nThis is a follow-up from GSAW.\n\nYour Membership Number: *' + membershipNum + '*\n\n📌 Join our Members Group: https://chat.whatsapp.com/IcZAlYCUtvi640wi2rin3o\n\nGod bless!\n#AllPowerBelongsToJesus');
 
         html += '<tr>';
-        html += '<td><strong>' + escapeHtml(app.firstName + ' ' + app.lastName) + '</strong><br><small>' + escapeHtml(app.email) + '</small></td>';
-        html += '<td><strong style="color:#1B7A3D;">' + escapeHtml(app.membershipNumber || 'N/A') + '</strong></td>';
-        html += '<td>' + escapeHtml(app.phone) + '</td>';
-        html += '<td>' + escapeHtml(app.province) + '</td>';
-        html += '<td>' + escapeHtml(app.municipality) + '</td>';
+        html += '<td><strong>' + escapeHtml(firstName + ' ' + lastName) + '</strong><br><small>' + escapeHtml(app.email || '') + '</small></td>';
+        html += '<td><strong style="color:#1B7A3D;">' + escapeHtml(membershipNum) + '</strong></td>';
+        html += '<td>' + escapeHtml(app.phone || '') + '</td>';
+        html += '<td>' + escapeHtml(app.province || '') + '</td>';
+        html += '<td>' + escapeHtml(app.municipality || '') + '</td>';
         html += '<td><small>' + escapeHtml(app.skills || 'Not specified') + '</small></td>';
         html += '<td class="action-btns">';
         html += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '?text=' + whatsappMsg + '" target="_blank"><i class="fab fa-whatsapp"></i> Message</a>';
@@ -522,38 +411,38 @@ function viewApplication(index) {
     var footer = document.getElementById('modal-footer');
 
     var fields = [
-        { label: 'Membership #', value: app.membershipNumber || 'Pending Approval' },
-        { label: 'First Name', value: app.firstName },
-        { label: 'Last Name', value: app.lastName },
-        { label: 'Email', value: app.email },
-        { label: 'Phone', value: app.phone },
-        { label: 'ID Number', value: app.idNumber },
+        { label: 'Membership #', value: app.membership_number || 'Pending Approval' },
+        { label: 'First Name', value: app.first_name || '' },
+        { label: 'Last Name', value: app.last_name || '' },
+        { label: 'Email', value: app.email || '' },
+        { label: 'Phone', value: app.phone || '' },
+        { label: 'ID Number', value: app.id_number || '' },
         { label: 'Gender', value: app.gender || 'Not specified' },
-        { label: 'Date of Birth', value: app.dob || 'Not specified' },
+        { label: 'Date of Birth', value: app.date_of_birth || 'Not specified' },
         { label: 'Address', value: app.address || 'Not specified' },
-        { label: 'Province', value: app.province },
-        { label: 'Municipality', value: app.municipality },
+        { label: 'Province', value: app.province || '' },
+        { label: 'Municipality', value: app.municipality || '' },
         { label: 'Ward', value: app.ward || 'Not specified' },
-        { label: 'Voting Station', value: app.votingStation || 'Not specified' },
+        { label: 'Voting Station', value: app.voting_station || 'Not specified' },
         { label: 'Occupation', value: app.occupation || 'Not specified' },
         { label: 'Qualification', value: app.qualification || 'Not specified' },
         { label: 'Skills', value: app.skills || 'Not specified' },
         { label: 'Reason', value: app.reason || 'Not specified' },
         { label: 'Status', value: app.status || 'pending' },
-        { label: 'Submitted', value: app.submittedAt || 'N/A' },
-        { label: 'Approved', value: app.approvedAt || 'Not yet' }
+        { label: 'Submitted', value: app.submitted_at ? new Date(app.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : 'N/A' },
+        { label: 'Approved', value: app.approved_at ? new Date(app.approved_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : 'Not yet' }
     ];
 
     var html = '';
     fields.forEach(function (f) {
-        html += '<div class="detail-row"><span class="detail-label">' + f.label + '</span><span class="detail-value">' + escapeHtml(f.value) + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-label">' + f.label + '</span><span class="detail-value">' + escapeHtml(String(f.value || '')) + '</span></div>';
     });
 
     body.innerHTML = html;
 
     // Footer actions
     var status = app.status || 'pending';
-    var phone = formatPhone(app.phone);
+    var phone = formatPhone(app.phone || '');
     var footerHtml = '';
 
     if (status === 'pending') {
@@ -581,43 +470,50 @@ document.getElementById('modal-overlay').addEventListener('click', function (e) 
 // ========================================
 function approveApplication(index) {
     var apps = getApplications();
-    if (apps[index]) {
+    var app = apps[index];
+    if (!app) return;
+
+    // Generate membership number if not already assigned
+    var membershipNumber = app.membership_number;
+    if (!membershipNumber) {
+        var year = new Date().getFullYear().toString().slice(-2);
+        var approvedCount = apps.filter(function (a) { return a.status === 'approved'; }).length + 1;
+        membershipNumber = 'GSAW-' + year + '-' + ('0000' + approvedCount).slice(-4);
+    }
+
+    var approvedAt = new Date().toISOString();
+
+    // Update in Supabase
+    gsawDB.updateMembership(app.id, {
+        status: 'approved',
+        approved_at: approvedAt,
+        membership_number: membershipNumber
+    }).then(function () {
+        // Update local cache
         apps[index].status = 'approved';
-        apps[index].approvedAt = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+        apps[index].approved_at = approvedAt;
+        apps[index].membership_number = membershipNumber;
+        cachedApplications = apps;
 
-        // Generate membership number if not already assigned
-        if (!apps[index].membershipNumber) {
-            var year = new Date().getFullYear().toString().slice(-2);
-            var approvedCount = apps.filter(function (a) { return a.status === 'approved'; }).length + 1;
-            apps[index].membershipNumber = 'GSAW-' + year + '-' + ('0000' + approvedCount).slice(-4);
-        }
-
-        saveApplications(apps);
-
-        // Update on Google Sheets
-        updateMembershipOnSheet({
-            email: apps[index].email,
-            submittedAt: apps[index].submittedAt,
-            status: 'approved',
-            approvedAt: apps[index].approvedAt,
-            membershipNumber: apps[index].membershipNumber
-        });
-
-        refreshData();
         renderApplications();
         renderApproved();
+        renderDashboard(apps);
 
         // Open WhatsApp with welcome message
-        var app = apps[index];
         var phone = formatPhone(app.phone);
-        var welcomeMsg = 'Dear ' + app.firstName + ' ' + app.lastName + ',\n\n' +
+        var firstName = app.first_name || app.firstName || '';
+        var lastName = app.last_name || app.lastName || '';
+        var province = app.province || '';
+        var municipality = app.municipality || '';
+
+        var welcomeMsg = 'Dear ' + firstName + ' ' + lastName + ',\n\n' +
             '🎉 *CONGRATULATIONS!*\n\n' +
             'Your membership application to *God Save Africa & The World (GSAW)* has been *APPROVED*.\n\n' +
             '📋 *Your Membership Details:*\n' +
-            '• Membership Number: *' + app.membershipNumber + '*\n' +
-            '• Province: ' + app.province + '\n' +
-            '• Municipality: ' + app.municipality + '\n' +
-            '• Date Approved: ' + app.approvedAt + '\n\n' +
+            '• Membership Number: *' + membershipNumber + '*\n' +
+            '• Province: ' + province + '\n' +
+            '• Municipality: ' + municipality + '\n' +
+            '• Date Approved: ' + new Date(approvedAt).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) + '\n\n' +
             '👉 *Join the GSAW Members WhatsApp Group:*\n' +
             'https://chat.whatsapp.com/IcZAlYCUtvi640wi2rin3o\n\n' +
             '📌 *Next Steps:*\n' +
@@ -630,7 +526,7 @@ function approveApplication(index) {
 
         var whatsappUrl = 'https://wa.me/' + encodeURIComponent(phone) + '?text=' + encodeURIComponent(welcomeMsg);
         window.open(whatsappUrl, '_blank');
-    }
+    });
 }
 
 // ========================================
@@ -640,20 +536,14 @@ function removeApplication(index) {
     if (!confirm('Are you sure you want to remove this application?')) return;
     var apps = getApplications();
     var removed = apps[index];
-    apps.splice(index, 1);
-    saveApplications(apps);
+    if (!removed) return;
 
-    // Delete from Google Sheets
-    if (removed) {
-        deleteMembershipFromSheet({
-            email: String(removed.email || ''),
-            idNumber: String(removed.idNumber || '')
-        });
-    }
-
-    refreshData();
-    renderApplications();
-    renderApproved();
+    gsawDB.deleteMembership(removed.id).then(function () {
+        cachedApplications.splice(index, 1);
+        refreshData();
+        renderApplications();
+        renderApproved();
+    });
 }
 
 // ========================================
@@ -671,13 +561,13 @@ function exportCSV() {
 
     apps.forEach(function (app) {
         var row = [
-            app.membershipNumber || '', app.firstName, app.lastName, app.email, app.phone,
-            app.idNumber, app.gender || '', app.dob || '', app.address || '',
-            app.province, app.municipality, app.ward || '', app.votingStation || '',
+            app.membership_number || '', app.first_name || '', app.last_name || '', app.email || '', app.phone || '',
+            app.id_number || '', app.gender || '', app.date_of_birth || '', app.address || '',
+            app.province || '', app.municipality || '', app.ward || '', app.voting_station || '',
             app.occupation || '', app.qualification || '', app.skills || '', (app.reason || '').replace(/"/g, '""'),
-            app.status || 'pending', app.submittedAt || '', app.approvedAt || ''
+            app.status || 'pending', app.submitted_at || '', app.approved_at || ''
         ];
-        csv += row.map(function (val) { return '"' + val + '"'; }).join(',') + '\n';
+        csv += row.map(function (val) { return '"' + String(val) + '"'; }).join(',') + '\n';
     });
 
     var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -708,13 +598,6 @@ function populateProvinceFilter() {
 // ========================================
 // 15. DONATIONS - DATA HELPERS
 // ========================================
-function getDonations() {
-    return JSON.parse(localStorage.getItem('gsaw_donations') || '[]');
-}
-
-function saveDonations(donations) {
-    localStorage.setItem('gsaw_donations', JSON.stringify(donations));
-}
 
 function refreshDonationStats() {
     var donations = getDonations();
@@ -771,25 +654,25 @@ function renderDonations() {
         // Find real index
         var realIndex = donations.indexOf(donation);
         for (var j = 0; j < donations.length; j++) {
-            if (donations[j].submittedAt === donation.submittedAt && donations[j].email === donation.email) {
+            if (donations[j].id === donation.id) {
                 realIndex = j;
                 break;
             }
         }
 
         var status = (donation.status || 'pending').toString();
-        var name = escapeHtml(donation.donorName || ((donation.firstName || '') + ' ' + (donation.lastName || '')).trim() || 'Unknown');
+        var name = escapeHtml(donation.donor_name || ((donation.first_name || '') + ' ' + (donation.last_name || '')).trim() || 'Unknown');
         var amount = donation.amount ? 'R' + parseFloat(donation.amount).toLocaleString('en-ZA') : 'N/A';
 
         html += '<tr>';
         html += '<td><strong>' + name + '</strong></td>';
-        html += '<td><small>' + escapeHtml(donation.donorType || 'individual') + '</small></td>';
+        html += '<td><small>' + escapeHtml(donation.donor_type || 'individual') + '</small></td>';
         html += '<td><strong style="color:#f47920;">' + amount + '</strong></td>';
         html += '<td><small>' + escapeHtml(donation.purpose || 'General') + '</small></td>';
         html += '<td><small>' + escapeHtml(donation.email || '') + '</small></td>';
         html += '<td>' + escapeHtml(donation.phone || '') + '</td>';
-        html += '<td>' + ((donation.proofFileData || donation.proofFileUrl) ? '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + realIndex + ')" title="View POP" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-image"></i> View</button>' : (donation.hasProofOfPayment ? '<span style="color:#f47920;"><i class="fas fa-check"></i> Uploaded</span>' : '<span style="color:#9ca3af;">None</span>')) + '</td>';
-        html += '<td><small>' + escapeHtml(donation.submittedAt || '') + '</small></td>';
+        html += '<td>' + (donation.proof_file_url ? '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + realIndex + ')" title="View POP" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-image"></i> View</button>' : (donation.has_proof_of_payment ? '<span style="color:#f47920;"><i class="fas fa-check"></i> Uploaded</span>' : '<span style="color:#9ca3af;">None</span>')) + '</td>';
+        html += '<td><small>' + escapeHtml(donation.submitted_at ? new Date(donation.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : '') + '</small></td>';
         html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
         html += '<td class="action-btns">';
         html += '<button class="btn-sm btn-view" onclick="viewDonation(' + realIndex + ')" title="View Details"><i class="fas fa-eye"></i></button>';
@@ -817,34 +700,33 @@ function viewDonation(index) {
     var footer = document.getElementById('modal-footer');
 
     var fields = [
-        { label: 'Donor Name', value: d.donorName || (d.firstName + ' ' + (d.lastName || '')) },
-        { label: 'Donor Type', value: d.donorType || 'individual' },
-        { label: 'Organisation', value: d.orgName || 'N/A' },
-        { label: 'Contact Person', value: d.contactPerson || 'N/A' },
+        { label: 'Donor Name', value: d.donor_name || ((d.first_name || '') + ' ' + (d.last_name || '')) },
+        { label: 'Donor Type', value: d.donor_type || 'individual' },
+        { label: 'Organisation', value: d.org_name || 'N/A' },
+        { label: 'Contact Person', value: d.contact_person || 'N/A' },
         { label: 'Email', value: d.email },
         { label: 'Phone', value: d.phone },
         { label: 'Amount', value: d.amount ? 'R' + parseFloat(d.amount).toLocaleString('en-ZA') : 'N/A' },
         { label: 'Purpose', value: d.purpose || 'General' },
         { label: 'Message', value: d.message || 'None' },
-        { label: 'Proof of Payment', value: d.hasProofOfPayment ? d.proofFileName : 'Not uploaded' },
+        { label: 'Proof of Payment', value: d.has_proof_of_payment ? (d.proof_file_name || 'Uploaded') : 'Not uploaded' },
         { label: 'Status', value: d.status || 'pending' },
-        { label: 'Submitted', value: d.submittedAt || 'N/A' },
-        { label: 'Verified At', value: d.verifiedAt || 'Not yet verified' }
+        { label: 'Submitted', value: d.submitted_at ? new Date(d.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : 'N/A' },
+        { label: 'Verified At', value: d.verified_at ? new Date(d.verified_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : 'Not yet verified' }
     ];
 
     var html = '';
     fields.forEach(function (f) {
-        html += '<div class="detail-row"><span class="detail-label">' + f.label + '</span><span class="detail-value">' + escapeHtml(f.value) + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-label">' + f.label + '</span><span class="detail-value">' + escapeHtml(String(f.value || '')) + '</span></div>';
     });
 
     // Add POP preview if available
-    if (d.proofFileData || d.proofFileUrl) {
-        if (d.proofFileUrl) {
-            html += '<div class="detail-row" style="flex-direction:column;align-items:flex-start;"><span class="detail-label">Proof of Payment Preview</span><iframe src="' + escapeHtml(d.proofFileUrl) + '" style="width:100%;height:400px;border-radius:8px;margin-top:10px;border:1px solid #e5e7eb;" allowfullscreen></iframe></div>';
-        } else if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
-            html += '<div class="detail-row" style="flex-direction:column;align-items:flex-start;"><span class="detail-label">Proof of Payment Preview</span><img src="' + d.proofFileData + '" style="max-width:100%;max-height:400px;border-radius:8px;margin-top:10px;border:1px solid #e5e7eb;" alt="Proof of Payment"></div>';
+    if (d.proof_file_url) {
+        var isImage = d.proof_file_type && d.proof_file_type.indexOf('image') !== -1;
+        if (isImage) {
+            html += '<div class="detail-row" style="flex-direction:column;align-items:flex-start;"><span class="detail-label">Proof of Payment Preview</span><img src="' + escapeHtml(d.proof_file_url) + '" style="max-width:100%;max-height:400px;border-radius:8px;margin-top:10px;border:1px solid #e5e7eb;" alt="Proof of Payment"></div>';
         } else {
-            html += '<div class="detail-row"><span class="detail-label">Proof of Payment</span><button class="btn-sm btn-view" onclick="viewProofOfPayment(' + index + ')" style="background:#1B7A3D;color:#fff;"><i class="fas fa-file-pdf"></i> View POP</button></div>';
+            html += '<div class="detail-row" style="flex-direction:column;align-items:flex-start;"><span class="detail-label">Proof of Payment Preview</span><iframe src="' + escapeHtml(d.proof_file_url) + '" style="width:100%;height:400px;border-radius:8px;margin-top:10px;border:1px solid #e5e7eb;" allowfullscreen></iframe></div>';
         }
     }
 
@@ -857,7 +739,7 @@ function viewDonation(index) {
     if (status === 'pending') {
         footerHtml += '<button class="btn-sm btn-approve" onclick="verifyDonation(' + index + '); closeModal();"><i class="fas fa-check"></i> Verify</button>';
     }
-    if (d.proofFileData || d.proofFileUrl) {
+    if (d.proof_file_url) {
         footerHtml += '<button class="btn-sm btn-view" onclick="viewProofOfPayment(' + index + ')" style="background:#1B7A3D;color:#fff;"><i class="fas fa-eye"></i> View POP</button>';
     }
     footerHtml += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
@@ -873,7 +755,7 @@ function viewDonation(index) {
 function viewProofOfPayment(index) {
     var donations = getDonations();
     var d = donations[index];
-    if (!d || (!d.proofFileData && !d.proofFileUrl)) {
+    if (!d || !d.proof_file_url) {
         return;
     }
 
@@ -888,32 +770,25 @@ function viewProofOfPayment(index) {
     // Header bar
     var header = document.createElement('div');
     header.className = 'pop-viewer-header';
-    header.innerHTML = '<span><i class="fas fa-file-image"></i> POP - ' + escapeHtml(d.donorName || 'Donor') + '</span><button class="pop-viewer-close" onclick="closePOPViewer()"><i class="fas fa-times"></i></button>';
+    header.innerHTML = '<span><i class="fas fa-file-image"></i> POP - ' + escapeHtml(d.donor_name || 'Donor') + '</span><button class="pop-viewer-close" onclick="closePOPViewer()"><i class="fas fa-times"></i></button>';
     container.appendChild(header);
 
     // Content area
     var content = document.createElement('div');
     content.className = 'pop-viewer-content';
 
-    if (d.proofFileUrl) {
-        // Google Drive file - use iframe
-        var iframe = document.createElement('iframe');
-        iframe.src = d.proofFileUrl;
-        iframe.style.cssText = 'width:100%;height:100%;border:none;';
-        iframe.setAttribute('allowfullscreen', 'true');
-        content.appendChild(iframe);
-    } else if (d.proofFileType && d.proofFileType.indexOf('image') !== -1) {
-        // Base64 image
+    var isImage = d.proof_file_type && d.proof_file_type.indexOf('image') !== -1;
+    if (isImage) {
         var img = document.createElement('img');
-        img.src = d.proofFileData;
+        img.src = d.proof_file_url;
         img.alt = 'Proof of Payment';
         img.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;';
         content.appendChild(img);
     } else {
-        // Base64 PDF - use iframe with data URI
         var iframe = document.createElement('iframe');
-        iframe.src = d.proofFileData;
+        iframe.src = d.proof_file_url;
         iframe.style.cssText = 'width:100%;height:100%;border:none;';
+        iframe.setAttribute('allowfullscreen', 'true');
         content.appendChild(iframe);
     }
 
@@ -943,22 +818,21 @@ function closePOPViewer() {
 }
 function verifyDonation(index) {
     var donations = getDonations();
-    if (donations[index]) {
+    var d = donations[index];
+    if (!d) return;
+
+    var verifiedAt = new Date().toISOString();
+
+    gsawDB.updateDonation(d.id, {
+        status: 'verified',
+        verified_at: verifiedAt
+    }).then(function () {
         donations[index].status = 'verified';
-        donations[index].verifiedAt = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
-        saveDonations(donations);
-
-        // Update on Google Sheets
-        updateDonationOnSheet({
-            email: donations[index].email,
-            submittedAt: donations[index].submittedAt,
-            status: 'verified',
-            verifiedAt: donations[index].verifiedAt
-        });
-
+        donations[index].verified_at = verifiedAt;
+        cachedDonations = donations;
         refreshDonationStats();
         renderDonations();
-    }
+    });
 }
 
 // ========================================
@@ -968,19 +842,13 @@ function removeDonation(index) {
     if (!confirm('Are you sure you want to remove this donation record?')) return;
     var donations = getDonations();
     var removed = donations[index];
-    donations.splice(index, 1);
-    saveDonations(donations);
+    if (!removed) return;
 
-    // Delete from Google Sheets
-    if (removed) {
-        deleteDonationFromSheet({
-            email: String(removed.email || ''),
-            submittedAt: String(removed.submittedAt || '')
-        });
-    }
-
-    refreshDonationStats();
-    renderDonations();
+    gsawDB.deleteDonation(removed.id).then(function () {
+        cachedDonations.splice(index, 1);
+        refreshDonationStats();
+        renderDonations();
+    });
 }
 
 // ========================================
@@ -998,21 +866,21 @@ function exportDonationsCSV() {
 
     donations.forEach(function (d) {
         var row = [
-            d.donorName || (d.firstName + ' ' + (d.lastName || '')),
-            d.donorType || 'individual',
-            d.orgName || '',
-            d.contactPerson || '',
+            d.donor_name || ((d.first_name || '') + ' ' + (d.last_name || '')),
+            d.donor_type || 'individual',
+            d.org_name || '',
+            d.contact_person || '',
             d.email || '',
             d.phone || '',
             d.amount || '',
             d.purpose || 'General',
             (d.message || '').replace(/"/g, '""'),
-            d.proofFileName || '',
+            d.proof_file_name || '',
             d.status || 'pending',
-            d.submittedAt || '',
-            d.verifiedAt || ''
+            d.submitted_at || '',
+            d.verified_at || ''
         ];
-        csv += row.map(function (val) { return '"' + val + '"'; }).join(',') + '\n';
+        csv += row.map(function (val) { return '"' + String(val) + '"'; }).join(',') + '\n';
     });
 
     var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

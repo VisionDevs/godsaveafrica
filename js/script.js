@@ -359,120 +359,74 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ========================================
-    // 9. SUBMIT APPLICATION
+    // 9. SUBMIT APPLICATION (Supabase)
     // ========================================
     function submitApplication(data) {
-        /*
-        ============================================
-        EMAIL NOTIFICATION SETUP OPTIONS:
-        ============================================
-        
-        OPTION A: EmailJS (recommended for simplicity)
-        -----------------------------------------------
-        1. Go to https://www.emailjs.com/ and create a free account
-        2. Add your email service (Gmail, Outlook, etc.)
-        3. Create an email template with variables:
-           {{from_name}}, {{from_email}}, {{phone}}, {{province}}, {{municipality}}
-        4. Get your Service ID, Template ID, and Public Key
-        5. Add this to index.html <head>:
-           <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-        6. Uncomment the code below and fill in your IDs:
+        var dbRecord = {
+            first_name: data.firstName || '',
+            last_name: data.lastName || '',
+            full_name: (data.firstName || '') + ' ' + (data.lastName || ''),
+            id_number: data.idNumber || '',
+            date_of_birth: data.dateOfBirth || '',
+            gender: data.gender || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            address: data.address || '',
+            city: data.city || '',
+            province: data.province || '',
+            postal_code: data.postalCode || '',
+            municipality: data.municipality || '',
+            ward: data.ward || '',
+            voting_station: data.votingStation || '',
+            occupation: data.occupation || '',
+            qualification: data.qualification || '',
+            skills: data.skills || '',
+            reason: data.reason || '',
+            membership_number: data.membershipNumber || '',
+            status: 'pending'
+        };
 
-        emailjs.init('YOUR_PUBLIC_KEY');
-        return emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
-            from_name: data.firstName + ' ' + data.lastName,
-            from_email: data.email,
-            phone: data.phone,
-            id_number: data.idNumber,
-            province: data.province,
-            municipality: data.municipality,
-            occupation: data.occupation,
-            skills: data.skills,
-            reason: data.reason,
-            submitted_at: data.submittedAt,
-            message: 'New GSAW membership: ' + data.firstName + ' ' + data.lastName + 
-                     ' from ' + data.province + '. WhatsApp: ' + data.phone
-        });
+        // Upload signature if available
+        var signaturePromise;
+        if (data.signatureData) {
+            var signatureBlob = dataURItoBlob(data.signatureData);
+            var sigPath = 'signatures/' + data.membershipNumber + '_signature.png';
+            signaturePromise = gsawDB.uploadFile('documents', sigPath, signatureBlob).then(function (result) {
+                if (!result.error) {
+                    dbRecord.signature_url = gsawDB.getFileUrl('documents', sigPath);
+                }
+            }).catch(function () { /* continue without signature */ });
+        } else {
+            signaturePromise = Promise.resolve();
+        }
 
-        OPTION B: Formspree (no JS SDK needed)
-        -----------------------------------------------
-        1. Go to https://formspree.io/ and create a free account
-        2. Create a new form and get your form endpoint
-        3. Uncomment the code below:
-
-        return fetch('https://formspree.io/f/YOUR_FORM_ID', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: data.firstName + ' ' + data.lastName,
-                email: data.email,
-                phone: data.phone,
-                id_number: data.idNumber,
-                province: data.province,
-                municipality: data.municipality,
-                _subject: 'New GSAW Membership: ' + data.firstName + ' ' + data.lastName
-            })
-        }).then(function(r) { if (!r.ok) throw new Error(); });
-
-        ============================================
-        */
-
-        // Submit to Google Sheets via hidden form (bypasses CORS)
-        var GSAW_API_URL = 'https://script.google.com/macros/s/AKfycbwukI1u08KQBH0zB6A2I3K6GbW4KYEmPTlNr3EtcJXSUeQ5_HNp3uPKb4JkvwmO2JM9Og/exec';
-
-        return new Promise(function (resolve) {
-            // Store locally first (always works)
-            storeLocally(data);
-
-            // Send to Google Sheets via iframe form
-            var iframe = document.createElement('iframe');
-            iframe.name = 'gsaw_submit_frame';
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = GSAW_API_URL;
-            form.target = 'gsaw_submit_frame';
-
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'payload';
-            input.value = JSON.stringify({ action: 'addMembership', payload: data });
-            form.appendChild(input);
-
-            document.body.appendChild(form);
-            form.submit();
-
-            // Cleanup after 5 seconds
-            setTimeout(function () {
-                document.body.removeChild(form);
-                document.body.removeChild(iframe);
-            }, 5000);
-
-            setTimeout(resolve, 1500);
+        return signaturePromise.then(function () {
+            return gsawDB.addMembership(dbRecord);
         });
     }
 
-    // ========================================
-    // 10. LOCAL STORAGE (backup)
-    // ========================================
-    function storeLocally(data) {
-        var apps = JSON.parse(localStorage.getItem('gsaw_applications') || '[]');
-        apps.push(data);
-        localStorage.setItem('gsaw_applications', JSON.stringify(apps));
+    // Helper: convert base64 data URI to Blob
+    function dataURItoBlob(dataURI) {
+        var parts = dataURI.split(',');
+        var mimeMatch = parts[0].match(/:(.*?);/);
+        var mime = mimeMatch ? mimeMatch[1] : 'image/png';
+        var byteString = atob(parts[1]);
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mime });
     }
 
     // ========================================
-    // 10b. GENERATE UNIQUE MEMBERSHIP NUMBER
+    // 10. GENERATE UNIQUE MEMBERSHIP NUMBER
     // ========================================
     function generateMembershipNumber() {
-        var apps = JSON.parse(localStorage.getItem('gsaw_applications') || '[]');
         var year = new Date().getFullYear().toString().slice(-2);
-        var nextNum = apps.length + 1;
-        // Format: GSAW-YY-XXXX (e.g. GSAW-25-0001)
-        var padded = ('0000' + nextNum).slice(-4);
-        return 'GSAW-' + year + '-' + padded;
+        var random = Math.floor(Math.random() * 9000) + 1000;
+        var timestamp = Date.now().toString().slice(-4);
+        return 'GSAW-' + year + '-' + timestamp;
     }
 
     // ========================================
