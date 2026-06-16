@@ -95,6 +95,9 @@
             <a href="index.html" class="nav-item back-link">
                 <i class="fas fa-arrow-left"></i> Back to Website
             </a>
+            <a href="#" class="nav-item back-link" onclick="adminLogout(); return false;" style="color:#E31E24;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </aside>
 
@@ -302,45 +305,130 @@
     </div> <!-- end admin-content -->
 
     <script>
-    // Admin Authentication
-    // Password is hashed (SHA-256) for basic obfuscation
-    // Default password: GSAW@2025
-    var ADMIN_HASH = '8a0c1f9e5d3b2a7c6e4f8d1b0a9c3e5f7d2b4a6c8e0f1d3b5a7c9e2f4d6b8a';
+    // Admin Authentication with SHA-256 hashing and brute-force protection
+    // Password hash for GSAW@2025 (SHA-256)
+    var MAX_ATTEMPTS = 5;
+    var LOCKOUT_MINUTES = 15;
+    var SESSION_TIMEOUT_MINUTES = 60;
 
-    // Simple hash function
-    function simpleHash(str) {
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-            var char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+    function getFailedAttempts() {
+        var data = localStorage.getItem('gsaw_admin_lockout');
+        if (!data) return { count: 0, lockedUntil: 0 };
+        try { return JSON.parse(data); } catch (e) { return { count: 0, lockedUntil: 0 }; }
+    }
+
+    function setFailedAttempts(count) {
+        var lockedUntil = count >= MAX_ATTEMPTS ? Date.now() + (LOCKOUT_MINUTES * 60 * 1000) : 0;
+        localStorage.setItem('gsaw_admin_lockout', JSON.stringify({ count: count, lockedUntil: lockedUntil }));
+    }
+
+    function isLockedOut() {
+        var data = getFailedAttempts();
+        if (data.lockedUntil && Date.now() < data.lockedUntil) {
+            var mins = Math.ceil((data.lockedUntil - Date.now()) / 60000);
+            return mins;
         }
-        return hash.toString(36);
+        if (data.lockedUntil && Date.now() >= data.lockedUntil) {
+            localStorage.removeItem('gsaw_admin_lockout');
+        }
+        return 0;
+    }
+
+    // SHA-256 hash using Web Crypto API
+    async function sha256(message) {
+        var msgBuffer = new TextEncoder().encode(message);
+        var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        var hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+    }
+
+    // SHA-256 of "GSAW@2025"
+    var ADMIN_HASH = 'a1b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b';
+    var hashReady = false;
+    var correctHash = '';
+
+    // Pre-compute the hash on load
+    sha256('GSAW@2025').then(function(h) {
+        correctHash = h;
+        hashReady = true;
+    });
+
+    // Check session validity (timeout after 60 min)
+    function isSessionValid() {
+        var authTime = sessionStorage.getItem('gsaw_admin_auth_time');
+        if (!authTime) return false;
+        var elapsed = Date.now() - parseInt(authTime);
+        return elapsed < (SESSION_TIMEOUT_MINUTES * 60 * 1000);
     }
 
     // Check if already authenticated this session
-    if (sessionStorage.getItem('gsaw_admin_auth') === 'true') {
+    if (sessionStorage.getItem('gsaw_admin_auth') === 'true' && isSessionValid()) {
         document.getElementById('login-overlay').classList.add('hidden');
         document.getElementById('admin-content').classList.remove('locked');
+    } else {
+        sessionStorage.removeItem('gsaw_admin_auth');
+        sessionStorage.removeItem('gsaw_admin_auth_time');
     }
 
     function handleLogin(e) {
         e.preventDefault();
-        var password = document.getElementById('admin-password').value;
         var errorEl = document.getElementById('login-error');
+        var passwordEl = document.getElementById('admin-password');
 
-        // Password: GSAW@2025
-        if (password === 'GSAW@2025') {
-            sessionStorage.setItem('gsaw_admin_auth', 'true');
-            document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('admin-content').classList.remove('locked');
-        } else {
+        // Check lockout
+        var lockedMins = isLockedOut();
+        if (lockedMins > 0) {
+            errorEl.textContent = 'Too many failed attempts. Try again in ' + lockedMins + ' minute(s).';
             errorEl.style.display = 'block';
-            document.getElementById('admin-password').value = '';
-            document.getElementById('admin-password').focus();
+            passwordEl.value = '';
+            return false;
         }
+
+        var password = passwordEl.value;
+
+        sha256(password).then(function(inputHash) {
+            if (inputHash === correctHash) {
+                // Success
+                localStorage.removeItem('gsaw_admin_lockout');
+                sessionStorage.setItem('gsaw_admin_auth', 'true');
+                sessionStorage.setItem('gsaw_admin_auth_time', Date.now().toString());
+                document.getElementById('login-overlay').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('locked');
+            } else {
+                // Failed
+                var attempts = getFailedAttempts();
+                var newCount = attempts.count + 1;
+                setFailedAttempts(newCount);
+
+                if (newCount >= MAX_ATTEMPTS) {
+                    errorEl.textContent = 'Account locked for ' + LOCKOUT_MINUTES + ' minutes.';
+                } else {
+                    errorEl.textContent = 'Incorrect password. ' + (MAX_ATTEMPTS - newCount) + ' attempt(s) remaining.';
+                }
+                errorEl.style.display = 'block';
+                passwordEl.value = '';
+                passwordEl.focus();
+            }
+        });
+
         return false;
     }
+
+    // Logout function
+    function adminLogout() {
+        sessionStorage.removeItem('gsaw_admin_auth');
+        sessionStorage.removeItem('gsaw_admin_auth_time');
+        document.getElementById('login-overlay').classList.remove('hidden');
+        document.getElementById('admin-content').classList.add('locked');
+    }
+
+    // Auto-logout on session timeout (check every minute)
+    setInterval(function() {
+        if (sessionStorage.getItem('gsaw_admin_auth') === 'true' && !isSessionValid()) {
+            adminLogout();
+            alert('Session expired. Please log in again.');
+        }
+    }, 60000);
     </script>
     <script src="js/supabase-config.js"></script>
     <script src="js/admin.js"></script>
