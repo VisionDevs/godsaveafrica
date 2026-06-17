@@ -1,15 +1,14 @@
-var CACHE_NAME = 'gsaw-v1';
+var CACHE_NAME = 'gsaw-v2';
 var urlsToCache = [
     '/',
-    '/index.html',
     '/css/styles.css',
     '/js/script.js',
     '/images/logo.jpg',
-    '/membership.html',
-    '/donate.html',
-    '/about.html',
-    '/faq.html',
-    '/events.html',
+    '/membership',
+    '/donate',
+    '/about',
+    '/faq',
+    '/events',
     '/manifest.json'
 ];
 
