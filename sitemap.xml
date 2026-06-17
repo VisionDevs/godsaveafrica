@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url><loc>https://visiondevs.github.io/godsaveafrica/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/about.html</loc><priority>0.8</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/manifesto.html</loc><priority>0.8</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/leadership.html</loc><priority>0.7</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/constitution.html</loc><priority>0.7</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/membership.html</loc><priority>0.9</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/donate.html</loc><priority>0.8</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/news.html</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/events.html</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/contact.html</loc><priority>0.6</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/faq.html</loc><priority>0.7</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/gallery.html</loc><priority>0.6</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/status.html</loc><priority>0.7</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/news/gospel-extravaganza.html</loc><priority>0.8</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/news/register-to-vote-2026.html</loc><priority>0.7</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/news/constitution-adopted.html</loc><priority>0.6</priority></url>
-    <url><loc>https://visiondevs.github.io/godsaveafrica/news/nec-policy-released.html</loc><priority>0.6</priority></url>
+    <url><loc>https://www.gsaw.org.za/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+    <url><loc>https://www.gsaw.org.za/about.html</loc><priority>0.8</priority></url>
+    <url><loc>https://www.gsaw.org.za/manifesto.html</loc><priority>0.8</priority></url>
+    <url><loc>https://www.gsaw.org.za/leadership.html</loc><priority>0.7</priority></url>
+    <url><loc>https://www.gsaw.org.za/constitution.html</loc><priority>0.7</priority></url>
+    <url><loc>https://www.gsaw.org.za/membership.html</loc><priority>0.9</priority></url>
+    <url><loc>https://www.gsaw.org.za/donate.html</loc><priority>0.8</priority></url>
+    <url><loc>https://www.gsaw.org.za/news.html</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+    <url><loc>https://www.gsaw.org.za/events.html</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+    <url><loc>https://www.gsaw.org.za/contact.html</loc><priority>0.6</priority></url>
+    <url><loc>https://www.gsaw.org.za/faq.html</loc><priority>0.7</priority></url>
+    <url><loc>https://www.gsaw.org.za/gallery.html</loc><priority>0.6</priority></url>
+    <url><loc>https://www.gsaw.org.za/status.html</loc><priority>0.7</priority></url>
+    <url><loc>https://www.gsaw.org.za/news/gospel-extravaganza.html</loc><priority>0.8</priority></url>
+    <url><loc>https://www.gsaw.org.za/news/register-to-vote-2026.html</loc><priority>0.7</priority></url>
+    <url><loc>https://www.gsaw.org.za/news/constitution-adopted.html</loc><priority>0.6</priority></url>
+    <url><loc>https://www.gsaw.org.za/news/nec-policy-released.html</loc><priority>0.6</priority></url>
 </urlset>

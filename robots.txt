@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://visiondevs.github.io/godsaveafrica/sitemap.xml
+Sitemap: https://www.gsaw.org.za/sitemap.xml
