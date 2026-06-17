@@ -139,20 +139,49 @@
         </div>
     </section>
 
-    <!-- Video Section -->
-    <section class="section section-dark" id="video">
+    <!-- Slideshow Section -->
+    <section class="section section-dark" id="slideshow">
         <div class="container">
             <div class="section-header">
-                <span class="section-tag">Watch</span>
-                <h2 class="section-title">Meet <span class="text-orange">GSAW</span></h2>
+                <span class="section-tag">Our Work</span>
+                <h2 class="section-title">GSAW in <span class="text-orange">Action</span></h2>
                 <div class="section-divider"></div>
-                <p class="section-desc">Watch our introduction video to learn more about the movement transforming South African politics.</p>
+                <p class="section-desc">Community outreach, worship, and service — faith in action across South Africa.</p>
             </div>
-            <div class="video-container">
-                <video controls poster="images/logo.jpg" preload="metadata">
-                    <source src="images/intro-video.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+            <div class="slideshow-wrapper" style="position:relative;max-width:900px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.3);">
+                <div class="slideshow-track" id="slideshow-track" style="display:flex;transition:transform 0.6s ease;">
+                    <div class="slide" style="min-width:100%;position:relative;">
+                        <img src="images/slide-outreach-1.jpg" alt="Community outreach — volunteers distributing food aid" style="width:100%;height:400px;object-fit:cover;" loading="lazy">
+                        <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 25px;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
+                            <h3 style="color:#fff;font-size:1.1rem;margin:0;">Community Outreach</h3>
+                            <p style="color:rgba(255,255,255,0.8);font-size:0.82rem;margin:4px 0 0;">"Faith without works is dead" — James 2:26</p>
+                        </div>
+                    </div>
+                    <div class="slide" style="min-width:100%;position:relative;">
+                        <img src="images/slide-worship-1.jpg" alt="Church worship and prayer gathering" style="width:100%;height:400px;object-fit:cover;" loading="lazy">
+                        <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 25px;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
+                            <h3 style="color:#fff;font-size:1.1rem;margin:0;">United in Prayer</h3>
+                            <p style="color:rgba(255,255,255,0.8);font-size:0.82rem;margin:4px 0 0;">"Where two or three gather in my name, there am I" — Matthew 18:20</p>
+                        </div>
+                    </div>
+                    <div class="slide" style="min-width:100%;position:relative;">
+                        <img src="images/slide-community-1.jpg" alt="Volunteers working with children in the community" style="width:100%;height:400px;object-fit:cover;" loading="lazy">
+                        <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 25px;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
+                            <h3 style="color:#fff;font-size:1.1rem;margin:0;">Empowering Communities</h3>
+                            <p style="color:rgba(255,255,255,0.8);font-size:0.82rem;margin:4px 0 0;">Training, co-ops, and skills development at branch level</p>
+                        </div>
+                    </div>
+                    <div class="slide" style="min-width:100%;position:relative;">
+                        <img src="images/slide-choir-1.jpg" alt="Church choir singing with passion" style="width:100%;height:400px;object-fit:cover;" loading="lazy">
+                        <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 25px;background:linear-gradient(transparent,rgba(0,0,0,0.8));">
+                            <h3 style="color:#fff;font-size:1.1rem;margin:0;">Worship & Praise</h3>
+                            <p style="color:rgba(255,255,255,0.8);font-size:0.82rem;margin:4px 0 0;">"Make a joyful noise unto the Lord" — Psalm 100:1</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="moveSlide(-1)" style="position:absolute;top:50%;left:10px;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:2;" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
+                <button onclick="moveSlide(1)" style="position:absolute;top:50%;right:10px;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:2;" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
+                <div id="slide-dots" style="position:absolute;bottom:60px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:2;"></div>
             </div>
             <div class="social-follow">
                 <p>Follow us on social media:</p>
@@ -163,6 +192,15 @@
             </div>
         </div>
     </section>
+    <script>
+    (function(){
+        var idx=0, slides=document.querySelectorAll('.slide'), track=document.getElementById('slideshow-track'), dots=document.getElementById('slide-dots');
+        slides.forEach(function(_,i){var d=document.createElement('span');d.style.cssText='width:10px;height:10px;border-radius:50%;background:'+(i===0?'#fff':'rgba(255,255,255,0.4)')+';cursor:pointer;transition:background 0.3s;';d.onclick=function(){idx=i;update();};dots.appendChild(d);});
+        function update(){track.style.transform='translateX(-'+idx*100+'%)';dots.querySelectorAll('span').forEach(function(d,i){d.style.background=i===idx?'#fff':'rgba(255,255,255,0.4)';});}
+        window.moveSlide=function(dir){idx=(idx+dir+slides.length)%slides.length;update();};
+        setInterval(function(){idx=(idx+1)%slides.length;update();},5000);
+    })();
+    </script>
 
     <!-- Values Preview -->
     <section class="section">
