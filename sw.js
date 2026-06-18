@@ -1,4 +1,4 @@
-var CACHE_NAME = 'gsaw-v3';
+var CACHE_NAME = 'gsaw-v4';
 var urlsToCache = [
     '/',
     '/css/styles.css',
