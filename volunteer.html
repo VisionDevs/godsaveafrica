@@ -264,6 +264,7 @@
 
             gsawDB.addVolunteer(data).then(function(result) {
                 if (result && !result.error) {
+                    gsawNotify.sendAdminAlert('new_volunteer', { name: data.first_name + ' ' + data.last_name, province: data.province, areas: data.areas });
                     form.style.display = 'none';
                     successDiv.style.display = 'block';
                     showNotification('Volunteer registration submitted successfully!', 'success');

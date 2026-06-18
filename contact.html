@@ -214,6 +214,7 @@
                 submitted_at: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
             }).then(function(result) {
                 if (result && !result.error) {
+                    gsawNotify.sendAdminAlert('new_contact', { name: name, email: email, subject: subject, message: message });
                     form.style.display = 'none';
                     successDiv.style.display = 'block';
                     showNotification('Message sent successfully!', 'success');
