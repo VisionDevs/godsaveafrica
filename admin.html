@@ -35,6 +35,7 @@
         .login-box input {
             width: 100%; padding: 14px 18px; border: 2px solid #e5e7eb; border-radius: 10px;
             font-size: 1rem; font-family: 'Montserrat', sans-serif; outline: none; transition: border 0.3s;
+            box-sizing: border-box;
         }
         .login-box input:focus { border-color: #1B7A3D; }
         .login-box button {
@@ -53,11 +54,12 @@
         <div class="login-box">
             <img src="images/logo.jpg" alt="GSAW">
             <h2>Admin Access</h2>
-            <p>Enter the admin password to continue</p>
+            <p>Sign in with your admin credentials</p>
             <form id="login-form" onsubmit="return handleLogin(event)">
-                <input type="password" id="admin-password" placeholder="Enter password" autocomplete="off" autofocus>
-                <p class="login-error" id="login-error">Incorrect password. Try again.</p>
-                <button type="submit"><i class="fas fa-lock"></i> Unlock Panel</button>
+                <input type="email" id="admin-email" placeholder="Email address" autocomplete="email" autofocus style="margin-bottom:12px;">
+                <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+                <p class="login-error" id="login-error"></p>
+                <button type="submit"><i class="fas fa-sign-in-alt"></i> Sign In</button>
             </form>
             <p style="margin-top: 20px; font-size: 0.75rem; color: #9ca3af;">Authorised NEC members only</p>
         </div>
@@ -305,11 +307,11 @@
     </div> <!-- end admin-content -->
 
     <script>
-    // Admin Authentication with SHA-256 hashing and brute-force protection
-    // Password hash for GSAW@2025 (SHA-256)
+    // Supabase Auth Configuration
+    var SUPABASE_URL = 'https://nvgoaikzidtpyvmffmxq.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable__cGi8xiV0Il-9tAan7QUAQ_wqQY_Q0K';
     var MAX_ATTEMPTS = 5;
     var LOCKOUT_MINUTES = 15;
-    var SESSION_TIMEOUT_MINUTES = 60;
 
     function getFailedAttempts() {
         var data = localStorage.getItem('gsaw_admin_lockout');
@@ -325,8 +327,7 @@
     function isLockedOut() {
         var data = getFailedAttempts();
         if (data.lockedUntil && Date.now() < data.lockedUntil) {
-            var mins = Math.ceil((data.lockedUntil - Date.now()) / 60000);
-            return mins;
+            return Math.ceil((data.lockedUntil - Date.now()) / 60000);
         }
         if (data.lockedUntil && Date.now() >= data.lockedUntil) {
             localStorage.removeItem('gsaw_admin_lockout');
@@ -334,45 +335,71 @@
         return 0;
     }
 
-    // SHA-256 hash using Web Crypto API
-    async function sha256(message) {
-        var msgBuffer = new TextEncoder().encode(message);
-        var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        var hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+    // Supabase Auth: Sign in with email + password
+    async function supabaseSignIn(email, password) {
+        var response = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, password: password })
+        });
+        var data = await response.json();
+        if (!response.ok) throw new Error(data.error_description || data.msg || 'Invalid credentials');
+        return data;
     }
 
-    // SHA-256 of "GSAW@2025"
-    var ADMIN_HASH = 'a1b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b';
-    var hashReady = false;
-    var correctHash = '';
-
-    // Pre-compute the hash on load
-    sha256('GSAW@2025').then(function(h) {
-        correctHash = h;
-        hashReady = true;
-    });
-
-    // Check session validity (timeout after 60 min)
-    function isSessionValid() {
-        var authTime = sessionStorage.getItem('gsaw_admin_auth_time');
-        if (!authTime) return false;
-        var elapsed = Date.now() - parseInt(authTime);
-        return elapsed < (SESSION_TIMEOUT_MINUTES * 60 * 1000);
+    // Supabase Auth: Get current session
+    async function supabaseGetUser(accessToken) {
+        var response = await fetch(SUPABASE_URL + '/auth/v1/user', {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + accessToken
+            }
+        });
+        if (!response.ok) return null;
+        return await response.json();
     }
 
-    // Check if already authenticated this session
-    if (sessionStorage.getItem('gsaw_admin_auth') === 'true' && isSessionValid()) {
+    // Supabase Auth: Sign out
+    async function supabaseSignOut(accessToken) {
+        await fetch(SUPABASE_URL + '/auth/v1/logout', {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + accessToken
+            }
+        });
+    }
+
+    // Check existing session on page load
+    (async function checkSession() {
+        var token = localStorage.getItem('gsaw_admin_token');
+        if (token) {
+            var user = await supabaseGetUser(token);
+            if (user && user.email) {
+                unlockAdmin(user.email);
+                return;
+            }
+            // Token expired
+            localStorage.removeItem('gsaw_admin_token');
+            localStorage.removeItem('gsaw_admin_email');
+        }
+    })();
+
+    function unlockAdmin(email) {
         document.getElementById('login-overlay').classList.add('hidden');
         document.getElementById('admin-content').classList.remove('locked');
-    } else {
-        sessionStorage.removeItem('gsaw_admin_auth');
-        sessionStorage.removeItem('gsaw_admin_auth_time');
+        // Show logged-in user in topbar
+        var userEl = document.getElementById('admin-user-email');
+        if (userEl) userEl.textContent = email;
     }
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
         e.preventDefault();
         var errorEl = document.getElementById('login-error');
+        var emailEl = document.getElementById('admin-email');
         var passwordEl = document.getElementById('admin-password');
 
         // Check lockout
@@ -380,55 +407,54 @@
         if (lockedMins > 0) {
             errorEl.textContent = 'Too many failed attempts. Try again in ' + lockedMins + ' minute(s).';
             errorEl.style.display = 'block';
-            passwordEl.value = '';
             return false;
         }
 
+        var email = emailEl.value.trim();
         var password = passwordEl.value;
 
-        sha256(password).then(function(inputHash) {
-            if (inputHash === correctHash) {
-                // Success
-                localStorage.removeItem('gsaw_admin_lockout');
-                sessionStorage.setItem('gsaw_admin_auth', 'true');
-                sessionStorage.setItem('gsaw_admin_auth_time', Date.now().toString());
-                document.getElementById('login-overlay').classList.add('hidden');
-                document.getElementById('admin-content').classList.remove('locked');
+        if (!email || !password) {
+            errorEl.textContent = 'Please enter both email and password.';
+            errorEl.style.display = 'block';
+            return false;
+        }
+
+        try {
+            var session = await supabaseSignIn(email, password);
+            // Success
+            localStorage.removeItem('gsaw_admin_lockout');
+            localStorage.setItem('gsaw_admin_token', session.access_token);
+            localStorage.setItem('gsaw_admin_email', email);
+            unlockAdmin(email);
+        } catch (err) {
+            // Failed
+            var attempts = getFailedAttempts();
+            var newCount = attempts.count + 1;
+            setFailedAttempts(newCount);
+
+            if (newCount >= MAX_ATTEMPTS) {
+                errorEl.textContent = 'Account locked for ' + LOCKOUT_MINUTES + ' minutes.';
             } else {
-                // Failed
-                var attempts = getFailedAttempts();
-                var newCount = attempts.count + 1;
-                setFailedAttempts(newCount);
-
-                if (newCount >= MAX_ATTEMPTS) {
-                    errorEl.textContent = 'Account locked for ' + LOCKOUT_MINUTES + ' minutes.';
-                } else {
-                    errorEl.textContent = 'Incorrect password. ' + (MAX_ATTEMPTS - newCount) + ' attempt(s) remaining.';
-                }
-                errorEl.style.display = 'block';
-                passwordEl.value = '';
-                passwordEl.focus();
+                errorEl.textContent = err.message + ' (' + (MAX_ATTEMPTS - newCount) + ' attempts left)';
             }
-        });
-
+            errorEl.style.display = 'block';
+            passwordEl.value = '';
+            passwordEl.focus();
+        }
         return false;
     }
 
     // Logout function
-    function adminLogout() {
-        sessionStorage.removeItem('gsaw_admin_auth');
-        sessionStorage.removeItem('gsaw_admin_auth_time');
+    async function adminLogout() {
+        var token = localStorage.getItem('gsaw_admin_token');
+        if (token) {
+            try { await supabaseSignOut(token); } catch(e) {}
+        }
+        localStorage.removeItem('gsaw_admin_token');
+        localStorage.removeItem('gsaw_admin_email');
         document.getElementById('login-overlay').classList.remove('hidden');
         document.getElementById('admin-content').classList.add('locked');
     }
-
-    // Auto-logout on session timeout (check every minute)
-    setInterval(function() {
-        if (sessionStorage.getItem('gsaw_admin_auth') === 'true' && !isSessionValid()) {
-            adminLogout();
-            alert('Session expired. Please log in again.');
-        }
-    }, 60000);
     </script>
     <script src="js/supabase-config.js"></script>
     <script src="js/admin.js"></script>
