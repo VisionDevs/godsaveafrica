@@ -88,6 +88,15 @@ CREATE POLICY "Allow update contact messages" ON contact_messages
 --   } else if (type === 'new_contact') {
 --     subject = `[GSAW] Contact Message: ${data.subject}`
 --     body = `New contact message:\n\nFrom: ${data.name} (${data.email})\nSubject: ${data.subject}\nMessage: ${data.message}`
+--   } else if (type === 'reply') {
+--     // Admin reply to a contact message — send from info@gsaw.org.za
+--     const res = await fetch('https://api.resend.com/emails', {
+--       method: 'POST',
+--       headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+--       body: JSON.stringify({ from: 'GSAW <info@gsaw.org.za>', to: data.to, subject: data.subject, text: data.message, reply_to: 'info@gsaw.org.za' })
+--     })
+--     const result = await res.json()
+--     return new Response(JSON.stringify({ ok: true, result }), { headers: { 'Content-Type': 'application/json' } })
 --   }
 --   
 --   // Send via Resend (free tier: 100 emails/day)
