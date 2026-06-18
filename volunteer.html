@@ -9,7 +9,7 @@
     <link rel="icon" type="image/jpeg" href="images/logo.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></script>
     <!-- Google Analytics (replace G-XXXXXXXXXX with your Measurement ID) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
@@ -140,12 +140,6 @@
                             <label for="vol-message">Anything else you'd like us to know?</label>
                             <textarea id="vol-message" name="message" rows="3" placeholder="Skills, experience, or questions..."></textarea>
                         </div>
-
-                        <!-- Google reCAPTCHA -->
-                        <div class="form-group" style="margin-bottom:15px;">
-                            <div class="g-recaptcha" data-sitekey="6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></div>
-                        </div>
-
                         <button type="submit" class="btn btn-green btn-full" id="vol-submit-btn">
                             <span class="btn-text"><i class="fas fa-hand-holding-heart"></i> Register as Volunteer</span>
                             <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Submitting...</span>
@@ -226,12 +220,6 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // Google reCAPTCHA check
-            if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
-                showNotification('Please complete the CAPTCHA verification.', 'error');
-                return;
-            }
 
             // Validate required fields
             var firstName = document.getElementById('vol-firstName').value.trim();

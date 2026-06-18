@@ -98,6 +98,9 @@
             <a href="#" class="nav-item" data-view="donations">
                 <i class="fas fa-hand-holding-usd"></i> Donations
             </a>
+            <a href="#" class="nav-item" data-view="volunteers">
+                <i class="fas fa-hands-helping"></i> Volunteers
+            </a>
         </nav>
         <div class="sidebar-footer">
             <a href="/" class="nav-item back-link">
@@ -317,6 +320,30 @@
                     </div>
                 </div>
                 <div id="donations-table"></div>
+            </div>
+        </div>
+
+        <!-- Volunteers View -->
+        <div class="view" id="view-volunteers">
+            <div class="stats-grid">
+                <div class="stat-card" style="background: linear-gradient(135deg, #f47920, #d4661a);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-hands-helping" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-vol-count" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Total Volunteers</p></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #1B7A3D, #145a2d);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-map-marker-alt" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-vol-provinces" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Provinces</p></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-hands-helping"></i> All Volunteers</h2>
+                    <div class="header-actions">
+                        <input type="text" id="search-volunteers" placeholder="Search name, email, province..." oninput="renderVolunteers()" style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;width:200px;">
+                        <button class="btn-action" onclick="exportVolunteersCSV()" title="Export Volunteers"><i class="fas fa-download"></i> Export</button>
+                    </div>
+                </div>
+                <div id="volunteers-table"></div>
             </div>
         </div>
     </main>

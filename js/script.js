@@ -296,12 +296,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Google reCAPTCHA verification check
-            if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
-                showNotification('Please complete the CAPTCHA verification.', 'error');
-                return;
-            }
-
             // Rate limiting check
             var now = Date.now();
             if (now - lastSubmitTime < SUBMIT_COOLDOWN) {

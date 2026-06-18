@@ -9,7 +9,7 @@
     <link rel="icon" type="image/jpeg" href="images/logo.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></script>
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ6DY1TVB5"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BQ6DY1TVB5');</script>
@@ -101,12 +101,6 @@
                             <label for="contact-message">Message *</label>
                             <textarea id="contact-message" name="message" rows="5" required placeholder="Type your message here..."></textarea>
                         </div>
-
-                        <!-- Google reCAPTCHA -->
-                        <div class="form-group" style="margin-bottom:15px;">
-                            <div class="g-recaptcha" data-sitekey="6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></div>
-                        </div>
-
                         <button type="submit" class="btn btn-green btn-full" id="contact-submit-btn">
                             <span class="btn-text"><i class="fas fa-paper-plane"></i> Send Message</span>
                             <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Sending...</span>
@@ -120,6 +114,16 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Volunteer CTA -->
+    <section style="background: linear-gradient(135deg, #f8f9fa, #fff3e6); padding: 50px 0; text-align: center;">
+        <div class="container">
+            <i class="fas fa-hands-helping" style="font-size: 2.5rem; color: var(--orange); margin-bottom: 12px;"></i>
+            <h3 style="margin-bottom: 10px;">Want to Volunteer?</h3>
+            <p style="color: var(--gray-600); max-width: 500px; margin: 0 auto 20px;">Help GSAW build Godly governance in your community. No membership required — just a willing heart and hands.</p>
+            <a href="volunteer" class="btn btn-green"><i class="fas fa-hand-holding-heart"></i> Sign Up to Volunteer</a>
         </div>
     </section>
 
@@ -185,12 +189,6 @@
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // Google reCAPTCHA check
-            if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
-                showNotification('Please complete the CAPTCHA verification.', 'error');
-                return;
-            }
 
             var name = document.getElementById('contact-name').value.trim();
             var email = document.getElementById('contact-email').value.trim();

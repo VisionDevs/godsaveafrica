@@ -79,7 +79,8 @@ function switchView(viewId) {
         applications: 'All Applications',
         approved: 'Approved Members',
         provinces: 'Members by Province',
-        donations: 'Donations (Treasurer)'
+        donations: 'Donations (Treasurer)',
+        volunteers: 'Volunteers'
     };
 
     navItems.forEach(function (item) {
@@ -103,6 +104,7 @@ function switchView(viewId) {
     if (viewId === 'approved') renderApproved();
     if (viewId === 'provinces') renderProvinces();
     if (viewId === 'donations') renderDonations();
+    if (viewId === 'volunteers') loadVolunteers();
 }
 
 // ========================================
@@ -1404,4 +1406,106 @@ function bulkDelete() {
         });
         refreshData();
     });
+}
+
+// ========================================
+// VOLUNTEERS MANAGEMENT
+// ========================================
+var cachedVolunteers = [];
+
+function loadVolunteers() {
+    gsawDB.getVolunteers().then(function (data) {
+        if (Array.isArray(data)) {
+            cachedVolunteers = data;
+            renderVolunteers();
+        }
+    });
+}
+
+function renderVolunteers() {
+    var container = document.getElementById('volunteers-table');
+    if (!container) return;
+
+    var search = (document.getElementById('search-volunteers') || {}).value || '';
+    search = search.toLowerCase();
+
+    var filtered = cachedVolunteers.filter(function (v) {
+        if (!search) return true;
+        var text = (v.first_name + ' ' + v.last_name + ' ' + v.email + ' ' + v.province + ' ' + v.areas).toLowerCase();
+        return text.indexOf(search) !== -1;
+    });
+
+    // Update stats
+    var countEl = document.getElementById('stat-vol-count');
+    var provEl = document.getElementById('stat-vol-provinces');
+    if (countEl) countEl.textContent = cachedVolunteers.length;
+    if (provEl) {
+        var provinces = {};
+        cachedVolunteers.forEach(function (v) { if (v.province) provinces[v.province] = true; });
+        provEl.textContent = Object.keys(provinces).length;
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-hands-helping"></i><p>No volunteers yet</p><small>Share the volunteer page to start receiving signups</small></div>';
+        return;
+    }
+
+    var html = '<table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Province</th><th>Areas</th><th>Availability</th><th>Date</th></tr></thead><tbody>';
+    filtered.forEach(function (v) {
+        html += '<tr>';
+        html += '<td><strong>' + (v.first_name || '') + ' ' + (v.last_name || '') + '</strong></td>';
+        html += '<td><a href="mailto:' + (v.email || '') + '">' + (v.email || '') + '</a></td>';
+        html += '<td>' + (v.phone || '') + '</td>';
+        html += '<td>' + (v.province || '') + '</td>';
+        html += '<td><span style="font-size:0.8rem;">' + (v.areas || '') + '</span></td>';
+        html += '<td>' + (v.availability || '-') + '</td>';
+        html += '<td style="font-size:0.8rem;">' + (v.submitted_at || v.created_at || '') + '</td>';
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function exportVolunteersCSV() {
+    if (cachedVolunteers.length === 0) {
+        alert('No volunteers to export.');
+        return;
+    }
+
+    var headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Province', 'Areas', 'Availability', 'Message', 'Submitted At'];
+
+    if (typeof XLSX !== 'undefined') {
+        var data = cachedVolunteers.map(function (v) {
+            return {
+                'First Name': v.first_name || '',
+                'Last Name': v.last_name || '',
+                'Email': v.email || '',
+                'Phone': v.phone || '',
+                'Province': v.province || '',
+                'Areas': v.areas || '',
+                'Availability': v.availability || '',
+                'Message': v.message || '',
+                'Submitted At': v.submitted_at || ''
+            };
+        });
+        var ws = XLSX.utils.json_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Volunteers');
+        XLSX.writeFile(wb, 'gsaw_volunteers_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+        return;
+    }
+
+    var csv = '\uFEFF' + headers.join(',') + '\n';
+    cachedVolunteers.forEach(function (v) {
+        var row = [v.first_name || '', v.last_name || '', v.email || '', v.phone || '', v.province || '', (v.areas || '').replace(/"/g, '""'), v.availability || '', (v.message || '').replace(/"/g, '""').replace(/\n/g, ' '), v.submitted_at || ''];
+        csv += row.map(function (val) { return '"' + String(val) + '"'; }).join(',') + '\n';
+    });
+
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'gsaw_volunteers_' + new Date().toISOString().slice(0, 10) + '.csv';
+    link.click();
+    URL.revokeObjectURL(url);
 }
