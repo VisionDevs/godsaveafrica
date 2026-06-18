@@ -1574,7 +1574,7 @@ function renderMessages() {
         if (!isRead) {
             html += ' <button class="btn-action btn-sm" onclick="markMessageRead(\'' + m.id + '\')" title="Mark as read" style="background:#1B7A3D;color:#fff;"><i class="fas fa-check"></i></button>';
         }
-        html += ' <button class="btn-action btn-sm" onclick="viewMessage(\'' + m.id + '\')" title="Reply" style="background:#F47920;color:#fff;"><i class="fas fa-reply"></i></button>';
+        html += ' <button class="btn-action btn-sm" onclick="viewMessage(\'' + m.id + '\')" title="View & Reply" style="background:#F47920;color:#fff;"><i class="fas fa-reply"></i></button>';
         html += '</td></tr>';
     });
     html += '</tbody></table>';
@@ -1595,61 +1595,19 @@ function viewMessage(id) {
         '<div style="margin-bottom:15px;"><strong>From:</strong> ' + escapeHtml(m.name) + ' &lt;' + escapeHtml(m.email) + '&gt;</div>' +
         '<div style="margin-bottom:15px;"><strong>Subject:</strong> ' + escapeHtml(m.subject) + '</div>' +
         '<div style="margin-bottom:15px;"><strong>Date:</strong> ' + escapeHtml(m.submitted_at || new Date(m.created_at).toLocaleString('en-ZA')) + '</div>' +
-        '<div style="background:#f9fafb;padding:15px;border-radius:8px;border:1px solid #e5e7eb;white-space:pre-wrap;margin-bottom:20px;">' + escapeHtml(m.message) + '</div>' +
-        '<div id="reply-section">' +
-        '<h4 style="margin-bottom:10px;"><i class="fas fa-reply"></i> Reply (from info@gsaw.org.za)</h4>' +
-        '<textarea id="reply-text" rows="4" style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:8px;font-family:Montserrat,sans-serif;font-size:0.9rem;resize:vertical;" placeholder="Type your reply here..."></textarea>' +
-        '</div>';
+        '<div style="background:#f9fafb;padding:15px;border-radius:8px;border:1px solid #e5e7eb;white-space:pre-wrap;">' + escapeHtml(m.message) + '</div>';
+
+    var replyTemplate = 'Dear ' + (m.name || 'Sir/Madam') + ',\n\nThank you for reaching out to God Save Africa & The World (GSAW).\n\nWe have received your message regarding "' + (m.subject || 'your enquiry') + '" and appreciate you taking the time to contact us.\n\n[Your response here]\n\nMay God bless you.\n\nKind regards,\nGSAW National Office\ninfo@gsaw.org.za | +27 73 585 0365\nwww.gsaw.org.za';
+    var mailtoLink = 'mailto:' + encodeURIComponent(m.email) + '?subject=' + encodeURIComponent('Re: ' + (m.subject || 'Your enquiry to GSAW')) + '&body=' + encodeURIComponent(replyTemplate);
 
     footer.innerHTML =
-        '<button class="btn-action" onclick="sendReply(\'' + m.id + '\')" style="background:#F47920;color:#fff;padding:10px 20px;border-radius:8px;"><i class="fas fa-paper-plane"></i> Send Reply</button>' +
+        '<a href="' + mailtoLink + '" class="btn-action" style="background:#F47920;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;"><i class="fas fa-reply"></i> Reply via Email</a>' +
         (!m.is_read ? ' <button class="btn-action" onclick="markMessageRead(\'' + m.id + '\');closeModal();" style="background:#1B7A3D;color:#fff;padding:10px 20px;border-radius:8px;"><i class="fas fa-check"></i> Mark as Read</button>' : '');
 
     overlay.classList.add('active');
 
     // Auto-mark as read on view
     if (!m.is_read) markMessageRead(id);
-}
-
-function sendReply(id) {
-    var m = cachedMessages.find(function (msg) { return msg.id === id; });
-    if (!m) return;
-
-    var replyText = document.getElementById('reply-text');
-    if (!replyText || !replyText.value.trim()) {
-        alert('Please type a reply message.');
-        return;
-    }
-
-    var btn = document.querySelector('#modal-footer .btn-action');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; }
-
-    fetch(SUPABASE_URL + '/functions/v1/notify-admin', {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            type: 'reply',
-            data: {
-                to: m.email,
-                subject: 'Re: ' + (m.subject || 'Your enquiry'),
-                message: replyText.value.trim()
-            }
-        })
-    }).then(function (r) { return r.json(); }).then(function (result) {
-        if (result.ok) {
-            alert('Reply sent successfully to ' + m.email + ' from info@gsaw.org.za');
-            closeModal();
-        } else {
-            alert('Failed to send: ' + (result.result && result.result.message || 'Unknown error'));
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reply'; }
-        }
-    }).catch(function () {
-        alert('Network error. Please try again.');
-        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reply'; }
-    });
 }
 
 function markMessageRead(id) {

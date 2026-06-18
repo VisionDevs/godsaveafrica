@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 // Notify admin of new donation
                 if (typeof gsawNotify !== 'undefined') {
-                    gsawNotify.sendAdminAlert('new_donation', { donor: dbRecord.donor_name || dbRecord.org_name, amount: dbRecord.amount, purpose: dbRecord.purpose });
+                    gsawNotify.sendAdminAlert('new_donation', { donor: dbRecord.donor_name || dbRecord.org_name, email: dbRecord.email || '', amount: dbRecord.amount, purpose: dbRecord.purpose });
                 }
             }).catch(function (err) {
                 console.error('Donation save error:', err);
