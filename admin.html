@@ -45,6 +45,7 @@
         }
         .login-box button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(27,122,61,0.3); }
         .login-error { color: #E31E24; font-size: 0.82rem; margin-top: 10px; display: none; }
+        .admin-content { display: flex; width: 100%; min-height: 100vh; }
         .admin-content.locked { display: none; }
     </style>
 </head>
@@ -94,7 +95,7 @@
             </a>
         </nav>
         <div class="sidebar-footer">
-            <a href="index.html" class="nav-item back-link">
+            <a href="/" class="nav-item back-link">
                 <i class="fas fa-arrow-left"></i> Back to Website
             </a>
             <a href="#" class="nav-item back-link" onclick="adminLogout(); return false;" style="color:#E31E24;">
@@ -118,7 +119,7 @@
                 <button class="btn-action" onclick="exportCSV()" title="Export to CSV">
                     <i class="fas fa-download"></i> Export
                 </button>
-                <a href="index.html" class="btn-action btn-website" title="View Website">
+                <a href="/" class="btn-action btn-website" title="View Website">
                     <i class="fas fa-globe"></i> Website
                 </a>
             </div>
