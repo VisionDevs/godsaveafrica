@@ -70,7 +70,18 @@ CREATE POLICY "Allow update contact messages" ON contact_messages
 -- const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 -- const ADMIN_EMAILS = ['admin@gsaw.org.za', 'info@gsaw.org.za']
 -- 
+-- const corsHeaders = {
+--   'Access-Control-Allow-Origin': '*',
+--   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+--   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+-- }
+-- 
 -- serve(async (req) => {
+--   // Handle CORS preflight
+--   if (req.method === 'OPTIONS') {
+--     return new Response('ok', { headers: corsHeaders })
+--   }
+-- 
 --   try {
 --     const { type, data } = await req.json()
 --     
@@ -122,9 +133,9 @@ CREATE POLICY "Allow update contact messages" ON contact_messages
 --       })
 --     }
 --     
---     return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } })
+--     return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 --   } catch (error) {
---     return new Response(JSON.stringify({ ok: false, error: error.message }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+--     return new Response(JSON.stringify({ ok: false, error: error.message }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 --   }
 -- })
 --
