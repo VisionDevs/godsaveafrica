@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - GSAW</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a2e, #0f3a1a); text-align: center; padding: 40px 20px; }
+        .error-content { max-width: 500px; }
+        .error-code { font-size: 8rem; font-weight: 900; color: rgba(255,255,255,0.1); line-height: 1; font-family: 'Playfair Display', serif; }
+        .error-icon { font-size: 4rem; color: #F47920; margin: -30px 0 20px; }
+        .error-content h1 { color: #fff; font-size: 1.8rem; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; }
+        .error-content p { color: rgba(255,255,255,0.7); margin-bottom: 30px; font-size: 1rem; line-height: 1.6; }
+        .error-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .error-links a { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .error-links a:hover { transform: translateY(-2px); }
+        .btn-home { background: #1B7A3D; color: #fff; }
+        .btn-contact { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+    <div class="error-page">
+        <div class="error-content">
+            <div class="error-code">404</div>
+            <div class="error-icon"><i class="fas fa-map-signs"></i></div>
+            <h1>Page Not Found</h1>
+            <p>The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+            <div class="error-links">
+                <a href="/" class="btn-home"><i class="fas fa-home"></i> Go Home</a>
+                <a href="/membership" class="btn-home" style="background:#F47920;"><i class="fas fa-user-plus"></i> Join GSAW</a>
+                <a href="/contact" class="btn-contact"><i class="fas fa-envelope"></i> Contact Us</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

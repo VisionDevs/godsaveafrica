@@ -101,6 +101,9 @@
             <a href="#" class="nav-item" data-view="volunteers">
                 <i class="fas fa-hands-helping"></i> Volunteers
             </a>
+            <a href="#" class="nav-item" data-view="messages">
+                <i class="fas fa-envelope"></i> Messages <span id="unread-badge" style="background:#E31E24;color:#fff;border-radius:10px;padding:1px 7px;font-size:0.7rem;margin-left:5px;display:none;"></span>
+            </a>
         </nav>
         <div class="sidebar-footer">
             <a href="/" class="nav-item back-link">
@@ -344,6 +347,30 @@
                     </div>
                 </div>
                 <div id="volunteers-table"></div>
+            </div>
+        </div>
+
+        <!-- Contact Messages View -->
+        <div class="view" id="view-messages">
+            <div class="stats-grid">
+                <div class="stat-card" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-envelope" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-msg-total" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Total Messages</p></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #E31E24, #b8171c);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-envelope-open" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-msg-unread" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Unread</p></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-envelope"></i> Contact Messages</h2>
+                    <div class="header-actions">
+                        <input type="text" id="search-messages" placeholder="Search name, email, subject..." oninput="renderMessages()" style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;width:200px;">
+                        <button class="btn-action" onclick="exportMessagesCSV()" title="Export Messages"><i class="fas fa-download"></i> Export</button>
+                    </div>
+                </div>
+                <div id="messages-table"></div>
             </div>
         </div>
     </main>

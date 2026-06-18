@@ -53,6 +53,10 @@ CREATE POLICY "Allow anonymous insert" ON contact_messages
 CREATE POLICY "Allow authenticated read" ON contact_messages
     FOR SELECT TO anon USING (true);
 
+-- Allow updates (mark as read from admin)
+CREATE POLICY "Allow update contact messages" ON contact_messages
+    FOR UPDATE TO anon USING (true) WITH CHECK (true);
+
 
 -- ============================================================
 -- SUPABASE EDGE FUNCTION: notify-admin

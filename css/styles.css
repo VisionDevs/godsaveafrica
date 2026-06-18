@@ -1874,6 +1874,102 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
+   24.6 WHATSAPP FLOATING BUTTON
+======================================== */
+.whatsapp-float {
+    position: fixed;
+    bottom: 90px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #25D366;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    z-index: 998;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.whatsapp-float:hover {
+    background: #1ebe57;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}
+
+.whatsapp-float .whatsapp-tooltip {
+    position: absolute;
+    right: 70px;
+    background: var(--dark);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    font-family: var(--font-main);
+}
+
+.whatsapp-float:hover .whatsapp-tooltip {
+    opacity: 1;
+}
+
+/* ========================================
+   24.7 COOKIE CONSENT BANNER
+======================================== */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--dark);
+    color: var(--white);
+    padding: 18px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 10000;
+    font-size: 0.85rem;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    flex-wrap: wrap;
+}
+
+.cookie-banner p {
+    margin: 0;
+    max-width: 700px;
+    line-height: 1.5;
+}
+
+.cookie-banner a {
+    color: var(--orange);
+    text-decoration: underline;
+}
+
+.cookie-banner button {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.cookie-banner button:hover {
+    background: var(--green-dark);
+}
+
+/* ========================================
    25. RESPONSIVE
 ======================================== */
 @media (max-width: 1024px) {
@@ -1920,6 +2016,10 @@ h1, h2, h3, h4, h5, h6 {
     .top-bar-right {
         margin: 0 auto;
     }
+
+    .whatsapp-float { bottom: 80px; right: 20px; width: 50px; height: 50px; font-size: 1.5rem; }
+    .whatsapp-float .whatsapp-tooltip { display: none; }
+    .cookie-banner { flex-direction: column; text-align: center; padding: 15px; }
 
     .nav-menu {
         position: fixed;
@@ -2345,4 +2445,17 @@ h1, h2, h3, h4, h5, h6 {
     .banking-table td:first-child {
         width: 35%;
     }
+}
+
+/* ========================================
+   PRINT STYLES
+======================================== */
+@media print {
+    .top-bar, .navbar, .footer, .back-to-top, .whatsapp-float, .cookie-banner,
+    .page-header button, .breadcrumb { display: none !important; }
+    .page-header { background: #fff !important; color: #000 !important; padding: 20px 0 !important; }
+    .page-header h1, .page-header p { color: #000 !important; }
+    .section { padding: 20px 0 !important; }
+    .manifesto-card { break-inside: avoid; border: 1px solid #ddd; }
+    body { font-size: 12pt; }
 }

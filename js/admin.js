@@ -80,7 +80,8 @@ function switchView(viewId) {
         approved: 'Approved Members',
         provinces: 'Members by Province',
         donations: 'Donations (Treasurer)',
-        volunteers: 'Volunteers'
+        volunteers: 'Volunteers',
+        messages: 'Contact Messages'
     };
 
     navItems.forEach(function (item) {
@@ -105,6 +106,7 @@ function switchView(viewId) {
     if (viewId === 'provinces') renderProvinces();
     if (viewId === 'donations') renderDonations();
     if (viewId === 'volunteers') loadVolunteers();
+    if (viewId === 'messages') loadMessages();
 }
 
 // ========================================
@@ -184,7 +186,9 @@ function refreshData() {
         renderDonations();
     });
 
-    Promise.all([p1, p2]).then(function () {
+    var p3 = loadMessages();
+
+    Promise.all([p1, p2, p3]).then(function () {
         if (btn) {
             btn.disabled = false;
             btn.querySelector('i').className = 'fas fa-sync-alt';
@@ -1508,4 +1512,138 @@ function exportVolunteersCSV() {
     link.download = 'gsaw_volunteers_' + new Date().toISOString().slice(0, 10) + '.csv';
     link.click();
     URL.revokeObjectURL(url);
+}
+
+// ========================================
+// CONTACT MESSAGES
+// ========================================
+var cachedMessages = [];
+
+function loadMessages() {
+    return gsawDB.getContactMessages().then(function (data) {
+        if (Array.isArray(data)) {
+            cachedMessages = data;
+            renderMessages();
+            updateUnreadBadge();
+        }
+    }).catch(function () {});
+}
+
+function updateUnreadBadge() {
+    var unread = cachedMessages.filter(function (m) { return !m.is_read; }).length;
+    var badge = document.getElementById('unread-badge');
+    if (badge) {
+        badge.textContent = unread;
+        badge.style.display = unread > 0 ? 'inline' : 'none';
+    }
+    var statTotal = document.getElementById('stat-msg-total');
+    var statUnread = document.getElementById('stat-msg-unread');
+    if (statTotal) statTotal.textContent = cachedMessages.length;
+    if (statUnread) statUnread.textContent = unread;
+}
+
+function renderMessages() {
+    var container = document.getElementById('messages-table');
+    if (!container) return;
+
+    var search = (document.getElementById('search-messages') || {}).value || '';
+    search = search.toLowerCase();
+    var filtered = cachedMessages.filter(function (m) {
+        if (!search) return true;
+        return (m.name || '').toLowerCase().indexOf(search) > -1 ||
+               (m.email || '').toLowerCase().indexOf(search) > -1 ||
+               (m.subject || '').toLowerCase().indexOf(search) > -1;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;">No messages found.</div>';
+        return;
+    }
+
+    var html = '<table class="data-table"><thead><tr><th>Status</th><th>Name</th><th>Email</th><th>Subject</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+    filtered.forEach(function (m) {
+        var isRead = m.is_read;
+        var rowStyle = isRead ? '' : 'font-weight:600;background:#fef3c7;';
+        html += '<tr style="' + rowStyle + '">';
+        html += '<td>' + (isRead ? '<i class="fas fa-envelope-open" style="color:#9ca3af;"></i>' : '<i class="fas fa-envelope" style="color:#E31E24;"></i> New') + '</td>';
+        html += '<td>' + escapeHtml(m.name) + '</td>';
+        html += '<td><a href="mailto:' + escapeHtml(m.email) + '">' + escapeHtml(m.email) + '</a></td>';
+        html += '<td>' + escapeHtml(m.subject) + '</td>';
+        html += '<td style="white-space:nowrap;">' + escapeHtml(m.submitted_at || new Date(m.created_at).toLocaleString('en-ZA')) + '</td>';
+        html += '<td><button class="btn-action btn-sm" onclick="viewMessage(\'' + m.id + '\')" title="View"><i class="fas fa-eye"></i></button>';
+        if (!isRead) {
+            html += ' <button class="btn-action btn-sm" onclick="markMessageRead(\'' + m.id + '\')" title="Mark as read" style="background:#1B7A3D;color:#fff;"><i class="fas fa-check"></i></button>';
+        }
+        html += ' <a href="mailto:' + escapeHtml(m.email) + '?subject=Re: ' + encodeURIComponent(m.subject || '') + '" class="btn-action btn-sm" title="Reply" style="background:#F47920;color:#fff;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;"><i class="fas fa-reply"></i></a>';
+        html += '</td></tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function viewMessage(id) {
+    var m = cachedMessages.find(function (msg) { return msg.id === id; });
+    if (!m) return;
+
+    var body = document.getElementById('modal-body');
+    var footer = document.getElementById('modal-footer');
+    var overlay = document.getElementById('modal-overlay');
+    var title = document.querySelector('#detail-modal .modal-header h3');
+
+    if (title) title.textContent = 'Contact Message';
+    body.innerHTML =
+        '<div style="margin-bottom:15px;"><strong>From:</strong> ' + escapeHtml(m.name) + ' &lt;' + escapeHtml(m.email) + '&gt;</div>' +
+        '<div style="margin-bottom:15px;"><strong>Subject:</strong> ' + escapeHtml(m.subject) + '</div>' +
+        '<div style="margin-bottom:15px;"><strong>Date:</strong> ' + escapeHtml(m.submitted_at || new Date(m.created_at).toLocaleString('en-ZA')) + '</div>' +
+        '<div style="background:#f9fafb;padding:15px;border-radius:8px;border:1px solid #e5e7eb;white-space:pre-wrap;">' + escapeHtml(m.message) + '</div>';
+
+    footer.innerHTML =
+        '<a href="mailto:' + escapeHtml(m.email) + '?subject=Re: ' + encodeURIComponent(m.subject || '') + '" class="btn-action" style="background:#F47920;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;"><i class="fas fa-reply"></i> Reply via Email</a>' +
+        (!m.is_read ? ' <button class="btn-action" onclick="markMessageRead(\'' + m.id + '\');closeModal();" style="background:#1B7A3D;color:#fff;padding:10px 20px;border-radius:8px;"><i class="fas fa-check"></i> Mark as Read</button>' : '');
+
+    overlay.classList.add('active');
+
+    // Auto-mark as read on view
+    if (!m.is_read) markMessageRead(id);
+}
+
+function markMessageRead(id) {
+    fetch(SUPABASE_URL + '/rest/v1/contact_messages?id=eq.' + id, {
+        method: 'PATCH',
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ is_read: true })
+    }).then(function () {
+        var m = cachedMessages.find(function (msg) { return msg.id === id; });
+        if (m) m.is_read = true;
+        renderMessages();
+        updateUnreadBadge();
+    });
+}
+
+function exportMessagesCSV() {
+    if (cachedMessages.length === 0) {
+        alert('No messages to export.');
+        return;
+    }
+    if (typeof XLSX !== 'undefined') {
+        var data = cachedMessages.map(function (m) {
+            return {
+                'Name': m.name || '',
+                'Email': m.email || '',
+                'Subject': m.subject || '',
+                'Message': m.message || '',
+                'Date': m.submitted_at || '',
+                'Read': m.is_read ? 'Yes' : 'No'
+            };
+        });
+        var ws = XLSX.utils.json_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Messages');
+        XLSX.writeFile(wb, 'gsaw_messages_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    }
 }

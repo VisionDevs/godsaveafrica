@@ -100,11 +100,35 @@
                 <div class="banner-text">
                     <h3>2026 Local Government Elections</h3>
                     <p>Register to vote! Registration Weekend: <strong>20&ndash;21 June 2026</strong> | Vote GSAW for Godly leadership.</p>
+                    <div id="countdown" style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;"></div>
                 </div>
                 <a href="https://registertovote.elections.org.za/" target="_blank" rel="noopener" class="btn btn-white btn-sm">Register to Vote <i class="fas fa-external-link-alt"></i></a>
             </div>
         </div>
     </section>
+    <script>
+    (function(){
+        var target = new Date('2026-06-20T07:00:00+02:00').getTime();
+        var el = document.getElementById('countdown');
+        if (!el) return;
+        function pad(n){ return n < 10 ? '0'+n : n; }
+        function unit(val, label){
+            return '<div style="text-align:center;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;min-width:60px;"><div style="font-size:1.5rem;font-weight:800;line-height:1;">'+pad(val)+'</div><div style="font-size:0.65rem;text-transform:uppercase;opacity:0.8;letter-spacing:1px;">'+label+'</div></div>';
+        }
+        function update(){
+            var now = Date.now();
+            var diff = target - now;
+            if(diff <= 0){ el.innerHTML = '<div style="font-weight:700;font-size:1.1rem;">🗳️ Registration Weekend is HERE! Go register now!</div>'; return; }
+            var d = Math.floor(diff/86400000);
+            var h = Math.floor((diff%86400000)/3600000);
+            var m = Math.floor((diff%3600000)/60000);
+            var s = Math.floor((diff%60000)/1000);
+            el.innerHTML = unit(d,'Days') + unit(h,'Hours') + unit(m,'Minutes') + unit(s,'Seconds');
+        }
+        update();
+        setInterval(update, 1000);
+    })();
+    </script>
 
     <!-- About Preview -->
     <section class="section" id="about">
@@ -327,6 +351,33 @@
         </div>
     </section>
 
+    <!-- Social Media Feed -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Follow Us</span>
+                <h2 class="section-title">Social <span class="text-green">Media</span></h2>
+                <div class="section-divider"></div>
+                <p class="section-desc">Stay connected with GSAW on Facebook and TikTok for the latest updates.</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;max-width:900px;margin:0 auto;">
+                <div>
+                    <h3 style="text-align:center;margin-bottom:15px;font-size:1rem;"><i class="fab fa-facebook-f" style="color:#1877F2;"></i> Facebook</h3>
+                    <iframe src="https://www.facebook.com/plugins/group.php?href=https%3A%2F%2Fwww.facebook.com%2Fgroups%2F7831634076854510&width=400&show_social_context=true&show_metadata=false&appId" width="100%" height="400" style="border:none;overflow:hidden;border-radius:12px;" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" loading="lazy"></iframe>
+                </div>
+                <div>
+                    <h3 style="text-align:center;margin-bottom:15px;font-size:1rem;"><i class="fab fa-tiktok"></i> TikTok</h3>
+                    <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@gsaw.political.pa" data-unique-id="gsaw.political.pa" data-embed-type="creator" style="max-width:100%;min-width:300px;border-radius:12px;"><section><a target="_blank" href="https://www.tiktok.com/@gsaw.political.pa">@gsaw.political.pa</a></section></blockquote>
+                    <script async src="https://www.tiktok.com/embed.js"></script>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:25px;">
+                <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener" class="btn btn-sm" style="background:#1877F2;color:#fff;margin-right:10px;"><i class="fab fa-facebook-f"></i> Join Facebook Group</a>
+                <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener" class="btn btn-sm" style="background:#000;color:#fff;"><i class="fab fa-tiktok"></i> Follow on TikTok</a>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="section section-green">
         <div class="container" style="text-align: center;">
@@ -399,6 +450,33 @@
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/godsaveafrica/sw.js').catch(function() {});
     }
+    // PWA Install Prompt
+    var deferredPrompt;
+    window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        var banner = document.createElement('div');
+        banner.id = 'pwa-install';
+        banner.style.cssText = 'position:fixed;bottom:80px;left:20px;right:20px;max-width:400px;background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;align-items:center;gap:14px;z-index:9999;font-family:Montserrat,sans-serif;';
+        banner.innerHTML = '<img src="images/logo.jpg" style="width:45px;height:45px;border-radius:10px;" alt="GSAW">' +
+            '<div style="flex:1;"><strong style="font-size:0.9rem;">Add GSAW to Home Screen</strong><p style="margin:3px 0 0;font-size:0.75rem;color:#6b7280;">Quick access to news, events & more</p></div>' +
+            '<button id="pwa-install-btn" style="background:#1B7A3D;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:600;font-size:0.8rem;cursor:pointer;white-space:nowrap;">Install</button>' +
+            '<button onclick="this.parentElement.remove();localStorage.setItem(\'pwa_dismissed\',\'1\');" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#9ca3af;padding:0 4px;">&times;</button>';
+        if (!localStorage.getItem('pwa_dismissed')) document.body.appendChild(banner);
+        document.addEventListener('click', function handler(ev) {
+            if (ev.target.id === 'pwa-install-btn') {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function() { var b = document.getElementById('pwa-install'); if (b) b.remove(); });
+                document.removeEventListener('click', handler);
+            }
+        });
+    });
     </script>
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/27735850365?text=Hi%20GSAW%2C%20I%20have%20a%20question" class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="whatsapp-tooltip">Chat with us</span></a>
+
+    <!-- Cookie Consent -->
+    <div class="cookie-banner" id="cookieBanner" style="display:none;"><p>We use cookies and analytics to improve your experience. By continuing, you consent to our use of cookies per <a href="faq#privacy">POPIA</a>.</p><button onclick="document.getElementById('cookieBanner').style.display='none';localStorage.setItem('gsaw_cookies','1');">Accept</button></div>
+    <script>if(!localStorage.getItem('gsaw_cookies')){document.getElementById('cookieBanner').style.display='flex';}</script>
 </body>
 </html>
