@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSAW Admin - Membership Management</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 50px 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-box img { width: 70px; border-radius: 50%; margin-bottom: 20px; }
+        .login-box h2 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; margin-bottom: 5px; color: #1a1a2e; }
+        .login-box p { color: #6b7280; font-size: 0.85rem; margin-bottom: 25px; }
+        .login-box input {
+            width: 100%; padding: 14px 18px; border: 2px solid #e5e7eb; border-radius: 10px;
+            font-size: 1rem; font-family: 'Montserrat', sans-serif; outline: none; transition: border 0.3s;
+            box-sizing: border-box;
+        }
+        .login-box input:focus { border-color: #1B7A3D; }
+        .login-box button {
+            width: 100%; padding: 14px; margin-top: 15px; background: linear-gradient(135deg, #1B7A3D, #145a2d);
+            color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; font-family: 'Montserrat', sans-serif; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(27,122,61,0.3); }
+        .login-error { color: #E31E24; font-size: 0.82rem; margin-top: 10px; display: none; }
+        .admin-content { display: flex; width: 100%; min-height: 100vh; }
+        .admin-content.locked { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Login Gate -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <img src="images/logo.jpg" alt="GSAW">
+            <h2>Admin Access</h2>
+            <p>Sign in with your admin credentials</p>
+            <form id="login-form" onsubmit="return handleLogin(event)">
+                <input type="email" id="admin-email" placeholder="Email address" autocomplete="email" autofocus style="margin-bottom:12px;">
+                <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+                <p class="login-error" id="login-error"></p>
+                <button type="submit"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            </form>
+            <p style="margin-top: 20px; font-size: 0.75rem; color: #9ca3af;">Authorised NEC members only</p>
+        </div>
+    </div>
+
+    <!-- Admin Content (hidden until authenticated) -->
+    <div class="admin-content locked" id="admin-content">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="images/logo.jpg" alt="GSAW" class="sidebar-logo">
+            <div>
+                <h2>GSAW</h2>
+                <p>Admin Panel</p>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-view="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item" data-view="applications">
+                <i class="fas fa-users"></i> Applications
+            </a>
+            <a href="#" class="nav-item" data-view="approved">
+                <i class="fas fa-user-check"></i> Approved Members
+            </a>
+            <a href="#" class="nav-item" data-view="provinces">
+                <i class="fas fa-map"></i> By Province
+            </a>
+            <a href="#" class="nav-item" data-view="donations">
+                <i class="fas fa-hand-holding-usd"></i> Donations
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="/" class="nav-item back-link">
+                <i class="fas fa-arrow-left"></i> Back to Website
+            </a>
+            <a href="#" class="nav-item back-link" onclick="adminLogout(); return false;" style="color:#E31E24;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="admin-topbar">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 id="page-title">Dashboard</h1>
+            <div class="topbar-actions">
+                <button id="btn-refresh" class="btn-action" onclick="refreshData()" title="Refresh data from server" style="background:#1B7A3D;color:#fff;">
+                    <i class="fas fa-sync-alt"></i> <span>Refresh</span>
+                </button>
+                <button class="btn-action" onclick="exportCSV()" title="Export to CSV">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <a href="/" class="btn-action btn-website" title="View Website">
+                    <i class="fas fa-globe"></i> Website
+                </a>
+            </div>
+        </header>
+
+        <!-- Dashboard View -->
+        <div class="view active" id="view-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card stat-total">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-total">0</h3>
+                        <p>Total Applications</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-pending">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-pending">0</h3>
+                        <p>Pending Review</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-approved">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-approved">0</h3>
+                        <p>Approved Members</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-provinces">
+                    <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="stat-info">
+                        <h3 id="stat-provinces">0</h3>
+                        <p>Provinces Reached</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donation Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-hand-holding-usd"></i> Donation Summary</h2>
+                    <button class="btn-text-link" onclick="switchView('donations')">View All &rarr;</button>
+                </div>
+                <div class="stats-grid" style="padding: 15px 0;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f47920, #d4661a);">
+                        <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-coins" style="color:#fff;"></i></div>
+                        <div class="stat-info"><h3 id="stat-donations-count" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Total Donations</p></div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #1B7A3D, #145a2d);">
+                        <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-money-bill-wave" style="color:#fff;"></i></div>
+                        <div class="stat-info"><h3 id="stat-donations-total" style="color:#fff;">R0</h3><p style="color:rgba(255,255,255,0.85);">Total Amount</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Applications -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock"></i> Recent Applications</h2>
+                    <button class="btn-text-link" onclick="switchView('applications')">View All &rarr;</button>
+                </div>
+                <div id="recent-applications">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No applications yet</p>
+                        <small>Share the website to start receiving membership applications</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Growth Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Membership Growth</h2>
+                </div>
+                <div style="padding:15px;"><canvas id="growth-chart" height="200"></canvas></div>
+            </div>
+
+            <!-- Donation Trends -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-area"></i> Donation Trends</h2>
+                </div>
+                <div style="padding:15px;"><canvas id="donation-chart" height="200"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Applications View -->
+        <div class="view" id="view-applications">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-users"></i> All Applications</h2>
+                    <div class="header-actions">
+                        <input type="text" id="search-applications" placeholder="Search by name, email, ID..." oninput="renderApplications()" style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;width:200px;">
+                        <select id="filter-status" onchange="renderApplications()">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                        </select>
+                        <select id="filter-province" onchange="renderApplications()">
+                            <option value="all">All Provinces</option>
+                        </select>
+                        <button class="btn-action" onclick="toggleBulkActions()" title="Bulk Actions" style="font-size:0.82rem;">
+                            <i class="fas fa-tasks"></i> Actions
+                        </button>
+                    </div>
+                </div>
+                <div class="bulk-actions" id="bulk-actions" style="padding:10px 20px;display:none;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <label style="font-size:0.82rem;color:#1B7A3D;font-weight:600;"><input type="checkbox" id="select-all-apps" onchange="toggleSelectAll(this)"> Select All</label>
+                    <button class="btn-sm btn-approve" onclick="bulkApprove()" style="font-size:0.78rem;"><i class="fas fa-check"></i> Approve Selected</button>
+                    <button class="btn-sm btn-danger" onclick="bulkDelete()" style="font-size:0.78rem;"><i class="fas fa-trash"></i> Delete Selected</button>
+                    <span id="selected-count" style="font-size:0.78rem;color:#6c757d;"></span>
+                    <button class="btn-sm" onclick="toggleBulkActions()" style="font-size:0.78rem;margin-left:auto;background:#e5e7eb;color:#374151;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;"><i class="fas fa-times"></i> Close</button>
+                </div>
+                <div id="applications-table"></div>
+            </div>
+        </div>
+
+        <!-- Approved Members View -->
+        <div class="view" id="view-approved">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-user-check"></i> Approved Members</h2>
+                    <span class="badge" id="approved-badge">0</span>
+                </div>
+                <div id="approved-table"></div>
+            </div>
+        </div>
+
+        <!-- Provinces View -->
+        <div class="view" id="view-provinces">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-map"></i> Members by Province</h2>
+                </div>
+                <div id="province-details"></div>
+            </div>
+        </div>
+
+        <!-- Donations View -->
+        <div class="view" id="view-donations">
+            <div class="stats-grid">
+                <div class="stat-card" style="background: linear-gradient(135deg, #f47920, #d4661a);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-coins" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-don-count" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Total Donations</p></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #1B7A3D, #145a2d);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-money-bill-wave" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-don-total" style="color:#fff;">R0</h3><p style="color:rgba(255,255,255,0.85);">Total Amount</p></div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #E31E24, #b8171c);">
+                    <div class="stat-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-file-invoice" style="color:#fff;"></i></div>
+                    <div class="stat-info"><h3 id="stat-don-verified" style="color:#fff;">0</h3><p style="color:rgba(255,255,255,0.85);">Verified</p></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-hand-holding-usd"></i> All Donations</h2>
+                    <div class="header-actions">
+                        <input type="text" id="search-donations" placeholder="Search donor name, email..." oninput="renderDonations()" style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:0.85rem;width:200px;">
+                        <select id="filter-donation-status" onchange="renderDonations()">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="verified">Verified</option>
+                        </select>
+                        <button class="btn-action" onclick="exportDonationsCSV()" title="Export Donations"><i class="fas fa-download"></i> Export</button>
+                    </div>
+                </div>
+                <div id="donations-table"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Application Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="detail-modal">
+            <div class="modal-header">
+                <h3>Application Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer"></div>
+        </div>
+    </div>
+    </div> <!-- end admin-content -->
+
+    <script>
+    // Supabase Auth Configuration
+    var SUPABASE_URL = 'https://nvgoaikzidtpyvmffmxq.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable__cGi8xiV0Il-9tAan7QUAQ_wqQY_Q0K';
+    var MAX_ATTEMPTS = 5;
+    var LOCKOUT_MINUTES = 15;
+
+    function getFailedAttempts() {
+        var data = localStorage.getItem('gsaw_admin_lockout');
+        if (!data) return { count: 0, lockedUntil: 0 };
+        try { return JSON.parse(data); } catch (e) { return { count: 0, lockedUntil: 0 }; }
+    }
+
+    function setFailedAttempts(count) {
+        var lockedUntil = count >= MAX_ATTEMPTS ? Date.now() + (LOCKOUT_MINUTES * 60 * 1000) : 0;
+        localStorage.setItem('gsaw_admin_lockout', JSON.stringify({ count: count, lockedUntil: lockedUntil }));
+    }
+
+    function isLockedOut() {
+        var data = getFailedAttempts();
+        if (data.lockedUntil && Date.now() < data.lockedUntil) {
+            return Math.ceil((data.lockedUntil - Date.now()) / 60000);
+        }
+        if (data.lockedUntil && Date.now() >= data.lockedUntil) {
+            localStorage.removeItem('gsaw_admin_lockout');
+        }
+        return 0;
+    }
+
+    // Supabase Auth: Sign in with email + password
+    async function supabaseSignIn(email, password) {
+        var response = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, password: password })
+        });
+        var data = await response.json();
+        if (!response.ok) throw new Error(data.error_description || data.msg || 'Invalid credentials');
+        return data;
+    }
+
+    // Supabase Auth: Get current session
+    async function supabaseGetUser(accessToken) {
+        var response = await fetch(SUPABASE_URL + '/auth/v1/user', {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + accessToken
+            }
+        });
+        if (!response.ok) return null;
+        return await response.json();
+    }
+
+    // Supabase Auth: Sign out
+    async function supabaseSignOut(accessToken) {
+        await fetch(SUPABASE_URL + '/auth/v1/logout', {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + accessToken
+            }
+        });
+    }
+
+    // Check existing session on page load
+    (async function checkSession() {
+        var token = localStorage.getItem('gsaw_admin_token');
+        if (token) {
+            var user = await supabaseGetUser(token);
+            if (user && user.email) {
+                unlockAdmin(user.email);
+                return;
+            }
+            // Token expired
+            localStorage.removeItem('gsaw_admin_token');
+            localStorage.removeItem('gsaw_admin_email');
+        }
+    })();
+
+    function unlockAdmin(email) {
+        document.getElementById('login-overlay').classList.add('hidden');
+        document.getElementById('admin-content').classList.remove('locked');
+        // Show logged-in user in topbar
+        var userEl = document.getElementById('admin-user-email');
+        if (userEl) userEl.textContent = email;
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        var errorEl = document.getElementById('login-error');
+        var emailEl = document.getElementById('admin-email');
+        var passwordEl = document.getElementById('admin-password');
+
+        // Check lockout
+        var lockedMins = isLockedOut();
+        if (lockedMins > 0) {
+            errorEl.textContent = 'Too many failed attempts. Try again in ' + lockedMins + ' minute(s).';
+            errorEl.style.display = 'block';
+            return false;
+        }
+
+        var email = emailEl.value.trim();
+        var password = passwordEl.value;
+
+        if (!email || !password) {
+            errorEl.textContent = 'Please enter both email and password.';
+            errorEl.style.display = 'block';
+            return false;
+        }
+
+        try {
+            var session = await supabaseSignIn(email, password);
+            // Success
+            localStorage.removeItem('gsaw_admin_lockout');
+            localStorage.setItem('gsaw_admin_token', session.access_token);
+            localStorage.setItem('gsaw_admin_email', email);
+            unlockAdmin(email);
+        } catch (err) {
+            // Failed
+            var attempts = getFailedAttempts();
+            var newCount = attempts.count + 1;
+            setFailedAttempts(newCount);
+
+            if (newCount >= MAX_ATTEMPTS) {
+                errorEl.textContent = 'Account locked for ' + LOCKOUT_MINUTES + ' minutes.';
+            } else {
+                errorEl.textContent = err.message + ' (' + (MAX_ATTEMPTS - newCount) + ' attempts left)';
+            }
+            errorEl.style.display = 'block';
+            passwordEl.value = '';
+            passwordEl.focus();
+        }
+        return false;
+    }
+
+    // Logout function
+    async function adminLogout() {
+        var token = localStorage.getItem('gsaw_admin_token');
+        if (token) {
+            try { await supabaseSignOut(token); } catch(e) {}
+        }
+        localStorage.removeItem('gsaw_admin_token');
+        localStorage.removeItem('gsaw_admin_email');
+        document.getElementById('login-overlay').classList.remove('hidden');
+        document.getElementById('admin-content').classList.add('locked');
+    }
+    </script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
