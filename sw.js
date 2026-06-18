@@ -1,14 +1,17 @@
-var CACHE_NAME = 'gsaw-v2';
+var CACHE_NAME = 'gsaw-v3';
 var urlsToCache = [
     '/',
     '/css/styles.css',
     '/js/script.js',
+    '/js/supabase-config.js',
     '/images/logo.jpg',
     '/membership',
     '/donate',
     '/about',
     '/faq',
     '/events',
+    '/volunteer',
+    '/contact',
     '/manifest.json'
 ];
 

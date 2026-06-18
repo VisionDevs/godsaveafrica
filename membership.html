@@ -7,7 +7,7 @@
     <meta name="description" content="Apply for GSAW membership. Open to all people irrespective of colour, race and creed who accept our principles and commit to Christian governance.">
     <meta property="og:title" content="Join GSAW - Membership Application">
     <meta property="og:description" content="Apply to join God Save Africa & The World. Open to all who accept our principles.">
-    <meta property="og:image" content="https://visiondevs.github.io/godsaveafrica/images/logo.jpg">
+    <meta property="og:image" content="https://www.gsaw.org.za/images/logo.jpg">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary">
     <link rel="stylesheet" href="css/styles.css">
@@ -16,6 +16,10 @@
     <meta name="theme-color" content="#1B7A3D">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ6DY1TVB5"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BQ6DY1TVB5');</script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -271,6 +275,11 @@
                                 <button type="button" class="signature-clear" id="clear-signature" title="Clear signature"><i class="fas fa-eraser"></i> Clear</button>
                             </div>
                             <input type="hidden" id="signatureData" name="signatureData">
+                        </div>
+
+                        <!-- Google reCAPTCHA Bot Protection -->
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div class="g-recaptcha" data-sitekey="6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></div>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-full" id="submit-btn">

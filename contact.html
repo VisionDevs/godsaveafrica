@@ -9,6 +9,10 @@
     <link rel="icon" type="image/jpeg" href="images/logo.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ6DY1TVB5"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BQ6DY1TVB5');</script>
 </head>
 <body>
     <div class="top-bar"><div class="container top-bar-content"><div class="top-bar-left"><span><i class="fas fa-phone"></i> +27 73 585 0365</span><span><i class="fas fa-envelope"></i> info@gsaw.org.za</span></div><div class="top-bar-right"><a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a><a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a></div></div></div>
@@ -63,10 +67,58 @@
                 </div>
             </div>
 
-            <div style="max-width: 700px; margin: 50px auto 0; text-align: center;">
-                <h3 style="margin-bottom: 15px;">Report Service Delivery Issues</h3>
-                <p style="color: var(--gray-600); margin-bottom: 20px;">For service delivery concerns in your area, report via your branch WhatsApp group. If you're not yet a member, join GSAW to access your local branch structure.</p>
-                <a href="membership" class="btn btn-green"><i class="fas fa-user-plus"></i> Join GSAW</a>
+            <div style="max-width: 700px; margin: 50px auto 0;">
+                <div class="join-form-wrapper">
+                    <div class="form-header">
+                        <h3><i class="fas fa-envelope-open-text"></i> Send Us a Message</h3>
+                        <p>Have a question or feedback? We'd love to hear from you.</p>
+                    </div>
+                    <form id="contact-form" class="membership-form" novalidate>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-name">Your Name *</label>
+                                <input type="text" id="contact-name" name="name" required placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Email *</label>
+                                <input type="email" id="contact-email" name="email" required placeholder="your.email@example.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-subject">Subject *</label>
+                            <select id="contact-subject" name="subject" required>
+                                <option value="">Select subject</option>
+                                <option value="General Enquiry">General Enquiry</option>
+                                <option value="Membership">Membership Question</option>
+                                <option value="Donations">Donations</option>
+                                <option value="Volunteering">Volunteering</option>
+                                <option value="Service Delivery">Report Service Delivery Issue</option>
+                                <option value="Media">Media / Press Enquiry</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-message">Message *</label>
+                            <textarea id="contact-message" name="message" rows="5" required placeholder="Type your message here..."></textarea>
+                        </div>
+
+                        <!-- Google reCAPTCHA -->
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div class="g-recaptcha" data-sitekey="6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-green btn-full" id="contact-submit-btn">
+                            <span class="btn-text"><i class="fas fa-paper-plane"></i> Send Message</span>
+                            <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Sending...</span>
+                        </button>
+                    </form>
+
+                    <div id="contact-success" class="form-success" style="display:none;">
+                        <div class="success-icon"><i class="fas fa-check-circle" style="color: var(--green);"></i></div>
+                        <h3>Message Sent!</h3>
+                        <p>Thank you for reaching out. We'll get back to you as soon as possible.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -122,6 +174,62 @@
         </div>
     </footer>
     <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+    <script src="js/supabase-config.js"></script>
     <script src="js/script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('contact-form');
+        var submitBtn = document.getElementById('contact-submit-btn');
+        var successDiv = document.getElementById('contact-success');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Google reCAPTCHA check
+            if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
+                showNotification('Please complete the CAPTCHA verification.', 'error');
+                return;
+            }
+
+            var name = document.getElementById('contact-name').value.trim();
+            var email = document.getElementById('contact-email').value.trim();
+            var subject = document.getElementById('contact-subject').value;
+            var message = document.getElementById('contact-message').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                showNotification('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            var btnText = submitBtn.querySelector('.btn-text');
+            var btnLoading = submitBtn.querySelector('.btn-loading');
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-flex';
+            submitBtn.disabled = true;
+
+            gsawDB.addContactMessage({
+                name: name,
+                email: email,
+                subject: subject,
+                message: message,
+                submitted_at: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
+            }).then(function(result) {
+                if (result && !result.error) {
+                    form.style.display = 'none';
+                    successDiv.style.display = 'block';
+                    showNotification('Message sent successfully!', 'success');
+                } else {
+                    throw new Error('Failed');
+                }
+            }).catch(function() {
+                showNotification('Something went wrong. Please try again or email info@gsaw.org.za directly.', 'error');
+                btnText.style.display = 'inline-flex';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
+            });
+        });
+    });
+    </script>
 </body>
 </html>

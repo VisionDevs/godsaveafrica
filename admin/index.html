@@ -48,6 +48,11 @@
         .admin-content { display: flex; width: 100%; min-height: 100vh; }
         .admin-content.locked { display: none; }
     </style>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ6DY1TVB5"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BQ6DY1TVB5');</script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <!-- Login Gate -->
@@ -205,6 +210,28 @@
                     <h2><i class="fas fa-chart-area"></i> Donation Trends</h2>
                 </div>
                 <div style="padding:15px;"><canvas id="donation-chart" height="200"></canvas></div>
+            </div>
+
+            <!-- Province Heatmap -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-map"></i> Province Membership Heatmap</h2>
+                </div>
+                <div style="padding:15px;" id="province-heatmap-container">
+                    <svg id="sa-province-map" viewBox="0 0 600 500" style="width:100%;max-width:600px;margin:0 auto;display:block;">
+                        <!-- Simplified SA province shapes -->
+                        <path id="map-limpopo" d="M320 60 L420 50 L460 100 L440 150 L370 160 L320 120 Z" data-province="Limpopo"/>
+                        <path id="map-mpumalanga" d="M370 160 L440 150 L460 200 L420 230 L360 210 Z" data-province="Mpumalanga"/>
+                        <path id="map-gauteng" d="M320 120 L370 160 L360 210 L320 200 L310 160 Z" data-province="Gauteng"/>
+                        <path id="map-north-west" d="M200 130 L320 120 L310 160 L320 200 L270 230 L180 200 Z" data-province="North West"/>
+                        <path id="map-free-state" d="M180 200 L270 230 L320 200 L360 210 L380 280 L300 320 L200 300 L160 250 Z" data-province="Free State"/>
+                        <path id="map-kwazulu-natal" d="M360 210 L420 230 L460 200 L480 270 L430 330 L380 280 Z" data-province="KwaZulu-Natal"/>
+                        <path id="map-eastern-cape" d="M200 300 L300 320 L380 280 L430 330 L400 400 L300 420 L200 380 L170 340 Z" data-province="Eastern Cape"/>
+                        <path id="map-western-cape" d="M80 320 L170 340 L200 380 L200 440 L140 460 L60 420 L50 360 Z" data-province="Western Cape"/>
+                        <path id="map-northern-cape" d="M50 120 L200 130 L180 200 L160 250 L200 300 L170 340 L80 320 L50 360 L30 250 Z" data-province="Northern Cape"/>
+                    </svg>
+                    <div id="heatmap-legend" style="display:flex;justify-content:center;gap:20px;margin-top:15px;flex-wrap:wrap;font-size:0.8rem;"></div>
+                </div>
             </div>
         </div>
 

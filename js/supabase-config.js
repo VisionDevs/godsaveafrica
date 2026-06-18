@@ -7,6 +7,21 @@
 var SUPABASE_URL = 'https://nvgoaikzidtpyvmffmxq.supabase.co';
 var SUPABASE_ANON_KEY = 'sb_publishable__cGi8xiV0Il-9tAan7QUAQ_wqQY_Q0K';
 
+// Email notification helper (calls Supabase Edge Function)
+// To enable: Deploy the notify-admin edge function in Supabase Dashboard
+var gsawNotify = {
+    sendAdminAlert: function (type, data) {
+        return fetch(SUPABASE_URL + '/functions/v1/notify-admin', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type: type, data: data })
+        }).catch(function () { /* silently fail - notifications are non-critical */ });
+    }
+};
+
 // ========================================
 // SUPABASE CLIENT HELPER
 // ========================================
@@ -104,5 +119,35 @@ var gsawDB = {
             headers: this.headers()
         }).then(function (r) { return r.json(); })
           .then(function (rows) { return rows.length > 0; });
+    },
+
+    // ---- VOLUNTEERS ----
+    addVolunteer: function (data) {
+        return fetch(SUPABASE_URL + '/rest/v1/volunteers', {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    getVolunteers: function () {
+        return fetch(SUPABASE_URL + '/rest/v1/volunteers?order=created_at.desc', {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); });
+    },
+
+    // ---- CONTACT MESSAGES ----
+    addContactMessage: function (data) {
+        return fetch(SUPABASE_URL + '/rest/v1/contact_messages', {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    getContactMessages: function () {
+        return fetch(SUPABASE_URL + '/rest/v1/contact_messages?order=created_at.desc', {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); });
     }
 };

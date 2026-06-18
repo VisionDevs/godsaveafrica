@@ -296,6 +296,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // Google reCAPTCHA verification check
+            if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
+                showNotification('Please complete the CAPTCHA verification.', 'error');
+                return;
+            }
+
             // Rate limiting check
             var now = Date.now();
             if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
@@ -389,6 +395,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         form.style.display = 'none';
                         formSuccess.style.display = 'block';
                         formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Notify admin of new application
+                        if (typeof gsawNotify !== 'undefined') {
+                            gsawNotify.sendAdminAlert('new_membership', { name: formData.firstName + ' ' + formData.lastName, province: formData.province, email: formData.email });
+                        }
                     })
                     .catch(function () {
                         storeLocally(formData);

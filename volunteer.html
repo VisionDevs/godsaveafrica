@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer - GSAW</title>
+    <meta name="description" content="Volunteer with God Save Africa & The World. Help build Godly governance in your community through campaigns, events, and outreach.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Google Analytics (replace G-XXXXXXXXXX with your Measurement ID) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+    <div class="top-bar"><div class="container top-bar-content"><div class="top-bar-left"><span><i class="fas fa-phone"></i> +27 73 585 0365</span><span><i class="fas fa-envelope"></i> info@gsaw.org.za</span></div><div class="top-bar-right"><a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a><a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a></div></div></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="/" class="nav-logo"><img src="images/logo.jpg" alt="GSAW Logo"><div class="nav-logo-text"><span class="logo-name">GSAW</span><span class="logo-tagline">God Save Africa &amp; The World</span></div></a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="about" class="nav-link">About</a></li>
+                <li><a href="manifesto" class="nav-link">Manifesto</a></li>
+                <li><a href="leadership" class="nav-link">Leadership</a></li>
+                <li><a href="constitution" class="nav-link">Constitution</a></li>
+                <li><a href="news" class="nav-link">News</a></li>
+                <li><a href="events" class="nav-link">Events</a></li>
+                <li><a href="contact" class="nav-link">Contact</a></li>
+                <li><a href="donate" class="nav-link">Donate</a></li>
+                <li><a href="membership" class="nav-link nav-cta">Join GSAW</a></li>
+            </ul>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <span>Volunteer</span></div>
+            <h1>Volunteer With GSAW</h1>
+            <p>Use your skills and time to help build Godly governance in South Africa.</p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <!-- Volunteer Info -->
+                <div style="background: linear-gradient(135deg, rgba(27,122,61,0.05), rgba(244,121,32,0.05)); border-radius: 12px; padding: 30px; margin-bottom: 40px;">
+                    <h2 style="color: var(--green); margin-bottom: 15px;"><i class="fas fa-hands-helping"></i> Why Volunteer?</h2>
+                    <p style="color: var(--gray-600); line-height: 1.8; margin-bottom: 15px;">GSAW relies on dedicated volunteers who believe in restoring God's will through quality service delivery. Whether you can help with campaigns, events, media, or community outreach — every contribution makes a difference.</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                        <div style="text-align: center; padding: 15px;">
+                            <i class="fas fa-bullhorn" style="font-size: 2rem; color: var(--red); margin-bottom: 10px;"></i>
+                            <h4 style="font-size: 0.9rem;">Campaigns</h4>
+                        </div>
+                        <div style="text-align: center; padding: 15px;">
+                            <i class="fas fa-calendar-check" style="font-size: 2rem; color: var(--green); margin-bottom: 10px;"></i>
+                            <h4 style="font-size: 0.9rem;">Event Support</h4>
+                        </div>
+                        <div style="text-align: center; padding: 15px;">
+                            <i class="fas fa-laptop" style="font-size: 2rem; color: var(--orange); margin-bottom: 10px;"></i>
+                            <h4 style="font-size: 0.9rem;">Media & IT</h4>
+                        </div>
+                        <div style="text-align: center; padding: 15px;">
+                            <i class="fas fa-people-carry" style="font-size: 2rem; color: var(--dark); margin-bottom: 10px;"></i>
+                            <h4 style="font-size: 0.9rem;">Community Outreach</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Volunteer Form -->
+                <div class="join-form-wrapper">
+                    <div class="form-header">
+                        <h3><i class="fas fa-hand-holding-heart"></i> Volunteer Registration</h3>
+                        <p>Sign up to volunteer. We'll match you with activities in your area.</p>
+                    </div>
+                    <form id="volunteer-form" class="membership-form" novalidate>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vol-firstName">First Name *</label>
+                                <input type="text" id="vol-firstName" name="firstName" required placeholder="Your first name">
+                            </div>
+                            <div class="form-group">
+                                <label for="vol-lastName">Last Name *</label>
+                                <input type="text" id="vol-lastName" name="lastName" required placeholder="Your last name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="vol-email">Email Address *</label>
+                            <input type="email" id="vol-email" name="email" required placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="vol-phone">WhatsApp / Mobile *</label>
+                                <input type="tel" id="vol-phone" name="phone" required placeholder="e.g. 071 234 5678">
+                            </div>
+                            <div class="form-group">
+                                <label for="vol-province">Province *</label>
+                                <select id="vol-province" name="province" required>
+                                    <option value="">Select Province</option>
+                                    <option value="Eastern Cape">Eastern Cape</option>
+                                    <option value="Free State">Free State</option>
+                                    <option value="Gauteng">Gauteng</option>
+                                    <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                                    <option value="Limpopo">Limpopo</option>
+                                    <option value="Mpumalanga">Mpumalanga</option>
+                                    <option value="North West">North West</option>
+                                    <option value="Northern Cape">Northern Cape</option>
+                                    <option value="Western Cape">Western Cape</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="vol-areas">Areas you'd like to help with *</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Campaigns"> Door-to-door campaigns</label>
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Events"> Event coordination</label>
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Media"> Social media / content</label>
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Transport"> Transport & logistics</label>
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Admin"> Admin & data entry</label>
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Voter Registration"> Voter registration drives</label>
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Prayer"> Prayer & spiritual support</label>
+                                <label class="checkbox-label"><input type="checkbox" name="areas" value="Other"> Other</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="vol-availability">Availability</label>
+                            <select id="vol-availability" name="availability">
+                                <option value="">Select availability</option>
+                                <option value="Weekdays">Weekdays</option>
+                                <option value="Weekends">Weekends only</option>
+                                <option value="Both">Weekdays & Weekends</option>
+                                <option value="Events Only">Events only</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="vol-message">Anything else you'd like us to know?</label>
+                            <textarea id="vol-message" name="message" rows="3" placeholder="Skills, experience, or questions..."></textarea>
+                        </div>
+
+                        <!-- Google reCAPTCHA -->
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div class="g-recaptcha" data-sitekey="6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-green btn-full" id="vol-submit-btn">
+                            <span class="btn-text"><i class="fas fa-hand-holding-heart"></i> Register as Volunteer</span>
+                            <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Submitting...</span>
+                        </button>
+                    </form>
+
+                    <!-- Success -->
+                    <div id="volunteer-success" class="form-success" style="display:none;">
+                        <div class="success-icon"><i class="fas fa-check-circle" style="color: var(--green);"></i></div>
+                        <h3>Thank You for Volunteering!</h3>
+                        <p>Your registration has been received. A GSAW coordinator will contact you soon to match you with activities in your area.</p>
+                        <p style="font-weight: 700; color: var(--orange); margin-top: 15px;">#AllPowerBelongsToJesus</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="GSAW Logo" class="footer-logo">
+                    <h3>God Save Africa &amp; The World</h3>
+                    <p class="footer-tagline">Founded 2025 | Restoring God's will through quality service delivery to the people of South Africa.</p>
+                    <p style="font-size: 0.85rem; font-weight: 700; color: var(--orange); margin-bottom: 10px;">#AllPowerBelongsToJesus</p>
+                    <div class="footer-social-icons">
+                        <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about">About Us</a></li>
+                        <li><a href="manifesto">Manifesto</a></li>
+                        <li><a href="leadership">Leadership</a></li>
+                        <li><a href="membership">Join GSAW</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="constitution">Constitution</a></li>
+                        <li><a href="news">News &amp; Statements</a></li>
+                        <li><a href="events">Events &amp; Rallies</a></li>
+                        <li><a href="faq">FAQ</a></li>
+                        <li><a href="contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Members</h4>
+                    <ul>
+                        <li><a href="status">Check Application Status</a></li>
+                        <li><a href="gallery">Photo Gallery</a></li>
+                        <li><a href="donate">Donate</a></li>
+                        <li><a href="https://www.elections.org.za" target="_blank" rel="noopener">IEC South Africa</a></li>
+                        <li><a href="https://registertovote.elections.org.za/" target="_blank" rel="noopener">Register to Vote</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025&ndash;2026 God Save Africa &amp; The World (GSAW). All rights reserved.</p>
+                <p class="footer-legal">Registered political party in South Africa | POPIA Compliant</p>
+            </div>
+        </div>
+    </footer>
+    <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('volunteer-form');
+        var submitBtn = document.getElementById('vol-submit-btn');
+        var successDiv = document.getElementById('volunteer-success');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Google reCAPTCHA check
+            if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
+                showNotification('Please complete the CAPTCHA verification.', 'error');
+                return;
+            }
+
+            // Validate required fields
+            var firstName = document.getElementById('vol-firstName').value.trim();
+            var lastName = document.getElementById('vol-lastName').value.trim();
+            var email = document.getElementById('vol-email').value.trim();
+            var phone = document.getElementById('vol-phone').value.trim();
+            var province = document.getElementById('vol-province').value;
+
+            if (!firstName || !lastName || !email || !phone || !province) {
+                showNotification('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            // Get selected areas
+            var areas = [];
+            document.querySelectorAll('input[name="areas"]:checked').forEach(function(cb) {
+                areas.push(cb.value);
+            });
+            if (areas.length === 0) {
+                showNotification('Please select at least one area you\'d like to help with.', 'error');
+                return;
+            }
+
+            // Show loading
+            var btnText = submitBtn.querySelector('.btn-text');
+            var btnLoading = submitBtn.querySelector('.btn-loading');
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-flex';
+            submitBtn.disabled = true;
+
+            var data = {
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                phone: phone,
+                province: province,
+                areas: areas.join(', '),
+                availability: document.getElementById('vol-availability').value || null,
+                message: document.getElementById('vol-message').value.trim() || null,
+                submitted_at: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
+            };
+
+            gsawDB.addVolunteer(data).then(function(result) {
+                if (result && !result.error) {
+                    form.style.display = 'none';
+                    successDiv.style.display = 'block';
+                    showNotification('Volunteer registration submitted successfully!', 'success');
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+            }).catch(function(err) {
+                showNotification('Something went wrong. Please try again.', 'error');
+                btnText.style.display = 'inline-flex';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
+            });
+        });
+    });
+    </script>
+</body>
+</html>

@@ -7,7 +7,7 @@
     <meta name="description" content="Support GSAW with a donation. Help fund Godly governance, community outreach, and the 2026 elections campaign.">
     <meta property="og:title" content="Donate to GSAW">
     <meta property="og:description" content="Support Godly governance in South Africa. Every rand counts.">
-    <meta property="og:image" content="https://visiondevs.github.io/godsaveafrica/images/logo.jpg">
+    <meta property="og:image" content="https://www.gsaw.org.za/images/logo.jpg">
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/jpeg" href="images/logo.jpg">
@@ -15,6 +15,10 @@
     <meta name="theme-color" content="#1B7A3D">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ6DY1TVB5"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BQ6DY1TVB5');</script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -258,6 +262,11 @@
                         <div class="form-group form-checkbox">
                             <input type="checkbox" id="donor-popia" name="popia" required>
                             <label for="donor-popia">I consent to GSAW processing my personal information for donation record-keeping purposes in accordance with POPIA. *</label>
+                        </div>
+
+                        <!-- Google reCAPTCHA Bot Protection -->
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div class="g-recaptcha" data-sitekey="6LdvrSYtAAAAADPIKcagbEX661k84XHuCo64P5SS"></div>
                         </div>
 
                         <button type="submit" class="btn btn-green btn-full" id="donate-submit-btn">

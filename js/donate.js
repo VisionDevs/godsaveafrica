@@ -95,6 +95,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!validateDonation()) return;
 
+        // Google reCAPTCHA verification check
+        if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
+            showNotification('Please complete the CAPTCHA verification.', 'error');
+            return;
+        }
+
         var btnText = submitBtn.querySelector('.btn-text');
         var btnLoading = submitBtn.querySelector('.btn-loading');
         btnText.style.display = 'none';
@@ -174,6 +180,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 form.style.display = 'none';
                 successDiv.style.display = 'block';
                 successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Notify admin of new donation
+                if (typeof gsawNotify !== 'undefined') {
+                    gsawNotify.sendAdminAlert('new_donation', { donor: dbRecord.donor_name || dbRecord.org_name, amount: dbRecord.amount, purpose: dbRecord.purpose });
+                }
             }).catch(function (err) {
                 console.error('Donation save error:', err);
                 showNotification('Submission failed. Please try again.', 'error');

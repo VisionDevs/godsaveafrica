@@ -221,6 +221,9 @@ function renderDashboard(apps) {
 
     // Donation trends
     renderDonationTrendsChart();
+
+    // Province heatmap
+    renderProvinceHeatmap(apps);
 }
 
 // ========================================
@@ -308,6 +311,94 @@ function renderDonationTrendsChart() {
         },
         options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
+}
+
+// ========================================
+// PROVINCE HEATMAP
+// ========================================
+function renderProvinceHeatmap(apps) {
+    var svg = document.getElementById('sa-province-map');
+    if (!svg) return;
+
+    // Count members per province
+    var provinceCounts = {};
+    var allProvinces = ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'];
+    allProvinces.forEach(function (p) { provinceCounts[p] = 0; });
+    apps.forEach(function (a) {
+        if (a.province && provinceCounts.hasOwnProperty(a.province)) {
+            provinceCounts[a.province]++;
+        }
+    });
+
+    var maxCount = Math.max.apply(null, Object.values(provinceCounts)) || 1;
+
+    // Color scale from light gray to dark green
+    function getColor(count) {
+        if (count === 0) return '#e5e7eb';
+        var intensity = Math.min(count / maxCount, 1);
+        var r = Math.round(229 - intensity * 202); // 229 → 27
+        var g = Math.round(231 - intensity * 109); // 231 → 122
+        var b = Math.round(235 - intensity * 174); // 235 → 61
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
+    // Apply colors and tooltips
+    var paths = svg.querySelectorAll('path[data-province]');
+    paths.forEach(function (path) {
+        var prov = path.getAttribute('data-province');
+        var count = provinceCounts[prov] || 0;
+        path.setAttribute('fill', getColor(count));
+        path.setAttribute('stroke', '#fff');
+        path.setAttribute('stroke-width', '2');
+        path.style.cursor = 'pointer';
+        path.setAttribute('title', prov + ': ' + count + ' member' + (count !== 1 ? 's' : ''));
+
+        // Add hover effect
+        path.addEventListener('mouseenter', function () {
+            this.setAttribute('stroke', '#1B7A3D');
+            this.setAttribute('stroke-width', '3');
+        });
+        path.addEventListener('mouseleave', function () {
+            this.setAttribute('stroke', '#fff');
+            this.setAttribute('stroke-width', '2');
+        });
+    });
+
+    // Add province labels
+    var existingLabels = svg.querySelectorAll('text');
+    existingLabels.forEach(function (t) { t.remove(); });
+
+    var labelPositions = {
+        'Limpopo': [380, 100], 'Mpumalanga': [410, 190], 'Gauteng': [335, 170],
+        'North West': [240, 175], 'Free State': [270, 270], 'KwaZulu-Natal': [430, 270],
+        'Eastern Cape': [300, 370], 'Western Cape': [120, 390], 'Northern Cape': [110, 230]
+    };
+
+    Object.keys(labelPositions).forEach(function (prov) {
+        var pos = labelPositions[prov];
+        var count = provinceCounts[prov] || 0;
+        var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', pos[0]);
+        text.setAttribute('y', pos[1]);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '11');
+        text.setAttribute('font-weight', '600');
+        text.setAttribute('fill', count > maxCount * 0.5 ? '#fff' : '#333');
+        text.textContent = count;
+        svg.appendChild(text);
+    });
+
+    // Legend
+    var legend = document.getElementById('heatmap-legend');
+    if (legend) {
+        legend.innerHTML = '';
+        var sortedProvinces = allProvinces.slice().sort(function (a, b) { return provinceCounts[b] - provinceCounts[a]; });
+        sortedProvinces.forEach(function (p) {
+            var span = document.createElement('span');
+            span.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + getColor(provinceCounts[p]) + ';margin-right:4px;vertical-align:middle;"></span>' + p + ' (' + provinceCounts[p] + ')';
+            legend.appendChild(span);
+        });
+    }
 }
 
 // ========================================
@@ -710,6 +801,66 @@ function exportCSV() {
     }
 
     var headers = ['Membership #', 'First Name', 'Last Name', 'Email', 'Phone', 'ID Number', 'Gender', 'DOB', 'Address', 'Province', 'Municipality', 'Ward', 'Voting Station', 'Occupation', 'Qualification', 'Skills', 'Reason', 'Status', 'Submitted At', 'Approved At'];
+
+    // Use SheetJS if available for proper .xlsx export
+    if (typeof XLSX !== 'undefined') {
+        var data = apps.map(function (app) {
+            return {
+                'Membership #': app.membership_number || '',
+                'First Name': app.first_name || '',
+                'Last Name': app.last_name || '',
+                'Email': app.email || '',
+                'Phone': app.phone || '',
+                'ID Number': app.id_number || '',
+                'Gender': app.gender || '',
+                'DOB': app.date_of_birth || '',
+                'Address': app.address || '',
+                'Province': app.province || '',
+                'Municipality': app.municipality || '',
+                'Ward': app.ward || '',
+                'Voting Station': app.voting_station || '',
+                'Occupation': app.occupation || '',
+                'Qualification': app.qualification || '',
+                'Skills': app.skills || '',
+                'Reason': app.reason || '',
+                'Status': app.status || 'pending',
+                'Submitted At': app.submitted_at || '',
+                'Approved At': app.approved_at || ''
+            };
+        });
+
+        var ws = XLSX.utils.json_to_sheet(data);
+        // Auto-width columns
+        var colWidths = headers.map(function (h) { return { wch: Math.max(h.length, 12) }; });
+        ws['!cols'] = colWidths;
+
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Members');
+
+        // Add summary sheet
+        var statusCounts = { pending: 0, approved: 0, rejected: 0 };
+        apps.forEach(function (a) { statusCounts[a.status || 'pending']++; });
+        var provinceCounts = {};
+        apps.forEach(function (a) { if (a.province) provinceCounts[a.province] = (provinceCounts[a.province] || 0) + 1; });
+        var summaryData = [
+            { Metric: 'Total Applications', Value: apps.length },
+            { Metric: 'Approved', Value: statusCounts.approved },
+            { Metric: 'Pending', Value: statusCounts.pending },
+            { Metric: 'Rejected', Value: statusCounts.rejected },
+            { Metric: '---', Value: '---' },
+            { Metric: 'Export Date', Value: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) }
+        ];
+        Object.keys(provinceCounts).sort().forEach(function (p) {
+            summaryData.push({ Metric: p, Value: provinceCounts[p] });
+        });
+        var ws2 = XLSX.utils.json_to_sheet(summaryData);
+        XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+        XLSX.writeFile(wb, 'gsaw_members_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+        return;
+    }
+
+    // Fallback to CSV if SheetJS not loaded
     var csv = '\uFEFF' + headers.join(',') + '\n';
 
     apps.forEach(function (app) {
