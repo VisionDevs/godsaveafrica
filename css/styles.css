@@ -947,15 +947,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leader-avatar {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
     background: var(--gray-100);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 15px;
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--gray-400);
     overflow: hidden;
 }
@@ -968,9 +968,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leader-primary .leader-avatar {
-    width: 150px;
-    height: 150px;
-    font-size: 2.2rem;
+    width: 200px;
+    height: 200px;
+    font-size: 2.5rem;
     background: rgba(27, 122, 61, 0.1);
     color: var(--green);
 }
