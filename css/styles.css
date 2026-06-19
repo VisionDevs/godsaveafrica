@@ -930,7 +930,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
     overflow: hidden;
-    height: 300px;
+    aspect-ratio: 3 / 4;
     transition: var(--transition);
     background: var(--gray-200);
     cursor: default;
@@ -943,8 +943,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .leader-primary {
     grid-column: 1 / -1;
-    width: 300px;
-    height: 370px;
+    width: 360px;
+    aspect-ratio: 3 / 4;
     justify-self: center;
 }
 
