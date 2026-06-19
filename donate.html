@@ -279,25 +279,19 @@
                         <div id="online-payment-section" style="display:none;">
                             <div class="form-group">
                                 <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;">
-                                    <p style="font-size:0.88rem;color:var(--gray-600);margin-bottom:16px;"><i class="fas fa-info-circle" style="color:var(--green);"></i> Choose a payment gateway below. You will be directed to complete your payment securely. Then return here and submit this form to record your donation.</p>
-                                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                                        <a href="https://ozow.com" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#00c9b1;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                                            <i class="fas fa-bolt" style="font-size:1.6rem;"></i>
-                                            Ozow
-                                            <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Instant EFT</span>
-                                        </a>
-                                        <a href="https://www.payfast.co.za" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#0070ba;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                                            <i class="fas fa-credit-card" style="font-size:1.6rem;"></i>
-                                            PayFast
-                                            <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Card &amp; EFT</span>
-                                        </a>
-                                        <a href="https://www.snapscan.co.za" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#ff6b00;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                                            <i class="fas fa-qrcode" style="font-size:1.6rem;"></i>
-                                            SnapScan
-                                            <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">QR Payment</span>
-                                        </a>
+                                    <p style="font-size:0.88rem;color:var(--gray-600);margin-bottom:14px;"><i class="fas fa-info-circle" style="color:var(--green);"></i> After submitting the form, you'll be able to complete payment via one of these trusted SA gateways — your donation record will be saved first.</p>
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                        <div style="flex:1;min-width:110px;background:#0070ba;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
+                                            <i class="fas fa-credit-card" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>PayFast<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">Card &amp; EFT</span>
+                                        </div>
+                                        <div style="flex:1;min-width:110px;background:#ff6b00;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
+                                            <i class="fas fa-qrcode" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>SnapScan<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">QR Payment</span>
+                                        </div>
+                                        <div style="flex:1;min-width:110px;background:#00c9b1;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
+                                            <i class="fas fa-bolt" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>Ozow<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">Instant EFT</span>
+                                        </div>
                                     </div>
-                                    <p style="font-size:0.75rem;color:var(--gray-500);margin-top:14px;"><i class="fas fa-lock"></i> These are trusted South African payment gateways. No proof of payment upload is needed &mdash; GSAW will confirm your donation within 24 hours.</p>
+                                    <p style="font-size:0.75rem;color:var(--gray-500);margin-top:12px;"><i class="fas fa-lock"></i> No proof of payment upload needed. GSAW confirms receipt within 24 hours.</p>
                                 </div>
                             </div>
                         </div>
@@ -311,6 +305,21 @@
                             <span class="btn-text"><i class="fas fa-heart"></i> Submit Donation</span>
                             <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Submitting...</span>
                         </button>
+                    </form>
+
+                    <!-- Hidden PayFast checkout form (submitted programmatically) -->
+                    <!-- SETUP: Replace PAYFAST_MERCHANT_ID and PAYFAST_MERCHANT_KEY with values from payfast.co.za -->
+                    <form id="payfast-form" action="https://www.payfast.co.za/eng/process" method="post" target="_blank" style="display:none;">
+                        <input type="hidden" name="merchant_id" id="pf-merchant-id" value="PAYFAST_MERCHANT_ID">
+                        <input type="hidden" name="merchant_key" id="pf-merchant-key" value="PAYFAST_MERCHANT_KEY">
+                        <input type="hidden" name="return_url" value="https://www.gsaw.org.za/donate">
+                        <input type="hidden" name="cancel_url" value="https://www.gsaw.org.za/donate">
+                        <input type="hidden" name="name_first" id="pf-name-first" value="">
+                        <input type="hidden" name="name_last" id="pf-name-last" value="">
+                        <input type="hidden" name="email_address" id="pf-email" value="">
+                        <input type="hidden" name="amount" id="pf-amount" value="">
+                        <input type="hidden" name="item_name" value="GSAW Donation">
+                        <input type="hidden" name="item_description" id="pf-item-desc" value="">
                     </form>
 
                     <!-- Success Message -->
@@ -327,6 +336,30 @@
                                 <li><i class="fas fa-check" style="color: var(--green); margin-right: 8px;"></i> You will receive confirmation once your payment has been verified.</li>
                                 <li><i class="fas fa-check" style="color: var(--green); margin-right: 8px;"></i> All donations are reported transparently at the National Convention.</li>
                             </ul>
+                        </div>
+
+                        <!-- Complete Payment (shown for online payments after DB save) -->
+                        <div id="complete-payment-section" style="display:none;border:2px solid var(--green);border-radius:10px;padding:22px;margin:20px 0;background:rgba(27,122,61,0.04);">
+                            <h4 style="font-size:1rem;color:var(--green);margin-bottom:8px;"><i class="fas fa-credit-card"></i> Step 2: Complete Your Payment</h4>
+                            <p style="font-size:0.85rem;color:var(--gray-600);margin-bottom:16px;">Your donation record is saved. Click your preferred gateway to pay — your amount is pre-filled:</p>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+                                <button type="button" id="pf-pay-btn" style="flex:1;min-width:130px;background:#0070ba;color:#fff;border:none;border-radius:10px;padding:16px 12px;cursor:pointer;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <i class="fas fa-credit-card" style="font-size:1.6rem;"></i>
+                                    PayFast
+                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Card &amp; EFT</span>
+                                </button>
+                                <a id="ss-pay-link" href="#" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#ff6b00;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <i class="fas fa-qrcode" style="font-size:1.6rem;"></i>
+                                    SnapScan
+                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">QR Payment</span>
+                                </a>
+                                <a id="oz-pay-link" href="https://ozow.com" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#00c9b1;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <i class="fas fa-bolt" style="font-size:1.6rem;"></i>
+                                    Ozow
+                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Instant EFT</span>
+                                </a>
+                            </div>
+                            <p style="font-size:0.75rem;color:var(--gray-500);"><i class="fas fa-lock"></i> Secure, trusted SA payment gateways. GSAW will confirm your donation within 24 hours.</p>
                         </div>
 
                         <p style="font-size: 0.9rem; color: var(--gray-600); font-style: italic; margin-bottom: 20px;">"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." &mdash; 2 Corinthians 9:7</p>
