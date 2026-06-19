@@ -943,9 +943,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .leader-primary {
     grid-column: 1 / -1;
-    max-width: 300px;
-    margin: 0 auto;
+    width: 300px;
     height: 370px;
+    justify-self: center;
 }
 
 .leader-avatar {
