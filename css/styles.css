@@ -926,71 +926,92 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leader-card {
-    background: var(--white);
-    padding: 30px;
+    position: relative;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
-    border: 1px solid var(--gray-200);
-    text-align: center;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
     transition: var(--transition);
+    background: var(--gray-200);
+    cursor: default;
 }
 
 .leader-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
 }
 
 .leader-primary {
     grid-column: 1 / -1;
-    background: linear-gradient(135deg, rgba(27, 122, 61, 0.03), rgba(27, 122, 61, 0.08));
-    border-color: rgba(27, 122, 61, 0.2);
+    max-width: 360px;
+    margin: 0 auto;
+    aspect-ratio: 3 / 4;
 }
 
 .leader-avatar {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: var(--gray-100);
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
-    font-size: 2rem;
+    font-size: 4rem;
     color: var(--gray-400);
-    overflow: hidden;
+    background: linear-gradient(160deg, var(--gray-100), var(--gray-300));
 }
 
 .leader-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%;
+    object-position: top center;
+    display: block;
 }
 
 .leader-primary .leader-avatar {
-    width: 200px;
-    height: 200px;
-    font-size: 2.5rem;
-    background: rgba(27, 122, 61, 0.1);
+    font-size: 5rem;
+    background: linear-gradient(160deg, rgba(27,122,61,0.08), rgba(27,122,61,0.18));
     color: var(--green);
 }
 
 .leader-card h3 {
-    font-size: 0.95rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.9;
 }
 
 .leader-name {
-    color: var(--green);
-    font-weight: 600;
-    font-size: 0.85rem;
-    margin-bottom: 8px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 
 .leader-desc {
-    font-size: 0.82rem;
-    color: var(--gray-500);
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Overlay at bottom of each card */
+.leader-card .leader-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 16px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+    text-align: left;
 }
 
 .leadership-note {
