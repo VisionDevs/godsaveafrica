@@ -128,7 +128,7 @@
                 <div class="join-form-wrapper">
                     <div class="form-header">
                         <h3><i class="fas fa-hand-holding-heart"></i> Donation Form</h3>
-                        <p>Complete the form below and upload your proof of payment.</p>
+                        <p>Complete the form below to record your donation. You can pay via bank transfer or use a free online payment gateway.</p>
                     </div>
 
                     <form id="donation-form" novalidate>
@@ -240,20 +240,64 @@
                             <textarea id="donor-message" name="message" rows="2" placeholder="Any message you'd like to share with us..."></textarea>
                         </div>
 
-                        <!-- Proof of Payment Upload -->
+                        <!-- Payment Method Selector -->
                         <div class="form-group">
-                            <label>Upload Proof of Payment *</label>
-                            <p style="font-size: 0.78rem; color: var(--gray-500); margin-bottom: 8px;">Accepted formats: JPG, PNG, PDF (max 5MB)</p>
-                            <div class="file-upload-wrapper" id="file-upload-wrapper">
-                                <input type="file" id="pop-upload" name="proofOfPayment" accept=".jpg,.jpeg,.png,.pdf" required>
-                                <div class="file-upload-label" id="file-upload-label">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <span>Click or drag to upload proof of payment</span>
+                            <label>How would you like to pay? *</label>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+                                <label class="donor-type-option">
+                                    <input type="radio" name="paymentMethod" value="eft" checked>
+                                    <span><i class="fas fa-university"></i> Bank Transfer (EFT)</span>
+                                </label>
+                                <label class="donor-type-option">
+                                    <input type="radio" name="paymentMethod" value="online">
+                                    <span><i class="fas fa-credit-card"></i> Pay Online</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- EFT: Proof of Payment Upload -->
+                        <div id="pop-section">
+                            <div class="form-group">
+                                <label>Upload Proof of Payment *</label>
+                                <p style="font-size: 0.78rem; color: var(--gray-500); margin-bottom: 8px;">Accepted formats: JPG, PNG, PDF (max 5MB)</p>
+                                <div class="file-upload-wrapper" id="file-upload-wrapper">
+                                    <input type="file" id="pop-upload" name="proofOfPayment" accept=".jpg,.jpeg,.png,.pdf">
+                                    <div class="file-upload-label" id="file-upload-label">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Click or drag to upload proof of payment</span>
+                                    </div>
+                                    <div class="file-upload-preview" id="file-upload-preview" style="display: none;">
+                                        <i class="fas fa-file-check"></i>
+                                        <span id="file-name"></span>
+                                        <button type="button" id="remove-file" class="file-remove-btn"><i class="fas fa-times"></i></button>
+                                    </div>
                                 </div>
-                                <div class="file-upload-preview" id="file-upload-preview" style="display: none;">
-                                    <i class="fas fa-file-check"></i>
-                                    <span id="file-name"></span>
-                                    <button type="button" id="remove-file" class="file-remove-btn"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Online Payment Options -->
+                        <div id="online-payment-section" style="display:none;">
+                            <div class="form-group">
+                                <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;">
+                                    <p style="font-size:0.88rem;color:var(--gray-600);margin-bottom:16px;"><i class="fas fa-info-circle" style="color:var(--green);"></i> Choose a payment gateway below. You will be directed to complete your payment securely. Then return here and submit this form to record your donation.</p>
+                                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                                        <a href="https://ozow.com" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#00c9b1;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                            <i class="fas fa-bolt" style="font-size:1.6rem;"></i>
+                                            Ozow
+                                            <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Instant EFT</span>
+                                        </a>
+                                        <a href="https://www.payfast.co.za" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#0070ba;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                            <i class="fas fa-credit-card" style="font-size:1.6rem;"></i>
+                                            PayFast
+                                            <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Card &amp; EFT</span>
+                                        </a>
+                                        <a href="https://www.snapscan.co.za" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#ff6b00;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                            <i class="fas fa-qrcode" style="font-size:1.6rem;"></i>
+                                            SnapScan
+                                            <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">QR Payment</span>
+                                        </a>
+                                    </div>
+                                    <p style="font-size:0.75rem;color:var(--gray-500);margin-top:14px;"><i class="fas fa-lock"></i> These are trusted South African payment gateways. No proof of payment upload is needed &mdash; GSAW will confirm your donation within 24 hours.</p>
                                 </div>
                             </div>
                         </div>

@@ -18,6 +18,22 @@ document.addEventListener('DOMContentLoaded', function () {
     var fileWrapper = document.getElementById('file-upload-wrapper');
     var submitBtn = document.getElementById('donate-submit-btn');
     var successDiv = document.getElementById('donation-success');
+    var paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+    var popSection = document.getElementById('pop-section');
+    var onlineSection = document.getElementById('online-payment-section');
+
+    // Toggle payment method sections
+    paymentMethodRadios.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            if (this.value === 'online') {
+                popSection.style.display = 'none';
+                onlineSection.style.display = 'block';
+            } else {
+                popSection.style.display = 'block';
+                onlineSection.style.display = 'none';
+            }
+        });
+    });
 
     // Toggle donor type fields
     donorTypeRadios.forEach(function (radio) {
@@ -116,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
             email: document.getElementById('donor-email').value.trim(),
             phone: document.getElementById('donor-phone').value.trim(),
             message: document.getElementById('donor-message').value.trim(),
+            paymentMethod: (document.querySelector('input[name="paymentMethod"]:checked') || {}).value || 'eft',
             hasProofOfPayment: fileInput.files.length > 0,
             proofFileName: fileInput.files.length > 0 ? fileInput.files[0].name : '',
             proofFileType: fileInput.files.length > 0 ? fileInput.files[0].type : '',
@@ -233,8 +250,10 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
 
-        // Proof of payment
-        if (!fileInput.files || fileInput.files.length === 0) {
+        // Proof of payment (only required for EFT)
+        var paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        var isEFT = !paymentMethod || paymentMethod.value === 'eft';
+        if (isEFT && (!fileInput.files || fileInput.files.length === 0)) {
             showNotification('Please upload your proof of payment.', 'error');
             return false;
         }
