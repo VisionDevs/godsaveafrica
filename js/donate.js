@@ -196,26 +196,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Wire up payment gateways for online payments
                 if (data.paymentMethod === 'online') {
-                    var amt = parseFloat(data.amount).toFixed(2);
                     var amtCents = Math.round(parseFloat(data.amount) * 100);
+                    var ref = 'GSAW_' + Date.now();
 
-                    // PayFast: populate hidden form fields then submit on button click
-                    document.getElementById('pf-name-first').value = data.firstName || (data.orgName ? data.orgName.split(' ')[0] : '') || '';
-                    document.getElementById('pf-name-last').value = data.lastName || '';
-                    document.getElementById('pf-email').value = data.email || '';
-                    document.getElementById('pf-amount').value = amt;
-                    document.getElementById('pf-item-desc').value = 'GSAW Donation - ' + (data.purpose || 'General Support');
-                    document.getElementById('pf-pay-btn').onclick = function () {
-                        document.getElementById('payfast-form').submit();
-                    };
+                    // Yoco: static payment page link (replace YOCO_USERNAME after signup at yoco.com)
+                    // No NPO/PBO required - just a business bank account
+                    // SETUP: Replace YOCO_USERNAME with your Yoco username from pay.yoco.com
+                    // document.getElementById('yoco-pay-link').href = 'https://pay.yoco.com/YOCO_USERNAME';
 
                     // SnapScan: dynamic URL with pre-filled amount in cents
-                    // SETUP: Replace SNAPSCAN_MERCHANT_ID with your SnapScan merchant code from snapscan.co.za
-                    document.getElementById('ss-pay-link').href = 'https://pos.snapscan.io/qr/SNAPSCAN_MERCHANT_ID?amount=' + amtCents + '&reference=GSAW_' + Date.now();
+                    // SETUP: Replace SNAPSCAN_MERCHANT_ID with your code from snapscan.co.za
+                    document.getElementById('ss-pay-link').href = 'https://pos.snapscan.io/qr/SNAPSCAN_MERCHANT_ID?amount=' + amtCents + '&reference=' + ref;
 
-                    // Ozow: link to merchant payment page once account is set up at ozow.com
-                    // SETUP: Replace href below with your Ozow payment link once you have a merchant account
-                    // document.getElementById('oz-pay-link').href = 'https://pay.ozow.com/YOUR_OZOW_LINK?amount=' + amt;
+                    // Ozow: replace href with your merchant payment link from ozow.com
+                    // SETUP: document.getElementById('oz-pay-link').href = 'https://pay.ozow.com/YOUR_LINK?amount=' + parseFloat(data.amount).toFixed(2);
 
                     document.getElementById('complete-payment-section').style.display = 'block';
                 }

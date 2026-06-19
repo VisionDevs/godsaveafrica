@@ -279,10 +279,10 @@
                         <div id="online-payment-section" style="display:none;">
                             <div class="form-group">
                                 <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;">
-                                    <p style="font-size:0.88rem;color:var(--gray-600);margin-bottom:14px;"><i class="fas fa-info-circle" style="color:var(--green);"></i> After submitting the form, you'll be able to complete payment via one of these trusted SA gateways — your donation record will be saved first.</p>
+                                    <p style="font-size:0.88rem;color:var(--gray-600);margin-bottom:14px;"><i class="fas fa-info-circle" style="color:var(--green);"></i> After submitting, you'll complete payment via one of these trusted SA gateways &mdash; no NPO/PBO number required:</p>
                                     <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                                        <div style="flex:1;min-width:110px;background:#0070ba;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
-                                            <i class="fas fa-credit-card" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>PayFast<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">Card &amp; EFT</span>
+                                        <div style="flex:1;min-width:110px;background:#142FDB;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
+                                            <i class="fas fa-credit-card" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>Yoco<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">Card Payment</span>
                                         </div>
                                         <div style="flex:1;min-width:110px;background:#ff6b00;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
                                             <i class="fas fa-qrcode" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>SnapScan<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">QR Payment</span>
@@ -307,21 +307,6 @@
                         </button>
                     </form>
 
-                    <!-- Hidden PayFast checkout form (submitted programmatically) -->
-                    <!-- SETUP: Replace PAYFAST_MERCHANT_ID and PAYFAST_MERCHANT_KEY with values from payfast.co.za -->
-                    <form id="payfast-form" action="https://www.payfast.co.za/eng/process" method="post" target="_blank" style="display:none;">
-                        <input type="hidden" name="merchant_id" id="pf-merchant-id" value="PAYFAST_MERCHANT_ID">
-                        <input type="hidden" name="merchant_key" id="pf-merchant-key" value="PAYFAST_MERCHANT_KEY">
-                        <input type="hidden" name="return_url" value="https://www.gsaw.org.za/donate">
-                        <input type="hidden" name="cancel_url" value="https://www.gsaw.org.za/donate">
-                        <input type="hidden" name="name_first" id="pf-name-first" value="">
-                        <input type="hidden" name="name_last" id="pf-name-last" value="">
-                        <input type="hidden" name="email_address" id="pf-email" value="">
-                        <input type="hidden" name="amount" id="pf-amount" value="">
-                        <input type="hidden" name="item_name" value="GSAW Donation">
-                        <input type="hidden" name="item_description" id="pf-item-desc" value="">
-                    </form>
-
                     <!-- Success Message -->
                     <div id="donation-success" class="form-success" style="display: none;">
                         <div class="success-icon"><i class="fas fa-heart" style="color: var(--red);"></i></div>
@@ -343,11 +328,11 @@
                             <h4 style="font-size:1rem;color:var(--green);margin-bottom:8px;"><i class="fas fa-credit-card"></i> Step 2: Complete Your Payment</h4>
                             <p style="font-size:0.85rem;color:var(--gray-600);margin-bottom:16px;">Your donation record is saved. Click your preferred gateway to pay — your amount is pre-filled:</p>
                             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
-                                <button type="button" id="pf-pay-btn" style="flex:1;min-width:130px;background:#0070ba;color:#fff;border:none;border-radius:10px;padding:16px 12px;cursor:pointer;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                <a id="yoco-pay-link" href="https://pay.yoco.com/YOCO_USERNAME" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#142FDB;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
                                     <i class="fas fa-credit-card" style="font-size:1.6rem;"></i>
-                                    PayFast
-                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Card &amp; EFT</span>
-                                </button>
+                                    Yoco
+                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Card Payment</span>
+                                </a>
                                 <a id="ss-pay-link" href="#" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#ff6b00;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
                                     <i class="fas fa-qrcode" style="font-size:1.6rem;"></i>
                                     SnapScan
