@@ -2482,3 +2482,90 @@ h1, h2, h3, h4, h5, h6 {
     .manifesto-card { break-inside: avoid; border: 1px solid #ddd; }
     body { font-size: 12pt; }
 }
+
+/* ========================================
+   SCROLL REVEAL ANIMATIONS
+======================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Button ripple */
+@keyframes ripple-anim {
+    to { transform: scale(2.8); opacity: 0; }
+}
+
+/* Enhanced button hover */
+.btn, .cta-btn, .submit-btn, .join-btn {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.25s ease;
+}
+.btn:hover, .cta-btn:hover, .submit-btn:hover, .join-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+}
+
+/* Card hover lift */
+.card:not(.no-hover):hover,
+.benefit-card:hover,
+.news-card:hover,
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+.card, .benefit-card, .news-card, .feature-card {
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+/* Leader card hover */
+.leader-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.16);
+}
+.leader-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Stat counter animation */
+@keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+[data-count] {
+    animation: countUp 0.5s ease forwards;
+}
+
+/* Smooth section backgrounds */
+section {
+    transition: background 0.3s ease;
+}
+
+/* Hero overlay fade in */
+.hero-content, .page-hero-content {
+    animation: heroFadeIn 0.9s ease both;
+}
+@keyframes heroFadeIn {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Nav active highlight */
+.nav-active {
+    color: var(--green) !important;
+    font-weight: 700;
+}
+
+/* Focus ring improvement */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--green);
+    outline-offset: 3px;
+    border-radius: 4px;
+}

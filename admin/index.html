@@ -210,12 +210,13 @@
                 <div style="padding:15px;"><canvas id="growth-chart" height="200"></canvas></div>
             </div>
 
-            <!-- Donation Trends -->
+            <!-- Volunteer Growth Chart -->
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-chart-area"></i> Donation Trends</h2>
+                    <h2><i class="fas fa-hands-helping"></i> Volunteer Growth</h2>
+                    <button class="btn-text-link" onclick="switchView('volunteers')">View All &rarr;</button>
                 </div>
-                <div style="padding:15px;"><canvas id="donation-chart" height="200"></canvas></div>
+                <div style="padding:15px;"><canvas id="volunteer-chart" height="200"></canvas></div>
             </div>
 
             <!-- Province Heatmap -->
@@ -287,7 +288,13 @@
         <div class="view" id="view-provinces">
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-map"></i> Members by Province</h2>
+                    <h2><i class="fas fa-chart-bar"></i> Members by Province</h2>
+                </div>
+                <div style="padding:20px;"><canvas id="province-bar-chart" height="260"></canvas></div>
+            </div>
+            <div class="card" style="margin-top:20px;">
+                <div class="card-header">
+                    <h2><i class="fas fa-list"></i> Province Breakdown</h2>
                 </div>
                 <div id="province-details"></div>
             </div>

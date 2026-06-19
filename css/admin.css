@@ -1,4 +1,4 @@
-/* ========================================
+﻿/* ========================================
    GSAW Admin Panel Styles
 ======================================== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -773,4 +773,133 @@ tr:hover td {
     background: #f0fdf4;
     border-bottom: 1px solid #dcfce7;
     flex-wrap: wrap;
+}
+
+/* ========================================
+   ENHANCED UI - ADMIN PANEL
+======================================== */
+
+/* Sidebar gradient */
+.sidebar {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+}
+
+/* Active nav glow */
+.nav-item.active {
+    background: var(--green);
+    box-shadow: 0 4px 12px rgba(27,122,61,0.35);
+}
+
+/* Stat card lift + subtle left accent */
+.stat-card {
+    border-left: 4px solid transparent;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    cursor: default;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.stat-total.stat-card  { border-left-color: var(--green); }
+.stat-approved.stat-card { border-left-color: #3b82f6; }
+.stat-pending.stat-card  { border-left-color: var(--orange); }
+.stat-volunteers.stat-card { border-left-color: #8b5cf6; }
+.stat-donations.stat-card  { border-left-color: #ef4444; }
+
+/* Stat number pop-in */
+@keyframes statPop {
+    from { opacity: 0; transform: scale(0.7); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.stat-number {
+    animation: statPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    animation-delay: 0.15s;
+}
+
+/* Chart cards */
+.card {
+    border-radius: var(--radius);
+    transition: box-shadow 0.25s ease;
+}
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Card header button link */
+.btn-text-link {
+    background: none;
+    border: none;
+    color: var(--green);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 0;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+.btn-text-link:hover {
+    color: var(--green-light);
+    text-decoration: underline;
+}
+
+/* Table row hover */
+.data-table tbody tr {
+    transition: background 0.18s ease;
+}
+.data-table tbody tr:hover {
+    background: rgba(27,122,61,0.04);
+}
+
+/* Province detail rows */
+#province-details > div:hover {
+    background: rgba(27,122,61,0.04);
+    transition: background 0.18s ease;
+}
+
+/* Modal slide-in */
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(-18px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-content {
+    animation: modalSlideIn 0.3s ease both;
+}
+
+/* Badge pulse for pending count */
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(244,121,32,0.4); }
+    50%       { box-shadow: 0 0 0 6px rgba(244,121,32,0); }
+}
+.stat-pending .stat-number {
+    animation: badgePulse 2.2s ease infinite, statPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+/* Refresh / action buttons */
+.btn-action:hover {
+    background: var(--gray-100);
+    border-color: var(--green);
+    color: var(--green);
+}
+
+/* Topbar shadow on scroll */
+.admin-topbar {
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s ease;
+}
+
+/* Focus ring */
+a:focus-visible, button:focus-visible {
+    outline: 3px solid var(--green);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Smooth view fade-in */
+.view.active {
+    animation: viewFadeIn 0.3s ease both;
+}
+@keyframes viewFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }

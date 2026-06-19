@@ -278,20 +278,11 @@
                         <!-- Online Payment Options -->
                         <div id="online-payment-section" style="display:none;">
                             <div class="form-group">
-                                <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;">
-                                    <p style="font-size:0.88rem;color:var(--gray-600);margin-bottom:14px;"><i class="fas fa-info-circle" style="color:var(--green);"></i> After submitting, you'll complete payment via one of these trusted SA gateways &mdash; no NPO/PBO number required:</p>
-                                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                                        <div style="flex:1;min-width:110px;background:#142FDB;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
-                                            <i class="fas fa-credit-card" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>Yoco<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">Card Payment</span>
-                                        </div>
-                                        <div style="flex:1;min-width:110px;background:#ff6b00;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
-                                            <i class="fas fa-qrcode" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>SnapScan<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">QR Payment</span>
-                                        </div>
-                                        <div style="flex:1;min-width:110px;background:#00c9b1;color:#fff;border-radius:10px;padding:13px 10px;text-align:center;font-weight:700;font-size:0.9rem;">
-                                            <i class="fas fa-bolt" style="font-size:1.3rem;display:block;margin-bottom:5px;"></i>Ozow<br><span style="font-size:0.7rem;font-weight:400;opacity:0.9;">Instant EFT</span>
-                                        </div>
-                                    </div>
-                                    <p style="font-size:0.75rem;color:var(--gray-500);margin-top:12px;"><i class="fas fa-lock"></i> No proof of payment upload needed. GSAW confirms receipt within 24 hours.</p>
+                                <div style="background:linear-gradient(135deg,rgba(27,122,61,0.05),rgba(27,122,61,0.02));border:2px dashed var(--green);border-radius:var(--radius);padding:28px;text-align:center;">
+                                    <div style="font-size:2.8rem;margin-bottom:12px;">🔧</div>
+                                    <h4 style="color:var(--green);font-size:1.05rem;margin-bottom:8px;">Online Payment &mdash; Coming Soon</h4>
+                                    <p style="font-size:0.88rem;color:var(--gray-600);max-width:400px;margin:0 auto 12px;">We are configuring secure online payment gateways (Yoco, SnapScan, Ozow). For now, please select <strong>Bank Transfer (EFT)</strong> above and upload your proof of payment.</p>
+                                    <span style="display:inline-block;background:var(--green);color:#fff;border-radius:20px;padding:4px 14px;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;">IN CONFIGURATION</span>
                                 </div>
                             </div>
                         </div>
@@ -324,27 +315,10 @@
                         </div>
 
                         <!-- Complete Payment (shown for online payments after DB save) -->
-                        <div id="complete-payment-section" style="display:none;border:2px solid var(--green);border-radius:10px;padding:22px;margin:20px 0;background:rgba(27,122,61,0.04);">
-                            <h4 style="font-size:1rem;color:var(--green);margin-bottom:8px;"><i class="fas fa-credit-card"></i> Step 2: Complete Your Payment</h4>
-                            <p style="font-size:0.85rem;color:var(--gray-600);margin-bottom:16px;">Your donation record is saved. Click your preferred gateway to pay — your amount is pre-filled:</p>
-                            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
-                                <a id="yoco-pay-link" href="https://pay.yoco.com/YOCO_USERNAME" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#142FDB;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                                    <i class="fas fa-credit-card" style="font-size:1.6rem;"></i>
-                                    Yoco
-                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Card Payment</span>
-                                </a>
-                                <a id="ss-pay-link" href="#" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#ff6b00;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                                    <i class="fas fa-qrcode" style="font-size:1.6rem;"></i>
-                                    SnapScan
-                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">QR Payment</span>
-                                </a>
-                                <a id="oz-pay-link" href="https://ozow.com" target="_blank" rel="noopener" style="flex:1;min-width:130px;background:#00c9b1;color:#fff;border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;font-weight:700;font-size:0.95rem;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                                    <i class="fas fa-bolt" style="font-size:1.6rem;"></i>
-                                    Ozow
-                                    <span style="font-size:0.72rem;font-weight:400;opacity:0.9;">Instant EFT</span>
-                                </a>
-                            </div>
-                            <p style="font-size:0.75rem;color:var(--gray-500);"><i class="fas fa-lock"></i> Secure, trusted SA payment gateways. GSAW will confirm your donation within 24 hours.</p>
+                        <div id="complete-payment-section" style="display:none;border:2px dashed var(--green);border-radius:10px;padding:22px;margin:20px 0;background:rgba(27,122,61,0.04);text-align:center;">
+                            <div style="font-size:2rem;margin-bottom:8px;">🔧</div>
+                            <h4 style="font-size:1rem;color:var(--green);margin-bottom:6px;">Online Payment Gateways &mdash; Coming Soon</h4>
+                            <p style="font-size:0.85rem;color:var(--gray-600);">Your donation record has been saved. Our team will contact you to arrange payment via Yoco, SnapScan, or Ozow once the gateways are configured.</p>
                         </div>
 
                         <p style="font-size: 0.9rem; color: var(--gray-600); font-style: italic; margin-bottom: 20px;">"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." &mdash; 2 Corinthians 9:7</p>
@@ -412,6 +386,7 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/script.js"></script>
     <script src="js/donate.js"></script>
+    <script src="js/animations.js"></script>
 
     <!-- WhatsApp Float -->
     <a href="https://wa.me/27735850365?text=Hi%20GSAW%2C%20I%20have%20a%20question" class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="whatsapp-tooltip">Chat with us</span></a>

@@ -126,6 +126,10 @@ function getDonations() {
     return cachedDonations;
 }
 
+function getVolunteers() {
+    return cachedVolunteers;
+}
+
 function fetchApplicationsFromSheet() {
     return gsawDB.getMemberships().then(function (data) {
         if (Array.isArray(data)) {
@@ -186,9 +190,15 @@ function refreshData() {
         renderDonations();
     });
 
+    // Also prefetch volunteers for dashboard chart
+    var p4 = gsawDB.getVolunteers().then(function (data) {
+        if (Array.isArray(data)) { cachedVolunteers = data; }
+        renderVolunteerTrendsChart();
+    }).catch(function () { renderVolunteerTrendsChart(); });
+
     var p3 = loadMessages();
 
-    Promise.all([p1, p2, p3]).then(function () {
+    Promise.all([p1, p2, p3, p4]).then(function () {
         if (btn) {
             btn.disabled = false;
             btn.querySelector('i').className = 'fas fa-sync-alt';
@@ -225,8 +235,8 @@ function renderDashboard(apps) {
     // Growth chart
     renderGrowthChart(apps);
 
-    // Donation trends
-    renderDonationTrendsChart();
+    // Volunteer trends
+    renderVolunteerTrendsChart();
 
     // Province heatmap
     renderProvinceHeatmap(apps);
@@ -283,31 +293,34 @@ function renderGrowthChart(apps) {
 }
 
 // ========================================
-// DONATION TRENDS CHART
+// VOLUNTEER GROWTH CHART
 // ========================================
-var donationChartInstance = null;
-function renderDonationTrendsChart() {
-    var canvas = document.getElementById('donation-chart');
+var volunteerChartInstance = null;
+function renderVolunteerTrendsChart() {
+    var canvas = document.getElementById('volunteer-chart');
     if (!canvas || typeof Chart === 'undefined') return;
 
-    var donations = getDonations();
-    var monthData = {};
-    donations.forEach(function (d) {
-        if (!d.submitted_at) return;
-        var key = new Date(d.submitted_at).toISOString().slice(0, 7);
-        monthData[key] = (monthData[key] || 0) + (parseFloat(d.amount) || 0);
+    var volunteers = getVolunteers();
+    var weekData = {};
+    volunteers.forEach(function (v) {
+        if (!v.submitted_at) return;
+        var d = new Date(v.submitted_at);
+        var weekStart = new Date(d);
+        weekStart.setDate(d.getDate() - d.getDay());
+        var key = weekStart.toISOString().slice(0, 10);
+        weekData[key] = (weekData[key] || 0) + 1;
     });
 
-    var labels = Object.keys(monthData).sort().slice(-12);
-    var data = labels.map(function (k) { return monthData[k]; });
+    var labels = Object.keys(weekData).sort().slice(-12);
+    var data = labels.map(function (k) { return weekData[k]; });
 
-    if (donationChartInstance) donationChartInstance.destroy();
-    donationChartInstance = new Chart(canvas, {
+    if (volunteerChartInstance) volunteerChartInstance.destroy();
+    volunteerChartInstance = new Chart(canvas, {
         type: 'bar',
         data: {
-            labels: labels.map(function (l) { return new Date(l + '-01').toLocaleDateString('en-ZA', { month: 'short', year: '2-digit' }); }),
+            labels: labels.map(function (l) { return new Date(l).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' }); }),
             datasets: [{
-                label: 'Donations (ZAR)',
+                label: 'New Volunteers',
                 data: data,
                 backgroundColor: 'rgba(244,121,32,0.7)',
                 borderColor: '#F47920',
@@ -315,7 +328,11 @@ function renderDonationTrendsChart() {
                 borderRadius: 6
             }]
         },
-        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
     });
 }
 
@@ -628,22 +645,71 @@ function renderApproved() {
 // ========================================
 function renderProvinces() {
     var container = document.getElementById('province-details');
+    var canvas = document.getElementById('province-bar-chart');
     var apps = getApplications();
-    var allProvinces = ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'];
+    var allProvinces = ['Gauteng', 'KwaZulu-Natal', 'Eastern Cape', 'Western Cape', 'Limpopo', 'Mpumalanga', 'North West', 'Free State', 'Northern Cape'];
 
+    var counts = {};
+    var approvedCounts = {};
+    allProvinces.forEach(function (p) { counts[p] = 0; approvedCounts[p] = 0; });
+    apps.forEach(function (a) {
+        if (a.province && counts.hasOwnProperty(a.province)) {
+            counts[a.province]++;
+            if (a.status === 'approved') approvedCounts[a.province]++;
+        }
+    });
+
+    // Chart.js horizontal bar chart
+    if (canvas && typeof Chart !== 'undefined') {
+        if (window.provinceChartInstance) window.provinceChartInstance.destroy();
+        window.provinceChartInstance = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: allProvinces,
+                datasets: [{
+                    label: 'Total',
+                    data: allProvinces.map(function (p) { return counts[p]; }),
+                    backgroundColor: 'rgba(27,122,61,0.65)',
+                    borderColor: '#1B7A3D',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }, {
+                    label: 'Approved',
+                    data: allProvinces.map(function (p) { return approvedCounts[p]; }),
+                    backgroundColor: 'rgba(244,121,32,0.7)',
+                    borderColor: '#F47920',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    }
+
+    // Province detail rows sorted by count
+    var sorted = allProvinces.slice().sort(function (a, b) { return counts[b] - counts[a]; });
+    var total = apps.length || 1;
     var html = '';
-
-    allProvinces.forEach(function (province) {
-        var members = apps.filter(function (a) { return a.province === province; });
-        var approved = members.filter(function (a) { return a.status === 'approved'; }).length;
-
-        html += '<div class="province-bar" style="padding:15px 20px;">';
-        html += '<span class="province-name" style="width:150px;">' + province + '</span>';
-        html += '<span style="flex:1; font-size:0.82rem; color:#6c757d;">Total: <strong>' + members.length + '</strong> | Approved: <strong>' + approved + '</strong></span>';
+    sorted.forEach(function (province) {
+        var cnt = counts[province];
+        var appr = approvedCounts[province];
+        var pct = Math.round((cnt / total) * 100);
+        html += '<div style="padding:12px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--gray-200);">';
+        html += '<span style="width:160px;font-weight:600;font-size:0.85rem;color:var(--dark);">' + province + '</span>';
+        html += '<div style="flex:1;background:var(--gray-200);border-radius:4px;height:8px;overflow:hidden;">';
+        html += '<div style="height:100%;border-radius:4px;background:linear-gradient(90deg,#1B7A3D,#24a352);width:' + pct + '%;transition:width 0.8s ease;"></div>';
+        html += '</div>';
+        html += '<span style="width:60px;text-align:right;font-size:0.82rem;"><strong>' + cnt + '</strong> total</span>';
+        html += '<span style="width:80px;text-align:right;font-size:0.82rem;color:var(--green);"><strong>' + appr + '</strong> approved</span>';
         html += '</div>';
     });
 
-    container.innerHTML = html;
+    container.innerHTML = html || '<div class="empty-state"><i class="fas fa-map"></i><p>No member data yet</p></div>';
 }
 
 // ========================================

@@ -194,23 +194,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 successDiv.style.display = 'block';
                 successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-                // Wire up payment gateways for online payments
+                // Online payment gateways are coming soon - show info section
                 if (data.paymentMethod === 'online') {
-                    var amtCents = Math.round(parseFloat(data.amount) * 100);
-                    var ref = 'GSAW_' + Date.now();
-
-                    // Yoco: static payment page link (replace YOCO_USERNAME after signup at yoco.com)
-                    // No NPO/PBO required - just a business bank account
-                    // SETUP: Replace YOCO_USERNAME with your Yoco username from pay.yoco.com
-                    // document.getElementById('yoco-pay-link').href = 'https://pay.yoco.com/YOCO_USERNAME';
-
-                    // SnapScan: dynamic URL with pre-filled amount in cents
-                    // SETUP: Replace SNAPSCAN_MERCHANT_ID with your code from snapscan.co.za
-                    document.getElementById('ss-pay-link').href = 'https://pos.snapscan.io/qr/SNAPSCAN_MERCHANT_ID?amount=' + amtCents + '&reference=' + ref;
-
-                    // Ozow: replace href with your merchant payment link from ozow.com
-                    // SETUP: document.getElementById('oz-pay-link').href = 'https://pay.ozow.com/YOUR_LINK?amount=' + parseFloat(data.amount).toFixed(2);
-
                     document.getElementById('complete-payment-section').style.display = 'block';
                 }
 
