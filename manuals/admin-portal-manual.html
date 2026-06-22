@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSAW Admin Portal — User Manual</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap');
+
+  :root {
+    --red: #E31E24;
+    --green: #1B7A3D;
+    --green-light: #24a352;
+    --orange: #F47920;
+    --dark: #1a1a2e;
+    --gray: #6c757d;
+    --gray-light: #f4f6f8;
+    --border: #dee2e6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 10.5pt;
+    color: #2d2d2d;
+    background: #fff;
+    line-height: 1.6;
+  }
+
+  h1,h2,h3,h4,h5 { font-family: 'Montserrat', sans-serif; }
+
+  /* ---- COVER PAGE ---- */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, var(--dark) 0%, #0f3460 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 40px;
+    page-break-after: always;
+  }
+  .cover-logo {
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    font-size: 3rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .cover-badge {
+    background: var(--orange);
+    color: white;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  .cover h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+  .cover .subtitle { font-size: 1.1rem; opacity: 0.8; margin-bottom: 40px; }
+  .cover-divider { width: 60px; height: 4px; background: var(--orange); margin: 20px auto; border-radius: 2px; }
+  .cover-meta { opacity: 0.6; font-size: 0.85rem; margin-top: 40px; }
+  .cover-version { background: rgba(255,255,255,0.1); padding: 10px 24px; border-radius: 8px; display: inline-block; margin-top: 12px; font-size: 0.9rem; }
+
+  /* ---- TOC ---- */
+  .toc-page {
+    padding: 50px 60px;
+    page-break-after: always;
+    min-height: 100vh;
+  }
+  .toc-header { border-bottom: 3px solid var(--green); padding-bottom: 12px; margin-bottom: 30px; }
+  .toc-header h2 { font-size: 1.6rem; color: var(--dark); }
+  .toc-item { display: flex; justify-content: space-between; align-items: flex-end; padding: 7px 0; border-bottom: 1px dotted #ccc; }
+  .toc-item a { text-decoration: none; color: var(--dark); font-weight: 600; font-size: 0.95rem; }
+  .toc-item a:hover { color: var(--green); }
+  .toc-num { color: var(--gray); font-size: 0.85rem; }
+  .toc-section { font-size: 0.78rem; color: var(--gray); font-weight: 400; margin-left: 20px; }
+  .toc-group { margin-top: 16px; }
+  .toc-group-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--green); font-weight: 700; margin-bottom: 6px; font-family: 'Montserrat', sans-serif; }
+
+  /* ---- SECTIONS ---- */
+  .section {
+    padding: 40px 60px;
+    page-break-before: always;
+  }
+  .section:first-of-type { page-break-before: auto; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    width: 42px;
+    height: 42px;
+    background: var(--green);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 1.5rem; color: var(--dark); }
+  .section-header p { font-size: 0.82rem; color: var(--gray); margin-top: 2px; }
+
+  .subsection { margin-bottom: 28px; }
+  .subsection h3 {
+    font-size: 1rem;
+    color: var(--green);
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding-left: 12px;
+    border-left: 3px solid var(--green);
+  }
+  .subsection h4 { font-size: 0.88rem; color: var(--dark); font-weight: 700; margin: 14px 0 6px; }
+
+  p { margin-bottom: 8px; }
+
+  /* ---- STEPS ---- */
+  .steps { list-style: none; counter-reset: step; margin: 12px 0; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(step);
+    min-width: 24px;
+    height: 24px;
+    background: var(--dark);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ---- BOXES ---- */
+  .box {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 0.88rem;
+  }
+  .box-cred {
+    background: #f0fdf4;
+    border: 1.5px solid var(--green);
+  }
+  .box-cred .cred-row { display: flex; gap: 8px; align-items: center; margin: 4px 0; }
+  .box-cred .label { font-weight: 700; color: var(--dark); min-width: 100px; font-size: 0.82rem; }
+  .box-cred .value { font-family: 'Courier New', monospace; background: white; border: 1px solid #ccc; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; color: var(--dark); }
+  .box-tip { background: #fff8f0; border-left: 4px solid var(--orange); }
+  .box-tip::before { content: "💡 TIP: "; font-weight: 700; color: var(--orange); }
+  .box-warn { background: #fff5f5; border-left: 4px solid var(--red); }
+  .box-warn::before { content: "⚠️ NOTE: "; font-weight: 700; color: var(--red); }
+  .box-info { background: #f0f4ff; border-left: 4px solid #4361ee; }
+  .box-info::before { content: "ℹ️ INFO: "; font-weight: 700; color: #4361ee; }
+
+  /* ---- FEATURE TABLE ---- */
+  .feat-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.85rem; }
+  .feat-table th { background: var(--dark); color: white; padding: 8px 12px; text-align: left; font-family: 'Montserrat', sans-serif; font-size: 0.78rem; }
+  .feat-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .feat-table tr:nth-child(even) td { background: var(--gray-light); }
+  .feat-table .icon-cell { text-align: center; font-size: 1rem; }
+
+  /* ---- BUTTON PILLS ---- */
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+  .pill-green { background: #d1fae5; color: #065f46; }
+  .pill-red { background: #fee2e2; color: #991b1b; }
+  .pill-orange { background: #fed7aa; color: #92400e; }
+  .pill-blue { background: #dbeafe; color: #1e40af; }
+  .pill-gray { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+
+  /* ---- SCREEN MOCK ---- */
+  .screen-mock {
+    background: var(--gray-light);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 14px 0;
+    position: relative;
+  }
+  .screen-mock-bar {
+    background: var(--dark);
+    border-radius: 6px 6px 0 0;
+    padding: 8px 14px;
+    margin: -20px -20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+  }
+  .screen-mock-bar .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .screen-mock-bar .url { background: rgba(255,255,255,0.1); padding: 3px 10px; border-radius: 4px; margin-left: 8px; color: rgba(255,255,255,0.85); font-family: monospace; font-size: 0.72rem; }
+
+  /* ---- FOOTER ---- */
+  @page { size: A4; margin: 15mm 15mm 20mm; }
+  @media print {
+    .cover { min-height: 297mm; }
+    .section, .toc-page { padding: 30px 40px; }
+    body { font-size: 9.5pt; }
+    .no-print { display: none; }
+  }
+
+  /* ---- CALLOUT GRID ---- */
+  .callout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0; }
+  .callout-card { background: var(--gray-light); border-radius: 8px; padding: 14px; border-top: 3px solid var(--green); }
+  .callout-card h4 { font-size: 0.82rem; color: var(--green); margin-bottom: 6px; }
+  .callout-card p { font-size: 0.8rem; color: #444; margin: 0; }
+
+  /* ---- INLINE CODE ---- */
+  code { background: #f0f0f0; border: 1px solid #ddd; border-radius: 3px; padding: 1px 5px; font-family: 'Courier New', monospace; font-size: 0.85em; color: #c7254e; }
+
+  ul { padding-left: 20px; margin: 8px 0; }
+  ul li { margin-bottom: 4px; }
+
+  .page-footer { text-align: center; font-size: 0.72rem; color: #aaa; padding-top: 20px; border-top: 1px solid var(--border); margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<!-- ============================== COVER ============================== -->
+<div class="cover">
+  <div class="cover-logo">🇿🇦</div>
+  <div class="cover-badge">Internal Use Only</div>
+  <h1>Admin Portal<br>User Manual</h1>
+  <div class="cover-divider"></div>
+  <p class="subtitle">God Save Africa &amp; The World (GSAW)<br>National Executive Committee Administration Guide</p>
+  <div class="cover-version">Version 1.0 &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; www.gsaw.org.za/admin</div>
+  <p class="cover-meta" style="margin-top:50px;">Confidential — for authorised GSAW NEC staff only<br>Do not share login credentials externally</p>
+</div>
+
+<!-- ============================== TOC ============================== -->
+<div class="toc-page">
+  <div class="toc-header">
+    <h2>Table of Contents</h2>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-title">Getting Started</div>
+    <div class="toc-item"><a href="#s1">1. Admin Portal Overview</a><span class="toc-num">3</span></div>
+    <div class="toc-item"><a href="#s2">2. Logging In &amp; Logging Out</a><span class="toc-num">3</span></div>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-title">Portal Views</div>
+    <div class="toc-item"><a href="#s3">3. Dashboard</a><span class="toc-num">4</span></div>
+    <div class="toc-item"><a href="#s4">4. Membership Applications</a><span class="toc-num">5</span></div>
+    <div class="toc-item"><a href="#s5">5. Approved Members</a><span class="toc-num">7</span></div>
+    <div class="toc-item"><a href="#s6">6. Members by Province</a><span class="toc-num">8</span></div>
+    <div class="toc-item"><a href="#s7">7. Donations</a><span class="toc-num">9</span></div>
+    <div class="toc-item"><a href="#s8">8. Volunteers</a><span class="toc-num">10</span></div>
+    <div class="toc-item"><a href="#s9">9. Contact Messages</a><span class="toc-num">11</span></div>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-title">Reference</div>
+    <div class="toc-item"><a href="#s10">10. Tips &amp; Best Practices</a><span class="toc-num">12</span></div>
+    <div class="toc-item"><a href="#s11">11. Credentials &amp; URLs</a><span class="toc-num">12</span></div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 1 ============================== -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <h2>Admin Portal Overview</h2>
+      <p>What the portal does and who uses it</p>
+    </div>
+  </div>
+
+  <p>The GSAW Admin Portal is the internal management system for the National Executive Committee. It allows authorised staff to manage all data submitted through the public website — including membership applications, donations, volunteers, and contact messages.</p>
+
+  <div class="callout-grid">
+    <div class="callout-card">
+      <h4>🌐 Portal URL</h4>
+      <p><strong>www.gsaw.org.za/admin</strong><br>Access from any browser — desktop or mobile.</p>
+    </div>
+    <div class="callout-card">
+      <h4>🔐 Access Control</h4>
+      <p>Login is required. Only authorised NEC staff with the admin credentials may access this portal.</p>
+    </div>
+    <div class="callout-card">
+      <h4>💾 Database</h4>
+      <p>All data is stored securely in <strong>Supabase</strong> (cloud database). No data is lost when you close the browser.</p>
+    </div>
+    <div class="callout-card">
+      <h4>📱 Mobile Friendly</h4>
+      <p>The portal works on smartphones and tablets. Use the ☰ menu icon on mobile to navigate.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 2 ============================== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <h2>Logging In &amp; Logging Out</h2>
+      <p>How to access the admin portal securely</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Admin Login Credentials</h3>
+    <div class="box box-cred">
+      <div class="cred-row"><span class="label">Portal URL</span><span class="value">https://www.gsaw.org.za/admin</span></div>
+      <div class="cred-row"><span class="label">Email</span><span class="value">admin@gsaw.org.za</span></div>
+      <div class="cred-row"><span class="label">Password</span><span class="value">Gsaw@Admin@2025</span></div>
+    </div>
+    <div class="box box-warn">Keep these credentials strictly confidential. Do not write them on paper or share via WhatsApp or social media.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>How to Log In</h3>
+    <ol class="steps">
+      <li>Open your browser (Chrome recommended) and go to <code>www.gsaw.org.za/admin</code></li>
+      <li>The login screen will appear. Enter the email: <code>admin@gsaw.org.za</code></li>
+      <li>Enter the password: <code>Gsaw@Admin@2025</code></li>
+      <li>Click the <span class="pill pill-green">Login</span> button</li>
+      <li>You will be taken directly to the Dashboard</li>
+    </ol>
+    <div class="box box-tip">Your session is saved in the browser. If you close and reopen the tab, you may not need to log in again on the same device.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>How to Log Out</h3>
+    <ol class="steps">
+      <li>Look at the bottom of the left sidebar</li>
+      <li>Click the <span class="pill pill-red">🚪 Logout</span> button</li>
+      <li>You will be returned to the login screen</li>
+    </ol>
+    <div class="box box-warn">Always log out when using a shared or public computer.</div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 3 ============================== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <h2>Dashboard</h2>
+      <p>Your overview of all GSAW activity at a glance</p>
+    </div>
+  </div>
+
+  <p>The Dashboard is the first screen you see after logging in. It gives you a real-time summary of all activity on the website.</p>
+
+  <div class="subsection">
+    <h3>Stat Cards (Top Row)</h3>
+    <table class="feat-table">
+      <thead><tr><th>Card</th><th>What it Shows</th></tr></thead>
+      <tbody>
+        <tr><td>📋 <strong>Total Members</strong></td><td>Total number of membership applications received (all statuses)</td></tr>
+        <tr><td>⏳ <strong>Pending</strong></td><td>Applications that have not yet been approved — needs action</td></tr>
+        <tr><td>✅ <strong>Approved</strong></td><td>Members who have been approved and are official GSAW members</td></tr>
+        <tr><td>🗺️ <strong>Provinces</strong></td><td>Number of provinces represented by current members</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Membership Growth Chart</h3>
+    <p>A line chart showing new membership applications per week. This helps you track if the party is growing. The x-axis shows weeks, the y-axis shows the number of new applications that week.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Volunteer Growth Chart</h3>
+    <p>A bar chart showing new volunteer sign-ups per week (orange bars). This lets you see volunteer engagement trends over time.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Recent Applications</h3>
+    <p>A list of the 5 most recent membership applications so you can quickly see who just joined and take action without needing to navigate to the Applications view.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Refreshing Data</h3>
+    <ol class="steps">
+      <li>Click the <span class="pill pill-gray">🔄 Refresh</span> button in the top toolbar</li>
+      <li>The button will spin and say "Refreshing…" while it fetches the latest data</li>
+      <li>All stats, charts, and tables update automatically once done</li>
+    </ol>
+    <div class="box box-tip">Data refreshes automatically each time you switch between views in the sidebar. You only need to click Refresh to see changes made by another admin in real time.</div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 4 ============================== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <h2>Membership Applications</h2>
+      <p>Review, approve, and manage all membership submissions</p>
+    </div>
+  </div>
+
+  <p>This view shows <strong>all membership applications</strong> — both pending and approved. New applications submitted from the public website appear here first with a <span class="pill pill-orange">pending</span> status.</p>
+
+  <div class="subsection">
+    <h3>Navigating to Applications</h3>
+    <ol class="steps">
+      <li>Click <strong>Applications</strong> in the left sidebar (clipboard icon)</li>
+      <li>The full list of applications loads with the most recent at the top</li>
+    </ol>
+  </div>
+
+  <div class="subsection">
+    <h3>Searching &amp; Filtering</h3>
+    <table class="feat-table">
+      <thead><tr><th>Tool</th><th>How to Use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Search Box</strong></td><td>Type a name, email, phone number, or ID number to instantly filter results</td></tr>
+        <tr><td><strong>Province Filter</strong></td><td>Click the Province dropdown to show only members from a specific province</td></tr>
+        <tr><td><strong>Status Filter</strong></td><td>Choose All / Pending / Approved to filter by application status</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Viewing Application Details</h3>
+    <ol class="steps">
+      <li>Find the application in the table</li>
+      <li>Click the <span class="pill pill-blue">👁 View</span> button (eye icon) in the Actions column</li>
+      <li>A detail panel opens showing all information: personal details, address, ID number, skills, reason for joining, signature, and timestamps</li>
+      <li>From the detail panel you can also approve or delete the application</li>
+    </ol>
+  </div>
+
+  <div class="subsection">
+    <h3>Approving an Application</h3>
+    <ol class="steps">
+      <li>Find a <span class="pill pill-orange">pending</span> application in the table</li>
+      <li>Click the <span class="pill pill-green">✓ Approve</span> button in the Actions column</li>
+      <li>A confirmation popup will appear — click <strong>Confirm</strong></li>
+      <li>The application status changes to <span class="pill pill-green">approved</span> immediately</li>
+      <li>The member now appears in the <strong>Approved Members</strong> view</li>
+    </ol>
+    <div class="box box-tip">After approving, go to the Approved Members view and send the member a WhatsApp welcome message with their membership number.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>Deleting an Application</h3>
+    <ol class="steps">
+      <li>Click the <span class="pill pill-red">🗑 Delete</span> button (red trash icon) next to the application</li>
+      <li>A confirmation popup appears — click <strong>Delete</strong> to confirm</li>
+    </ol>
+    <div class="box box-warn">Deletion is permanent. Only delete duplicate, test, or fraudulent applications.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>Bulk Actions (Multiple Deletions)</h3>
+    <ol class="steps">
+      <li>Click the <span class="pill pill-gray">⚡ Bulk Actions</span> button in the toolbar</li>
+      <li>Checkboxes appear on each row — tick all the applications you want to act on</li>
+      <li>Click <span class="pill pill-red">Delete Selected</span> to remove them all at once</li>
+      <li>Click Bulk Actions again to hide the checkboxes</li>
+    </ol>
+  </div>
+
+  <div class="subsection">
+    <h3>Exporting to CSV / Excel</h3>
+    <ol class="steps">
+      <li>Click the <span class="pill pill-gray">⬇ Export CSV</span> button in the toolbar</li>
+      <li>A CSV file downloads to your device</li>
+      <li>Open the file in Microsoft Excel or Google Sheets</li>
+    </ol>
+    <div class="box box-tip">Export regularly and save copies as your official membership register backup.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>Pagination (Large Lists)</h3>
+    <p>If there are many applications, they are split into pages. Use the <strong>&lt; &gt;</strong> arrow buttons at the bottom of the table to navigate between pages. The current page and total count are shown in the middle (e.g., "Page 2 of 5 — 48 total").</p>
+  </div>
+</div>
+
+<!-- ============================== SECTION 5 ============================== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <h2>Approved Members</h2>
+      <p>View and communicate with all confirmed GSAW members</p>
+    </div>
+  </div>
+
+  <p>This view shows only <span class="pill pill-green">approved</span> members. It is designed for the NEC to manage and communicate with official members after approval.</p>
+
+  <div class="subsection">
+    <h3>What You Can See</h3>
+    <table class="feat-table">
+      <thead><tr><th>Column</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Membership #</strong></td><td>Auto-generated unique membership number (e.g., GSAW-2026-00001)</td></tr>
+        <tr><td><strong>Name</strong></td><td>Full name of the approved member</td></tr>
+        <tr><td><strong>Phone</strong></td><td>Their contact number — used for WhatsApp messaging</td></tr>
+        <tr><td><strong>Province</strong></td><td>Province they registered from</td></tr>
+        <tr><td><strong>Municipality</strong></td><td>Local municipality</td></tr>
+        <tr><td><strong>Skills</strong></td><td>Skills they listed on the application</td></tr>
+        <tr><td><strong>Actions</strong></td><td>View details, send WhatsApp welcome message</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Sending a WhatsApp Welcome Message</h3>
+    <p>After a member is approved, you should send them a welcome WhatsApp message with their official membership number and the GSAW Members Group link.</p>
+    <ol class="steps">
+      <li>Find the approved member in the Approved Members list</li>
+      <li>Click the <span class="pill pill-green">💬 Message</span> button (WhatsApp icon)</li>
+      <li>WhatsApp will open on your device — the message is <strong>pre-filled</strong> with:<br>
+        &nbsp;&nbsp;• A personalised greeting with the member's first name<br>
+        &nbsp;&nbsp;• Their GSAW Membership Number<br>
+        &nbsp;&nbsp;• A link to join the official GSAW Members WhatsApp Group
+      </li>
+      <li>Review the message and press <strong>Send</strong> in WhatsApp</li>
+    </ol>
+    <div class="box box-tip">This is the primary way to welcome new members and get them into the Members Group. Always do this within 24 hours of approval.</div>
+    <div class="box box-info">The WhatsApp message button is only in the Approved view — not in the general Applications view — to ensure you only contact confirmed members.</div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 6 ============================== -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <h2>Members by Province</h2>
+      <p>Geographic distribution of GSAW membership</p>
+    </div>
+  </div>
+
+  <p>This view shows how membership is distributed across South Africa's 9 provinces. It is useful for understanding where GSAW's support base is strongest and where outreach is needed.</p>
+
+  <div class="subsection">
+    <h3>Province Bar Chart</h3>
+    <p>A horizontal bar chart shows all 9 provinces side by side. There are two data sets shown:</p>
+    <ul>
+      <li><strong style="color:var(--green);">Green bars</strong> — Total applications (pending + approved) from that province</li>
+      <li><strong style="color:var(--orange);">Orange bars</strong> — Approved members only from that province</li>
+    </ul>
+    <p>Hover over any bar to see the exact count. The chart is sorted alphabetically.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Province Breakdown List</h3>
+    <p>Below the chart, each province has a row showing:</p>
+    <ul>
+      <li>The province name</li>
+      <li>A green progress bar showing its share of total membership</li>
+      <li>Total count and Approved count side by side</li>
+    </ul>
+    <p>Provinces are sorted from most members to fewest.</p>
+  </div>
+</div>
+
+<!-- ============================== SECTION 7 ============================== -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div>
+      <h2>Donations</h2>
+      <p>Track and verify all donations made to GSAW</p>
+    </div>
+  </div>
+
+  <p>This view shows all donation submissions from the public website. All donations are currently processed via <strong>Bank Transfer (EFT)</strong> — online payment gateways are being configured and will be added soon.</p>
+
+  <div class="subsection">
+    <h3>Donation Record Columns</h3>
+    <table class="feat-table">
+      <thead><tr><th>Column</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Donor</strong></td><td>Name of the individual or organisation who donated</td></tr>
+        <tr><td><strong>Amount</strong></td><td>Donation amount in Rands (R)</td></tr>
+        <tr><td><strong>Purpose</strong></td><td>What the donation is for (e.g., General Fund, Campaign, Events)</td></tr>
+        <tr><td><strong>Status</strong></td><td><span class="pill pill-orange">pending</span> = not yet confirmed &nbsp; <span class="pill pill-green">verified</span> = payment confirmed</td></tr>
+        <tr><td><strong>Proof of Payment</strong></td><td>Icon shows if a POP was uploaded. Click to view the document.</td></tr>
+        <tr><td><strong>Date</strong></td><td>When the donation record was submitted</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Verifying a Donation (After Bank Confirmation)</h3>
+    <ol class="steps">
+      <li>Log in to your bank and confirm the EFT payment was received</li>
+      <li>Find the donation in the Donations view — it will show as <span class="pill pill-orange">pending</span></li>
+      <li>Click <span class="pill pill-blue">👁 View</span> to see full donation details</li>
+      <li>If the Proof of Payment was uploaded, click the POP icon to view and verify it matches</li>
+      <li>Click the <span class="pill pill-green">✓ Verify</span> button to mark the donation as verified</li>
+    </ol>
+    <div class="box box-tip">Check donations daily. Contact the donor via the phone/email shown if proof of payment is missing.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>GSAW Bank Details (for Reference)</h3>
+    <div class="box box-info">Bank details are shown directly on the public donate page at <code>www.gsaw.org.za/donate</code>. Donors are instructed to use their name as the payment reference.</div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 8 ============================== -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div>
+      <h2>Volunteers</h2>
+      <p>Manage all GSAW volunteer registrations</p>
+    </div>
+  </div>
+
+  <p>This view lists everyone who has submitted a volunteer application via the public website. Volunteers are separate from members — they are people who want to actively assist GSAW but may not yet be official members.</p>
+
+  <div class="subsection">
+    <h3>Volunteer Record Columns</h3>
+    <table class="feat-table">
+      <thead><tr><th>Column</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Name</strong></td><td>First and last name of the volunteer</td></tr>
+        <tr><td><strong>Email / Phone</strong></td><td>Contact details — click to email or call</td></tr>
+        <tr><td><strong>Province</strong></td><td>Where they are based</td></tr>
+        <tr><td><strong>Areas of Help</strong></td><td>What they offered to help with (e.g., Campaigns, Media, Admin, Community Outreach)</td></tr>
+        <tr><td><strong>Availability</strong></td><td>When they are available (Weekdays / Weekends / Evenings)</td></tr>
+        <tr><td><strong>Date</strong></td><td>When they registered</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Searching Volunteers</h3>
+    <p>Use the <strong>Search</strong> box at the top to filter by name, province, email, or area. This is useful when looking for volunteers in a specific area for an upcoming event or campaign.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Contacting a Volunteer</h3>
+    <ol class="steps">
+      <li>Find the volunteer in the list</li>
+      <li>Click their phone number to open WhatsApp or call</li>
+      <li>Click their email to open your email client with their address pre-filled</li>
+    </ol>
+    <div class="box box-tip">When coordinating provincial campaigns, filter volunteers by province first to quickly find local helpers.</div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 9 ============================== -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div>
+      <h2>Contact Messages</h2>
+      <p>Read and respond to all public enquiries</p>
+    </div>
+  </div>
+
+  <p>All messages submitted via the <strong>Contact Us</strong> page on the public website appear here. The public sender automatically receives an email confirmation when they submit.</p>
+
+  <div class="subsection">
+    <h3>Reading Messages</h3>
+    <ol class="steps">
+      <li>Click <strong>Messages</strong> in the left sidebar</li>
+      <li>Unread messages are highlighted — click any message to expand and read the full content</li>
+      <li>After reading, click <span class="pill pill-gray">Mark as Read</span> to clear the unread highlight</li>
+    </ol>
+  </div>
+
+  <div class="subsection">
+    <h3>Replying to a Message</h3>
+    <ol class="steps">
+      <li>Open the message you want to reply to</li>
+      <li>Click the <span class="pill pill-blue">Reply via Email</span> button</li>
+      <li>Your email client opens with a <strong>pre-drafted reply template</strong> already filled in, including the sender's email, subject, and a professional GSAW response template</li>
+      <li>Personalise the reply body where indicated and click Send</li>
+    </ol>
+    <div class="box box-tip">The reply template includes the GSAW signature with the website, phone number, and email. Do not change the signature.</div>
+    <div class="box box-info">The reply will be sent from <code>info@gsaw.org.za</code> — make sure you are logged in to that email account on your device before clicking Reply.</div>
+  </div>
+</div>
+
+<!-- ============================== SECTION 10 ============================== -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div>
+      <h2>Tips &amp; Best Practices</h2>
+      <p>Keeping the portal running smoothly</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Daily Routine</h3>
+    <ul>
+      <li>Check <strong>Pending Applications</strong> and approve or follow up within 24 hours</li>
+      <li>Check <strong>Donations</strong> against your bank statement and verify received payments</li>
+      <li>Check <strong>Messages</strong> and reply within 1 business day</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h3>Data Security</h3>
+    <ul>
+      <li>Never share the admin password via WhatsApp, SMS, or social media</li>
+      <li>Log out of the portal whenever using a shared device</li>
+      <li>Export and save a CSV backup of members at least once per week</li>
+      <li>If you suspect unauthorised access, change the password immediately via Supabase dashboard</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h3>If Something Looks Wrong</h3>
+    <ul>
+      <li>If the dashboard shows no data — click the <span class="pill pill-gray">🔄 Refresh</span> button</li>
+      <li>If login fails — check that you are using the correct email and password</li>
+      <li>If a chart is blank — there may be no data yet; it will populate as real submissions come in</li>
+      <li>For technical issues, contact the system developer</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================== SECTION 11 ============================== -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div>
+      <h2>Credentials &amp; Important URLs</h2>
+      <p>Quick reference for all login details and links</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Admin Portal</h3>
+    <div class="box box-cred">
+      <div class="cred-row"><span class="label">URL</span><span class="value">https://www.gsaw.org.za/admin</span></div>
+      <div class="cred-row"><span class="label">Email</span><span class="value">admin@gsaw.org.za</span></div>
+      <div class="cred-row"><span class="label">Password</span><span class="value">Gsaw@Admin@2025</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Public Website Pages</h3>
+    <table class="feat-table">
+      <thead><tr><th>Page</th><th>URL</th></tr></thead>
+      <tbody>
+        <tr><td>Homepage</td><td><code>www.gsaw.org.za</code></td></tr>
+        <tr><td>Membership Application</td><td><code>www.gsaw.org.za/membership</code></td></tr>
+        <tr><td>Application Status Check</td><td><code>www.gsaw.org.za/status</code></td></tr>
+        <tr><td>Donate</td><td><code>www.gsaw.org.za/donate</code></td></tr>
+        <tr><td>Volunteer</td><td><code>www.gsaw.org.za/volunteer</code></td></tr>
+        <tr><td>Contact Us</td><td><code>www.gsaw.org.za/contact</code></td></tr>
+        <tr><td>Leadership</td><td><code>www.gsaw.org.za/leadership</code></td></tr>
+        <tr><td>Events</td><td><code>www.gsaw.org.za/events</code></td></tr>
+        <tr><td>News</td><td><code>www.gsaw.org.za/news</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Social Media</h3>
+    <table class="feat-table">
+      <thead><tr><th>Platform</th><th>Handle / Link</th></tr></thead>
+      <tbody>
+        <tr><td>Facebook Group</td><td><code>facebook.com/groups/7831634076854510</code></td></tr>
+        <tr><td>TikTok</td><td><code>tiktok.com/@gsaw.political.pa</code></td></tr>
+        <tr><td>WhatsApp Members Group</td><td><code>chat.whatsapp.com/IcZAlYCUtvi640wi2rin3o</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    GSAW Admin Portal Manual &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; Confidential — Internal Use Only
+  </div>
+</div>
+
+</body>
+</html>

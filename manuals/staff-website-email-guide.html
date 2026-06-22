@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSAW Staff Guide — Website &amp; Email Setup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap');
+
+  :root {
+    --red: #E31E24;
+    --green: #1B7A3D;
+    --green-light: #24a352;
+    --orange: #F47920;
+    --dark: #1a1a2e;
+    --gray: #6c757d;
+    --gray-light: #f4f6f8;
+    --border: #dee2e6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Open Sans', sans-serif; font-size: 10.5pt; color: #2d2d2d; background: #fff; line-height: 1.6; }
+  h1,h2,h3,h4,h5 { font-family: 'Montserrat', sans-serif; }
+
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, var(--green) 0%, #0a4d2a 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 40px;
+    page-break-after: always;
+  }
+  .cover-logo { width: 120px; height: 120px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; font-size: 3rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  .cover-badge { background: var(--red); color: white; padding: 6px 20px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; display: inline-block; }
+  .cover h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+  .cover .subtitle { font-size: 1.1rem; opacity: 0.85; margin-bottom: 40px; }
+  .cover-divider { width: 60px; height: 4px; background: var(--orange); margin: 20px auto; border-radius: 2px; }
+  .cover-meta { opacity: 0.65; font-size: 0.85rem; margin-top: 40px; }
+  .cover-version { background: rgba(255,255,255,0.15); padding: 10px 24px; border-radius: 8px; display: inline-block; margin-top: 12px; font-size: 0.9rem; }
+
+  .toc-page { padding: 50px 60px; page-break-after: always; min-height: 100vh; }
+  .toc-header { border-bottom: 3px solid var(--red); padding-bottom: 12px; margin-bottom: 30px; }
+  .toc-header h2 { font-size: 1.6rem; color: var(--dark); }
+  .toc-item { display: flex; justify-content: space-between; align-items: flex-end; padding: 7px 0; border-bottom: 1px dotted #ccc; }
+  .toc-item a { text-decoration: none; color: var(--dark); font-weight: 600; font-size: 0.95rem; }
+  .toc-num { color: var(--gray); font-size: 0.85rem; }
+  .toc-group { margin-top: 16px; }
+  .toc-group-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--red); font-weight: 700; margin-bottom: 6px; font-family: 'Montserrat', sans-serif; }
+
+  .section { padding: 40px 60px; page-break-before: always; }
+
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 2px solid var(--border); }
+  .section-num { width: 42px; height: 42px; background: var(--red); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; font-family: 'Montserrat', sans-serif; flex-shrink: 0; }
+  .section-num.green { background: var(--green); }
+  .section-num.orange { background: var(--orange); }
+  .section-header h2 { font-size: 1.5rem; color: var(--dark); }
+  .section-header p { font-size: 0.82rem; color: var(--gray); margin-top: 2px; }
+
+  .subsection { margin-bottom: 28px; }
+  .subsection h3 { font-size: 1rem; color: var(--green); font-weight: 700; margin-bottom: 10px; padding-left: 12px; border-left: 3px solid var(--green); }
+  .subsection h4 { font-size: 0.88rem; color: var(--dark); font-weight: 700; margin: 14px 0 6px; }
+  p { margin-bottom: 8px; }
+
+  .steps { list-style: none; counter-reset: step; margin: 12px 0; }
+  .steps li { counter-increment: step; display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .steps li::before { content: counter(step); min-width: 24px; height: 24px; background: var(--dark); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; font-family: 'Montserrat', sans-serif; flex-shrink: 0; margin-top: 1px; }
+
+  .box { border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-size: 0.88rem; }
+  .box-cred { background: #f0fdf4; border: 1.5px solid var(--green); }
+  .box-cred .cred-row { display: flex; gap: 8px; align-items: center; margin: 4px 0; }
+  .box-cred .label { font-weight: 700; color: var(--dark); min-width: 130px; font-size: 0.82rem; }
+  .box-cred .value { font-family: 'Courier New', monospace; background: white; border: 1px solid #ccc; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; color: var(--dark); }
+  .box-tip { background: #fff8f0; border-left: 4px solid var(--orange); }
+  .box-tip::before { content: "💡 TIP: "; font-weight: 700; color: var(--orange); }
+  .box-warn { background: #fff5f5; border-left: 4px solid var(--red); }
+  .box-warn::before { content: "⚠️ NOTE: "; font-weight: 700; color: var(--red); }
+  .box-info { background: #f0f4ff; border-left: 4px solid #4361ee; }
+  .box-info::before { content: "ℹ️ INFO: "; font-weight: 700; color: #4361ee; }
+
+  .feat-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.85rem; }
+  .feat-table th { background: var(--dark); color: white; padding: 8px 12px; text-align: left; font-family: 'Montserrat', sans-serif; font-size: 0.78rem; }
+  .feat-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .feat-table tr:nth-child(even) td { background: var(--gray-light); }
+
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+  .pill-green { background: #d1fae5; color: #065f46; }
+  .pill-red { background: #fee2e2; color: #991b1b; }
+  .pill-orange { background: #fed7aa; color: #92400e; }
+  .pill-blue { background: #dbeafe; color: #1e40af; }
+  .pill-gray { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+
+  .callout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 14px 0; }
+  .callout-card { background: var(--gray-light); border-radius: 8px; padding: 14px; border-top: 3px solid var(--green); }
+  .callout-card.red { border-top-color: var(--red); }
+  .callout-card.orange { border-top-color: var(--orange); }
+  .callout-card h4 { font-size: 0.82rem; color: var(--green); margin-bottom: 6px; }
+  .callout-card.red h4 { color: var(--red); }
+  .callout-card.orange h4 { color: var(--orange); }
+  .callout-card p { font-size: 0.8rem; color: #444; margin: 0; }
+
+  /* Email device steps */
+  .device-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 14px 0; }
+  .device-card { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .device-card-header { padding: 10px 14px; font-weight: 700; font-size: 0.82rem; font-family: 'Montserrat', sans-serif; color: white; }
+  .device-card-header.ios { background: #333; }
+  .device-card-header.android { background: #3ddc84; color: #333; }
+  .device-card-header.windows { background: #0078d4; }
+  .device-card-body { padding: 12px 14px; }
+  .device-step { display: flex; gap: 8px; margin-bottom: 7px; font-size: 0.8rem; align-items: flex-start; }
+  .device-step-num { min-width: 18px; height: 18px; border-radius: 50%; background: var(--dark); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+  .email-settings-box { background: #f8f9fa; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 14px 0; }
+  .email-settings-box h4 { font-size: 0.85rem; color: var(--dark); margin-bottom: 10px; font-family: 'Montserrat', sans-serif; }
+  .email-settings-box table { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
+  .email-settings-box td { padding: 5px 8px; border-bottom: 1px solid #e9ecef; }
+  .email-settings-box td:first-child { font-weight: 700; color: var(--gray); width: 40%; }
+  code { background: #f0f0f0; border: 1px solid #ddd; border-radius: 3px; padding: 1px 5px; font-family: 'Courier New', monospace; font-size: 0.85em; color: #c7254e; }
+
+  ul { padding-left: 20px; margin: 8px 0; }
+  ul li { margin-bottom: 4px; }
+
+  .page-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin: 12px 0; align-items: start; }
+  .page-url { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--green); background: #f0fdf4; padding: 3px 8px; border-radius: 4px; display: block; margin-top: 3px; }
+
+  .page-footer { text-align: center; font-size: 0.72rem; color: #aaa; padding-top: 20px; border-top: 1px solid var(--border); margin-top: 40px; }
+
+  @page { size: A4; margin: 15mm 15mm 20mm; }
+  @media print {
+    .cover { min-height: 297mm; }
+    .section, .toc-page { padding: 30px 40px; }
+    body { font-size: 9.5pt; }
+    .device-tabs { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-logo">🌍</div>
+  <div class="cover-badge">GSAW Staff Guide</div>
+  <h1>Website &amp; Email<br>Setup Guide</h1>
+  <div class="cover-divider"></div>
+  <p class="subtitle">God Save Africa &amp; The World (GSAW)<br>For all NEC staff and authorised party officials</p>
+  <div class="cover-version">Version 1.0 &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; www.gsaw.org.za</div>
+  <p class="cover-meta" style="margin-top:50px;">This document covers the public website, all its pages and forms,<br>and how to set up GSAW email accounts on your personal device.</p>
+</div>
+
+<!-- TOC -->
+<div class="toc-page">
+  <div class="toc-header"><h2>Table of Contents</h2></div>
+  <div class="toc-group">
+    <div class="toc-group-title">Website Overview</div>
+    <div class="toc-item"><a href="#s1">1. Website Summary &amp; All Pages</a><span class="toc-num">3</span></div>
+    <div class="toc-item"><a href="#s2">2. Membership Application (for Public)</a><span class="toc-num">4</span></div>
+    <div class="toc-item"><a href="#s3">3. Application Status Check</a><span class="toc-num">5</span></div>
+    <div class="toc-item"><a href="#s4">4. Donations — EFT Process</a><span class="toc-num">5</span></div>
+    <div class="toc-item"><a href="#s5">5. Volunteer Registration</a><span class="toc-num">6</span></div>
+    <div class="toc-item"><a href="#s6">6. Contact Us Form</a><span class="toc-num">7</span></div>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-title">Email Setup</div>
+    <div class="toc-item"><a href="#s7">7. GSAW Email Accounts Overview</a><span class="toc-num">8</span></div>
+    <div class="toc-item"><a href="#s8">8. Setting Up Email on iPhone (iOS)</a><span class="toc-num">8</span></div>
+    <div class="toc-item"><a href="#s9">9. Setting Up Email on Android</a><span class="toc-num">9</span></div>
+    <div class="toc-item"><a href="#s10">10. Setting Up Email on Windows PC (Outlook)</a><span class="toc-num">10</span></div>
+    <div class="toc-item"><a href="#s11">11. Social Media &amp; Contact Details</a><span class="toc-num">11</span></div>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num green">1</div>
+    <div>
+      <h2>Website Summary &amp; All Pages</h2>
+      <p>What is on the GSAW website and where to find each page</p>
+    </div>
+  </div>
+
+  <p>The GSAW website is accessible to the public at <strong>www.gsaw.org.za</strong>. It serves as the main digital presence for the party — allowing people to learn about GSAW, join as members, donate, volunteer, and get in touch.</p>
+
+  <div class="callout-grid">
+    <div class="callout-card">
+      <h4>🌐 Website Address</h4>
+      <p><strong>www.gsaw.org.za</strong><br>Hosted on GitHub Pages with a custom domain. Works on all devices and browsers.</p>
+    </div>
+    <div class="callout-card orange">
+      <h4>📞 Contact Details on Site</h4>
+      <p>Phone: +27 73 585 0365<br>Email: info@gsaw.org.za<br>Shown on the top bar of every page.</p>
+    </div>
+  </div>
+
+  <div class="subsection" style="margin-top:20px;">
+    <h3>All Website Pages</h3>
+    <table class="feat-table">
+      <thead><tr><th>Page</th><th>URL</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Home</strong></td><td><code>gsaw.org.za</code></td><td>Party overview, mission, quick links to join/donate/volunteer</td></tr>
+        <tr><td><strong>About</strong></td><td><code>gsaw.org.za/about</code></td><td>History, mission, vision, and values of GSAW</td></tr>
+        <tr><td><strong>Leadership</strong></td><td><code>gsaw.org.za/leadership</code></td><td>NEC leadership team — President, SG, Treasurer, etc.</td></tr>
+        <tr><td><strong>Manifesto</strong></td><td><code>gsaw.org.za/manifesto</code></td><td>GSAW's policy positions and commitments to South Africans</td></tr>
+        <tr><td><strong>Membership</strong></td><td><code>gsaw.org.za/membership</code></td><td>Public membership application form</td></tr>
+        <tr><td><strong>Status Check</strong></td><td><code>gsaw.org.za/status</code></td><td>Members can check if their application was approved</td></tr>
+        <tr><td><strong>Donate</strong></td><td><code>gsaw.org.za/donate</code></td><td>Donation form — EFT with proof of payment upload</td></tr>
+        <tr><td><strong>Volunteer</strong></td><td><code>gsaw.org.za/volunteer</code></td><td>Volunteer registration form</td></tr>
+        <tr><td><strong>Events</strong></td><td><code>gsaw.org.za/events</code></td><td>Upcoming GSAW events and gatherings</td></tr>
+        <tr><td><strong>News</strong></td><td><code>gsaw.org.za/news</code></td><td>Party news articles and press releases</td></tr>
+        <tr><td><strong>Gallery</strong></td><td><code>gsaw.org.za/gallery</code></td><td>Photos from GSAW events and activities</td></tr>
+        <tr><td><strong>Constitution</strong></td><td><code>gsaw.org.za/constitution</code></td><td>GSAW party constitution document</td></tr>
+        <tr><td><strong>FAQ</strong></td><td><code>gsaw.org.za/faq</code></td><td>Frequently asked questions about GSAW</td></tr>
+        <tr><td><strong>Contact</strong></td><td><code>gsaw.org.za/contact</code></td><td>Contact form, map, office details</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num green">2</div>
+    <div>
+      <h2>Membership Application (for Public)</h2>
+      <p>What the public sees and how the process works end-to-end</p>
+    </div>
+  </div>
+
+  <p>When a member of the public wants to join GSAW, they go to <strong>www.gsaw.org.za/membership</strong> and fill in the application form. Understanding this process helps you explain it to potential members.</p>
+
+  <div class="subsection">
+    <h3>What the Applicant Fills In</h3>
+    <ul>
+      <li>Personal details: Full name, ID number, date of birth, gender</li>
+      <li>Contact details: Email address, phone number</li>
+      <li>Address: Street, city, province, postal code</li>
+      <li>Political details: Municipality, ward number, voting station name</li>
+      <li>Background: Occupation, qualifications, skills, reason for joining</li>
+      <li>Digital signature: Drawn on screen to accept the POPIA consent</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h3>What Happens After Submission</h3>
+    <ol class="steps">
+      <li>The application is saved to the GSAW database with a <span class="pill pill-orange">pending</span> status</li>
+      <li>A unique <strong>Membership Reference Number</strong> is generated (e.g., GSAW-2026-00001)</li>
+      <li>The applicant receives an <strong>automatic confirmation email</strong> from info@gsaw.org.za</li>
+      <li>The NEC admin receives a <strong>notification email</strong> at admin@gsaw.org.za</li>
+      <li>The NEC reviews the application in the <strong>Admin Portal</strong> and either approves or rejects it</li>
+      <li>Once approved, the applicant can check their status at <code>gsaw.org.za/status</code></li>
+      <li>The NEC sends a WhatsApp welcome message with their membership number and the Members Group link</li>
+    </ol>
+    <div class="box box-tip">Direct potential members to <code>www.gsaw.org.za/membership</code> or share the link via WhatsApp. The form works on mobile.</div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num green">3</div>
+    <div>
+      <h2>Application Status Check</h2>
+      <p>How members track their application progress</p>
+    </div>
+  </div>
+
+  <p>Once a member has submitted their application, they can check its status at any time — without logging in — by going to <strong>www.gsaw.org.za/status</strong>.</p>
+
+  <div class="subsection">
+    <h3>How to Check Status</h3>
+    <ol class="steps">
+      <li>Go to <code>www.gsaw.org.za/status</code></li>
+      <li>Enter either your <strong>ID Number</strong> or your <strong>Email Address</strong> that you used when applying</li>
+      <li>Click <strong>Check Status</strong></li>
+      <li>Your application details and current status will be displayed:<br>
+        &nbsp;&nbsp;• <span class="pill pill-orange">⏳ Pending</span> — Application received, under review<br>
+        &nbsp;&nbsp;• <span class="pill pill-green">✅ Approved</span> — You are an official GSAW member<br>
+        &nbsp;&nbsp;• <span class="pill pill-gray">Not Found</span> — ID/email not in the system
+      </li>
+    </ol>
+    <div class="box box-info">Share this page with applicants after they submit. It prevents them calling in to ask about their status.</div>
+  </div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num green">4</div>
+    <div>
+      <h2>Donations — EFT Process</h2>
+      <p>How the donation form works and what donors need to do</p>
+    </div>
+  </div>
+
+  <p>Donations are made at <strong>www.gsaw.org.za/donate</strong>. Currently only EFT (bank transfer) is accepted. Online payment gateways (Yoco, SnapScan, Ozow) will be available in a future update.</p>
+
+  <div class="subsection">
+    <h3>Donor Process — Step by Step</h3>
+    <ol class="steps">
+      <li>Donor goes to <code>www.gsaw.org.za/donate</code></li>
+      <li>Chooses donor type: <strong>Individual</strong> or <strong>Organisation</strong></li>
+      <li>Fills in their name, contact details, donation amount and purpose</li>
+      <li>Selects <strong>Bank Transfer (EFT)</strong> as the payment method</li>
+      <li>The GSAW bank details are displayed on screen</li>
+      <li>Donor does the EFT from their bank and uploads their <strong>Proof of Payment</strong> (PDF or image)</li>
+      <li>Clicks <strong>Submit Donation</strong></li>
+      <li>A confirmation email is sent to the donor automatically</li>
+      <li>The NEC admin verifies the donation in the Admin Portal once payment reflects</li>
+    </ol>
+  </div>
+
+  <div class="subsection">
+    <h3>Bank Details (Shown on Donate Page)</h3>
+    <div class="box box-info">The GSAW bank account details are shown directly on the donation page. The reference for payment should be the donor's full name. Contact the NEC treasurer for the official bank account number.</div>
+  </div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num green">5</div>
+    <div>
+      <h2>Volunteer Registration</h2>
+      <p>How people sign up to help GSAW</p>
+    </div>
+  </div>
+
+  <p>Anyone who wants to volunteer for GSAW (whether or not they are a member) can register at <strong>www.gsaw.org.za/volunteer</strong>.</p>
+
+  <div class="subsection">
+    <h3>What Volunteers Fill In</h3>
+    <ul>
+      <li>First name and last name</li>
+      <li>Email address and phone number</li>
+      <li>Province they are in</li>
+      <li>Areas they can help with (multiple selection):<br>
+        Campaigns, Community Outreach, Media &amp; Communications, Admin &amp; Office Support, Events, Youth Programmes, Legal, Finance
+      </li>
+      <li>Availability: Weekdays / Weekends / Evenings / Flexible</li>
+      <li>Optional message — anything they want the NEC to know</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h3>After Submission</h3>
+    <ol class="steps">
+      <li>The volunteer record is saved to the database</li>
+      <li>The volunteer receives a confirmation email from info@gsaw.org.za</li>
+      <li>The NEC admin receives a notification email at admin@gsaw.org.za</li>
+      <li>The volunteer is visible in the Admin Portal under <strong>Volunteers</strong></li>
+      <li>The NEC contacts the volunteer via phone/WhatsApp to assign them tasks</li>
+    </ol>
+    <div class="box box-tip">Encourage all members and supporters to also register as volunteers — even if they can only help on weekends or online.</div>
+  </div>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num green">6</div>
+    <div>
+      <h2>Contact Us Form</h2>
+      <p>How the public reaches GSAW through the website</p>
+    </div>
+  </div>
+
+  <p>Members of the public can send a message to GSAW at <strong>www.gsaw.org.za/contact</strong>.</p>
+
+  <div class="subsection">
+    <h3>Contact Form Fields</h3>
+    <ul>
+      <li>Full name</li>
+      <li>Email address</li>
+      <li>Subject</li>
+      <li>Message</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h3>What Happens When Someone Contacts GSAW</h3>
+    <ol class="steps">
+      <li>The message is saved to the database</li>
+      <li>The sender receives an auto-reply email confirming their message was received</li>
+      <li>The NEC admin sees the message in the Admin Portal under <strong>Messages</strong></li>
+      <li>Admin clicks <strong>Reply via Email</strong> in the portal — a pre-drafted professional reply opens in the email client</li>
+      <li>Admin personalises and sends the reply from <code>info@gsaw.org.za</code></li>
+    </ol>
+    <div class="box box-warn">Aim to reply to all contact messages within 1 business day. Unanswered messages reflect poorly on the party.</div>
+  </div>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num red">7</div>
+    <div>
+      <h2>GSAW Email Accounts Overview</h2>
+      <p>The two official GSAW email addresses and what they are used for</p>
+    </div>
+  </div>
+
+  <table class="feat-table">
+    <thead><tr><th>Email Address</th><th>Used For</th><th>Who Uses It</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>admin@gsaw.org.za</strong></td>
+        <td>Admin portal login; receives notifications of new applications, donations and volunteer sign-ups from the website</td>
+        <td>NEC Secretary General / Admin staff</td>
+      </tr>
+      <tr>
+        <td><strong>info@gsaw.org.za</strong></td>
+        <td>Public-facing inbox; sends confirmation emails to members/donors/volunteers; reply-to for contact messages</td>
+        <td>NEC staff responding to public enquiries</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="box box-info">Both email accounts use the <strong>gsaw.org.za</strong> domain managed through <strong>Resend</strong>. To receive and read incoming emails, these accounts must be set up on your device using the mail server settings provided by your email hosting provider.</div>
+  <div class="box box-warn">Contact your system administrator or email hosting provider to get the <strong>incoming mail server (IMAP)</strong> settings and <strong>password</strong> for each account before following the steps below.</div>
+</div>
+
+<!-- SECTION 8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num red">8</div>
+    <div>
+      <h2>Setting Up Email on iPhone (iOS)</h2>
+      <p>How to add a GSAW email account to the built-in Mail app</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>You Will Need (Get From Your Email Host)</h3>
+    <div class="email-settings-box">
+      <table>
+        <tr><td>Email Address</td><td><code>info@gsaw.org.za</code> or <code>admin@gsaw.org.za</code></td></tr>
+        <tr><td>Password</td><td>Your mailbox password (from your email hosting provider)</td></tr>
+        <tr><td>Incoming Mail Server</td><td>e.g., <code>mail.gsaw.org.za</code> — provided by host</td></tr>
+        <tr><td>IMAP Port</td><td>993 (SSL) or 143</td></tr>
+        <tr><td>Outgoing (SMTP) Server</td><td>e.g., <code>smtp.gsaw.org.za</code> — provided by host</td></tr>
+        <tr><td>SMTP Port</td><td>465 (SSL) or 587 (TLS)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Steps to Add the Account</h3>
+    <ol class="steps">
+      <li>Open <strong>Settings</strong> on your iPhone</li>
+      <li>Scroll down and tap <strong>Mail</strong></li>
+      <li>Tap <strong>Accounts</strong></li>
+      <li>Tap <strong>Add Account</strong></li>
+      <li>Tap <strong>Other</strong> (not Gmail or Microsoft)</li>
+      <li>Tap <strong>Add Mail Account</strong></li>
+      <li>Fill in:<br>
+        &nbsp;&nbsp;• <strong>Name:</strong> GSAW (or your name)<br>
+        &nbsp;&nbsp;• <strong>Email:</strong> <code>info@gsaw.org.za</code><br>
+        &nbsp;&nbsp;• <strong>Password:</strong> your mailbox password<br>
+        &nbsp;&nbsp;• <strong>Description:</strong> GSAW Info Email
+      </li>
+      <li>Tap <strong>Next</strong></li>
+      <li>Select <strong>IMAP</strong> at the top</li>
+      <li>Enter the <strong>Incoming Mail Server</strong> details (from your host)</li>
+      <li>Enter the <strong>Outgoing Mail Server (SMTP)</strong> details</li>
+      <li>Tap <strong>Next</strong> → tap <strong>Save</strong></li>
+      <li>Your GSAW email will now appear in the Mail app</li>
+    </ol>
+    <div class="box box-tip">Repeat the same process for the second email account (<code>admin@gsaw.org.za</code>). Both accounts will appear in your Mail app side by side.</div>
+  </div>
+</div>
+
+<!-- SECTION 9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num red">9</div>
+    <div>
+      <h2>Setting Up Email on Android</h2>
+      <p>How to add a GSAW email account using Gmail or the Samsung Email app</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Option A — Using the Gmail App (Recommended)</h3>
+    <ol class="steps">
+      <li>Open the <strong>Gmail</strong> app on your Android phone</li>
+      <li>Tap your profile picture (top right) → tap <strong>Add another account</strong></li>
+      <li>Scroll down and select <strong>Other</strong></li>
+      <li>Enter your GSAW email: <code>info@gsaw.org.za</code> → tap <strong>Next</strong></li>
+      <li>Select <strong>Personal (IMAP)</strong></li>
+      <li>Enter your <strong>mailbox password</strong> → tap <strong>Next</strong></li>
+      <li>Enter the <strong>Incoming server settings</strong>:<br>
+        &nbsp;&nbsp;• Username: <code>info@gsaw.org.za</code><br>
+        &nbsp;&nbsp;• Password: your password<br>
+        &nbsp;&nbsp;• IMAP server: provided by your host<br>
+        &nbsp;&nbsp;• Port: 993 &nbsp; Security type: SSL/TLS
+      </li>
+      <li>Tap <strong>Next</strong> → enter <strong>Outgoing (SMTP) server settings</strong></li>
+      <li>Tap <strong>Next</strong> → configure sync options → tap <strong>Next</strong></li>
+      <li>Give the account a name (e.g., "GSAW Info") and tap <strong>Done</strong></li>
+    </ol>
+  </div>
+
+  <div class="subsection">
+    <h3>Option B — Using Samsung Email App</h3>
+    <ol class="steps">
+      <li>Open <strong>Samsung Email</strong> app</li>
+      <li>Tap the menu (☰) → tap <strong>Settings</strong> → tap <strong>Add account</strong></li>
+      <li>Select <strong>Others</strong></li>
+      <li>Enter your email address and password → tap <strong>Manual Setup</strong></li>
+      <li>Choose <strong>IMAP</strong></li>
+      <li>Fill in the incoming and outgoing server details from your email host</li>
+      <li>Tap <strong>Done</strong></li>
+    </ol>
+    <div class="box box-tip">The Gmail app works on all Android phones (Samsung, Huawei, etc.) and is easier to set up than manufacturer email apps. It is the recommended option.</div>
+  </div>
+</div>
+
+<!-- SECTION 10 -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num red">10</div>
+    <div>
+      <h2>Setting Up Email on Windows PC (Outlook)</h2>
+      <p>How to add a GSAW email to Microsoft Outlook on a desktop or laptop</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Using Microsoft Outlook (Office 365 / Outlook 2019/2021)</h3>
+    <ol class="steps">
+      <li>Open <strong>Microsoft Outlook</strong></li>
+      <li>Click <strong>File</strong> in the top menu → click <strong>Add Account</strong></li>
+      <li>Enter your GSAW email: <code>info@gsaw.org.za</code> → click <strong>Connect</strong></li>
+      <li>If Outlook cannot auto-detect settings, select <strong>IMAP</strong> manually</li>
+      <li>Fill in the <strong>Incoming mail settings</strong>:<br>
+        &nbsp;&nbsp;• Server: your IMAP server (from host)<br>
+        &nbsp;&nbsp;• Port: 993 &nbsp; Encryption: SSL/TLS
+      </li>
+      <li>Fill in the <strong>Outgoing mail settings</strong>:<br>
+        &nbsp;&nbsp;• Server: your SMTP server (from host)<br>
+        &nbsp;&nbsp;• Port: 587 &nbsp; Encryption: STARTTLS
+      </li>
+      <li>Click <strong>Next</strong> → enter your password → click <strong>Connect</strong></li>
+      <li>Click <strong>Done</strong> — your GSAW email will now appear in Outlook's left panel</li>
+    </ol>
+  </div>
+
+  <div class="subsection">
+    <h3>Using Windows Mail (Built-in App)</h3>
+    <ol class="steps">
+      <li>Open the <strong>Mail</strong> app (Windows 10/11)</li>
+      <li>Click the ⚙️ <strong>Settings</strong> cog → click <strong>Manage Accounts</strong></li>
+      <li>Click <strong>Add account</strong></li>
+      <li>Select <strong>Other account (POP, IMAP)</strong></li>
+      <li>Enter your GSAW email, display name, and password</li>
+      <li>Click <strong>Sign in</strong> — if it fails, click <strong>Advanced setup</strong> and enter IMAP/SMTP details manually</li>
+    </ol>
+    <div class="box box-warn">If Outlook asks to verify your identity or shows a security warning about the server certificate, contact your email hosting provider for the correct SSL settings.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>Testing the Account</h3>
+    <ol class="steps">
+      <li>Once set up, send a test email from <code>info@gsaw.org.za</code> to your personal email</li>
+      <li>Check that the email arrives and the sender shows as <code>info@gsaw.org.za</code></li>
+      <li>Reply from your personal email to <code>info@gsaw.org.za</code> and confirm it arrives in the GSAW inbox</li>
+    </ol>
+  </div>
+</div>
+
+<!-- SECTION 11 -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num orange">11</div>
+    <div>
+      <h2>Social Media &amp; Contact Details</h2>
+      <p>Official GSAW accounts and how to reach the development team</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Official GSAW Accounts</h3>
+    <table class="feat-table">
+      <thead><tr><th>Platform</th><th>Handle / Link</th></tr></thead>
+      <tbody>
+        <tr><td>🌐 Website</td><td><code>www.gsaw.org.za</code></td></tr>
+        <tr><td>📘 Facebook Group</td><td><code>facebook.com/groups/7831634076854510</code></td></tr>
+        <tr><td>🎵 TikTok</td><td><code>tiktok.com/@gsaw.political.pa</code></td></tr>
+        <tr><td>💬 WhatsApp Members Group</td><td><code>chat.whatsapp.com/IcZAlYCUtvi640wi2rin3o</code></td></tr>
+        <tr><td>📧 General Enquiries</td><td><code>info@gsaw.org.za</code></td></tr>
+        <tr><td>📧 Admin (Internal)</td><td><code>admin@gsaw.org.za</code></td></tr>
+        <tr><td>📞 Phone / WhatsApp</td><td>+27 73 585 0365</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Quick Reference — All Key URLs</h3>
+    <table class="feat-table">
+      <thead><tr><th>Purpose</th><th>URL</th></tr></thead>
+      <tbody>
+        <tr><td>Public Website</td><td><code>www.gsaw.org.za</code></td></tr>
+        <tr><td>Admin Portal</td><td><code>www.gsaw.org.za/admin</code></td></tr>
+        <tr><td>Membership Form</td><td><code>www.gsaw.org.za/membership</code></td></tr>
+        <tr><td>Status Check</td><td><code>www.gsaw.org.za/status</code></td></tr>
+        <tr><td>Donate</td><td><code>www.gsaw.org.za/donate</code></td></tr>
+        <tr><td>Volunteer</td><td><code>www.gsaw.org.za/volunteer</code></td></tr>
+        <tr><td>Contact</td><td><code>www.gsaw.org.za/contact</code></td></tr>
+        <tr><td>Supabase Dashboard (DB)</td><td><code>supabase.com/dashboard/project/nvgoaikzidtpyvmffmxq</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3>Admin Portal Login (Quick Reference)</h3>
+    <div class="box box-cred">
+      <div class="cred-row"><span class="label">Portal URL</span><span class="value">https://www.gsaw.org.za/admin</span></div>
+      <div class="cred-row"><span class="label">Email</span><span class="value">admin@gsaw.org.za</span></div>
+      <div class="cred-row"><span class="label">Password</span><span class="value">Gsaw@Admin@2025</span></div>
+    </div>
+    <div class="box box-warn">Keep these credentials strictly confidential.</div>
+  </div>
+
+  <div class="page-footer">
+    GSAW Staff Guide — Website &amp; Email Setup &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; www.gsaw.org.za
+  </div>
+</div>
+
+</body>
+</html>

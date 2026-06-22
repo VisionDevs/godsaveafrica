@@ -29,6 +29,10 @@ CREATE POLICY "Allow anonymous insert" ON volunteers
 CREATE POLICY "Allow authenticated read" ON volunteers
     FOR SELECT TO anon USING (true);
 
+-- Allow admin delete
+CREATE POLICY "Allow public delete on volunteers" ON volunteers
+    FOR DELETE TO anon USING (true);
+
 
 -- 2. Contact Messages table
 CREATE TABLE IF NOT EXISTS contact_messages (
@@ -56,6 +60,10 @@ CREATE POLICY "Allow authenticated read" ON contact_messages
 -- Allow updates (mark as read from admin)
 CREATE POLICY "Allow update contact messages" ON contact_messages
     FOR UPDATE TO anon USING (true) WITH CHECK (true);
+
+-- Allow admin delete
+CREATE POLICY "Allow public delete on contact_messages" ON contact_messages
+    FOR DELETE TO anon USING (true);
 
 
 -- ============================================================

@@ -81,7 +81,12 @@ function switchView(viewId) {
         provinces: 'Members by Province',
         donations: 'Donations (Treasurer)',
         volunteers: 'Volunteers',
-        messages: 'Contact Messages'
+        messages: 'Contact Messages',
+        announcements: 'Announcements & Banners',
+        'cms-events': 'Events Management',
+        'cms-news': 'News Management',
+        'cms-gallery': 'Gallery Management',
+        'cms-leaders': 'Leadership Management'
     };
 
     navItems.forEach(function (item) {
@@ -107,6 +112,11 @@ function switchView(viewId) {
     if (viewId === 'donations') renderDonations();
     if (viewId === 'volunteers') loadVolunteers();
     if (viewId === 'messages') loadMessages();
+    if (viewId === 'announcements') renderAnnouncements();
+    if (viewId === 'cms-events') renderCmsEvents();
+    if (viewId === 'cms-news') renderCmsNews();
+    if (viewId === 'cms-gallery') renderCmsGallery();
+    if (viewId === 'cms-leaders') renderCmsLeaders();
 }
 
 // ========================================
@@ -1715,3 +1725,537 @@ function exportMessagesCSV() {
         XLSX.writeFile(wb, 'gsaw_messages_' + new Date().toISOString().slice(0, 10) + '.xlsx');
     }
 }
+
+// ========================================
+// CMS MANAGEMENT — shared helpers
+// ========================================
+
+var cmsCurrentType = null;
+var cmsCurrentRecord = null;
+var cmsUploadedImage = null; // { path, url } after uploading
+
+function cmsEsc(str) {
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(String(str || '')));
+    return d.innerHTML;
+}
+
+function cmsLoading(containerId) {
+    var el = document.getElementById(containerId);
+    if (el) el.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;"><i class="fas fa-spinner fa-spin" style="font-size:1.8rem;"></i><p style="margin-top:10px;font-size:0.85rem;">Loading...</p></div>';
+}
+
+function cmsEmpty(containerId, msg) {
+    var el = document.getElementById(containerId);
+    if (el) el.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;"><i class="fas fa-inbox" style="font-size:2rem;"></i><p style="margin-top:10px;font-size:0.85rem;">' + (msg || 'No items yet') + '</p></div>';
+}
+
+function openCmsModal(type, record) {
+    cmsCurrentType = type;
+    cmsCurrentRecord = record || null;
+    cmsUploadedImage = null;
+    var titleMap = { announcement: 'Announcement', event: 'Event', news: 'News Article', leader: 'Leader' };
+    document.getElementById('cms-modal-title').textContent = (record ? 'Edit' : 'New') + ' ' + (titleMap[type] || type);
+    document.getElementById('cms-modal-body').innerHTML = buildCmsForm(type, record);
+    document.getElementById('cms-modal-footer').innerHTML =
+        '<button style="padding:9px 20px;border-radius:8px;border:none;background:#e5e7eb;color:#374151;cursor:pointer;font-size:0.85rem;" onclick="closeCmsModal()">Cancel</button>' +
+        '<button style="padding:9px 24px;border-radius:8px;border:none;background:#1B7A3D;color:#fff;cursor:pointer;font-weight:600;font-size:0.85rem;" onclick="saveCmsItem()">' +
+        '<i class="fas fa-save"></i> Save</button>';
+    document.getElementById('cms-modal-overlay').style.display = 'flex';
+}
+
+function closeCmsModal(e) {
+    if (e && e.target !== document.getElementById('cms-modal-overlay')) return;
+    document.getElementById('cms-modal-overlay').style.display = 'none';
+    cmsCurrentType = null;
+    cmsCurrentRecord = null;
+    cmsUploadedImage = null;
+}
+
+function buildCmsForm(type, r) {
+    r = r || {};
+    var html = '';
+    var inp = function(label, name, val, type2, req, placeholder) {
+        return '<div style="margin-bottom:14px;">' +
+            '<label style="display:block;font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:5px;">' + label + (req ? ' <span style="color:#E31E24;">*</span>' : '') + '</label>' +
+            '<input type="' + (type2 || 'text') + '" name="' + name + '" value="' + cmsEsc(val || '') + '" ' + (req ? 'required' : '') + ' placeholder="' + (placeholder || '') + '" style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">' +
+            '</div>';
+    };
+    var ta = function(label, name, val, rows, req) {
+        return '<div style="margin-bottom:14px;">' +
+            '<label style="display:block;font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:5px;">' + label + (req ? ' <span style="color:#E31E24;">*</span>' : '') + '</label>' +
+            '<textarea name="' + name + '" rows="' + (rows || 3) + '" ' + (req ? 'required' : '') + ' style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;box-sizing:border-box;resize:vertical;">' + cmsEsc(val || '') + '</textarea>' +
+            '</div>';
+    };
+    var sel = function(label, name, options, val) {
+        var opts = options.map(function(o) {
+            var v = o.value !== undefined ? o.value : o;
+            var t = o.text || o;
+            return '<option value="' + cmsEsc(v) + '"' + (String(val) === String(v) ? ' selected' : '') + '>' + cmsEsc(t) + '</option>';
+        }).join('');
+        return '<div style="margin-bottom:14px;">' +
+            '<label style="display:block;font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:5px;">' + label + '</label>' +
+            '<select name="' + name + '" style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:0.85rem;box-sizing:border-box;">' + opts + '</select></div>';
+    };
+    var chk = function(label, name, checked) {
+        return '<div style="margin-bottom:14px;display:flex;align-items:center;gap:8px;">' +
+            '<input type="checkbox" name="' + name + '" id="chk-' + name + '" ' + (checked ? 'checked' : '') + ' style="width:16px;height:16px;cursor:pointer;">' +
+            '<label for="chk-' + name + '" style="font-size:0.85rem;color:#374151;cursor:pointer;">' + label + '</label></div>';
+    };
+    var imgUpload = function(currentUrl) {
+        var preview = currentUrl
+            ? '<div id="cms-img-preview" style="margin-bottom:8px;"><img src="' + currentUrl + '" style="max-width:100%;max-height:150px;border-radius:6px;object-fit:cover;"></div>'
+            : '<div id="cms-img-preview"></div>';
+        return '<div style="margin-bottom:14px;">' +
+            '<label style="display:block;font-size:0.8rem;font-weight:600;color:#374151;margin-bottom:5px;">Image ' + (currentUrl ? '(Upload new to replace)' : '') + '</label>' +
+            preview +
+            '<input type="file" id="cms-img-input" accept="image/jpeg,image/png,image/webp,image/gif" onchange="cmsPreviewAndUpload(this)" style="font-size:0.82rem;width:100%;">' +
+            '<div id="cms-upload-status" style="font-size:0.78rem;color:#1B7A3D;margin-top:4px;"></div>' +
+            '</div>';
+    };
+    var row2 = function(a, b) { return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' + a + b + '</div>'; };
+
+    if (type === 'announcement') {
+        html += ta('Banner Message', 'message', r.message, 3, true);
+        html += row2(
+            sel('Urgency Colour', 'color',
+                [{value:'green',text:'Green (Info/Success)'},{value:'orange',text:'Orange (Warning)'},{value:'red',text:'Red (Urgent)'}],
+                r.color || 'green'),
+            inp('Link URL', 'link_url', r.link_url, 'url', false, 'https://...')
+        );
+        html += inp('Link Button Text', 'link_text', r.link_text, 'text', false, 'e.g. Register Now');
+        html += row2(
+            inp('Start Date & Time', 'start_date', r.start_date ? r.start_date.slice(0,16) : '', 'datetime-local'),
+            inp('End Date & Time (auto-expire)', 'end_date', r.end_date ? r.end_date.slice(0,16) : '', 'datetime-local')
+        );
+        html += chk('Show countdown timer', 'show_countdown', r.show_countdown);
+        html += inp('Countdown Target Date & Time', 'countdown_date', r.countdown_date ? r.countdown_date.slice(0,16) : '', 'datetime-local');
+        html += chk('Active (show on website)', 'is_active', r.is_active !== false);
+    } else if (type === 'event') {
+        html += inp('Event Title', 'title', r.title, 'text', true);
+        html += row2(
+            sel('Event Type', 'event_type',
+                [{value:'general',text:'General'},{value:'gospel',text:'Gospel Event'},{value:'registration',text:'Voter Registration'},{value:'rally',text:'Rally'},{value:'outreach',text:'Community Outreach'}],
+                r.event_type || 'general'),
+            inp('Date', 'event_date', r.event_date, 'date', true)
+        );
+        html += row2(
+            inp('Time', 'event_time', r.event_time, 'time'),
+            inp('Location', 'location', r.location, 'text', false, 'e.g. Cape Town Stadium')
+        );
+        html += ta('Description', 'description', r.description, 4);
+        html += row2(
+            inp('Link URL', 'link_url', r.link_url, 'url', false, 'https://...'),
+            inp('Link Button Text', 'link_text', r.link_text, 'text', false, 'More Info')
+        );
+        html += imgUpload(r.image_url);
+        html += chk('Archive (hide from public)', 'is_archived', r.is_archived);
+    } else if (type === 'news') {
+        html += inp('Article Title', 'title', r.title, 'text', true);
+        html += ta('Summary (shown on news card)', 'summary', r.summary, 2);
+        html += ta('Full Article Body', 'body', r.body, 7);
+        html += row2(
+            inp('Author', 'author', r.author || 'GSAW NEC', 'text'),
+            sel('Category', 'category',
+                ['General','Announcement','Press Release','Community','Policy'],
+                r.category || 'General')
+        );
+        html += inp('Published Date', 'published_at', r.published_at ? r.published_at.slice(0,16) : new Date().toISOString().slice(0,16), 'datetime-local');
+        html += imgUpload(r.cover_image_url);
+        html += chk('Published (visible on website)', 'is_published', r.is_published !== false);
+    } else if (type === 'leader') {
+        html += row2(
+            inp('Full Name', 'name', r.name, 'text', true),
+            inp('Position / Title', 'title', r.title, 'text', true, 'e.g. President')
+        );
+        html += ta('Short Bio (optional)', 'bio', r.bio, 3);
+        html += row2(
+            inp('Display Order (lower = first)', 'display_order', r.display_order || 10, 'number'),
+            '<div style="margin-bottom:14px;"></div>'
+        );
+        html += chk('Primary Leader (large hero card)', 'is_primary', r.is_primary);
+        html += chk('Active (show on website)', 'is_active', r.is_active !== false);
+        html += imgUpload(r.photo_url);
+    }
+    return html;
+}
+
+function cmsPreviewAndUpload(input) {
+    var file = input.files[0];
+    if (!file) return;
+    var maxMB = 5;
+    if (file.size > maxMB * 1024 * 1024) { alert('File is too large. Maximum size is ' + maxMB + 'MB.'); input.value = ''; return; }
+    var statusEl = document.getElementById('cms-upload-status');
+    var previewEl = document.getElementById('cms-img-preview');
+    statusEl.textContent = 'Uploading...';
+    cmsUploadedImage = null;
+    var folderMap = { announcement: 'banners', event: 'events', news: 'news', leader: 'leaders' };
+    gsawDB.cmsUploadFile(file, folderMap[cmsCurrentType] || 'media')
+        .then(function(result) {
+            cmsUploadedImage = result;
+            statusEl.style.color = '#1B7A3D';
+            statusEl.textContent = 'Uploaded: ' + file.name;
+            previewEl.innerHTML = '<img src="' + result.url + '" style="max-width:100%;max-height:150px;border-radius:6px;object-fit:cover;margin-bottom:4px;">';
+        })
+        .catch(function(err) {
+            statusEl.style.color = '#E31E24';
+            statusEl.textContent = 'Upload failed: ' + (err.message || 'Please try again');
+        });
+}
+
+function cmsGetFormValues() {
+    var body = document.getElementById('cms-modal-body');
+    var inputs = body.querySelectorAll('input,textarea,select');
+    var data = {};
+    inputs.forEach(function(el) {
+        if (!el.name) return;
+        if (el.type === 'checkbox') data[el.name] = el.checked;
+        else if (el.type === 'file') return;
+        else data[el.name] = el.value || null;
+    });
+    return data;
+}
+
+function saveCmsItem() {
+    var type = cmsCurrentType;
+    var r = cmsCurrentRecord;
+    var d = cmsGetFormValues();
+    var btn = document.querySelector('#cms-modal-footer button:last-child');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+    var oldImagePath = null;
+    var promise;
+
+    if (type === 'announcement') {
+        if (!d.message) { alert('Please enter a banner message.'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save'; return; }
+        if (d.start_date) d.start_date = new Date(d.start_date).toISOString();
+        else d.start_date = null;
+        if (d.end_date) d.end_date = new Date(d.end_date).toISOString();
+        else d.end_date = null;
+        if (d.countdown_date) d.countdown_date = new Date(d.countdown_date).toISOString();
+        else d.countdown_date = null;
+        promise = r ? gsawDB.updateAnnouncement(r.id, d) : gsawDB.addAnnouncement(d);
+        promise.then(function() { closeCmsModal(); renderAnnouncements(); }).catch(cmsHandleError(btn));
+
+    } else if (type === 'event') {
+        if (!d.title || !d.event_date) { alert('Title and Date are required.'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save'; return; }
+        if (cmsUploadedImage) {
+            oldImagePath = r && r.image_path ? r.image_path : null;
+            d.image_url = cmsUploadedImage.url;
+            d.image_path = cmsUploadedImage.path;
+        }
+        promise = r ? gsawDB.updateCmsEvent(r.id, d) : gsawDB.addCmsEvent(d);
+        promise.then(function() {
+            if (oldImagePath) gsawDB.deleteStorageFile(oldImagePath);
+            closeCmsModal(); renderCmsEvents();
+        }).catch(cmsHandleError(btn));
+
+    } else if (type === 'news') {
+        if (!d.title) { alert('Title is required.'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save'; return; }
+        if (d.published_at) d.published_at = new Date(d.published_at).toISOString();
+        if (cmsUploadedImage) {
+            oldImagePath = r && r.cover_image_path ? r.cover_image_path : null;
+            d.cover_image_url = cmsUploadedImage.url;
+            d.cover_image_path = cmsUploadedImage.path;
+        }
+        promise = r ? gsawDB.updateCmsNews(r.id, d) : gsawDB.addCmsNews(d);
+        promise.then(function() {
+            if (oldImagePath) gsawDB.deleteStorageFile(oldImagePath);
+            closeCmsModal(); renderCmsNews();
+        }).catch(cmsHandleError(btn));
+
+    } else if (type === 'leader') {
+        if (!d.name || !d.title) { alert('Name and Title are required.'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save'; return; }
+        if (cmsUploadedImage) {
+            oldImagePath = r && r.photo_path ? r.photo_path : null;
+            d.photo_url = cmsUploadedImage.url;
+            d.photo_path = cmsUploadedImage.path;
+        }
+        d.display_order = parseInt(d.display_order) || 10;
+        promise = r ? gsawDB.updateCmsLeader(r.id, d) : gsawDB.addCmsLeader(d);
+        promise.then(function() {
+            if (oldImagePath) gsawDB.deleteStorageFile(oldImagePath);
+            closeCmsModal(); renderCmsLeaders();
+        }).catch(cmsHandleError(btn));
+    }
+}
+
+function cmsHandleError(btn) {
+    return function(err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Save';
+        alert('Error saving: ' + (err.message || 'Please try again'));
+    };
+}
+
+// ========================================
+// CMS — ANNOUNCEMENTS
+// ========================================
+function renderAnnouncements() {
+    cmsLoading('announcements-list');
+    gsawDB.getAnnouncements().then(function(items) {
+        if (!items || !items.length) { cmsEmpty('announcements-list', 'No announcements yet. Click "New Banner" to create one.'); return; }
+        var html = '<table style="width:100%;border-collapse:collapse;font-size:0.83rem;">';
+        html += '<thead><tr style="border-bottom:2px solid #e5e7eb;">' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Message</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Colour</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Expires</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Status</th>' +
+            '<th style="text-align:right;padding:10px 12px;color:#6c757d;font-weight:600;">Actions</th></tr></thead><tbody>';
+        items.forEach(function(a) {
+            var colourDot = {green:'#1B7A3D',orange:'#F47920',red:'#E31E24'}[a.color] || '#1B7A3D';
+            var expiry = a.end_date ? new Date(a.end_date).toLocaleDateString('en-ZA') : '—';
+            var statusBadge = a.is_active
+                ? '<span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;">Active</span>'
+                : '<span style="background:#f3f4f6;color:#6b7280;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;">Inactive</span>';
+            html += '<tr style="border-bottom:1px solid #f3f4f6;transition:background 0.15s;" onmouseover="this.style.background=\'#f9fafb\'" onmouseout="this.style.background=\'\'">' +
+                '<td style="padding:10px 12px;max-width:300px;"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;" title="' + cmsEsc(a.message) + '">' + cmsEsc(a.message) + '</div></td>' +
+                '<td style="padding:10px 12px;"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + colourDot + ';margin-right:6px;"></span>' + (a.color || 'green') + '</td>' +
+                '<td style="padding:10px 12px;">' + expiry + '</td>' +
+                '<td style="padding:10px 12px;">' + statusBadge + '</td>' +
+                '<td style="padding:10px 12px;text-align:right;white-space:nowrap;">' +
+                '<button onclick="openCmsModal(\'announcement\',' + JSON.stringify(a).replace(/"/g,'&quot;') + ')" style="padding:5px 12px;border:none;background:#e5e7eb;color:#374151;border-radius:6px;cursor:pointer;font-size:0.78rem;margin-right:4px;"><i class="fas fa-edit"></i></button>' +
+                '<button onclick="toggleAnnouncement(\'' + a.id + '\',' + !a.is_active + ')" style="padding:5px 12px;border:none;background:' + (a.is_active ? '#fef3c7' : '#d1fae5') + ';color:#374151;border-radius:6px;cursor:pointer;font-size:0.78rem;margin-right:4px;" title="' + (a.is_active ? 'Deactivate' : 'Activate') + '"><i class="fas fa-' + (a.is_active ? 'eye-slash' : 'eye') + '"></i></button>' +
+                '<button onclick="deleteAnnouncement(\'' + a.id + '\')" style="padding:5px 12px;border:none;background:#fee2e2;color:#E31E24;border-radius:6px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash"></i></button>' +
+                '</td></tr>';
+        });
+        html += '</tbody></table>';
+        document.getElementById('announcements-list').innerHTML = html;
+    }).catch(function() { cmsEmpty('announcements-list', 'Failed to load. Try refreshing.'); });
+}
+
+function toggleAnnouncement(id, newState) {
+    gsawDB.updateAnnouncement(id, { is_active: newState }).then(renderAnnouncements);
+}
+
+function deleteAnnouncement(id) {
+    if (!confirm('Delete this announcement?')) return;
+    gsawDB.deleteAnnouncement(id).then(renderAnnouncements);
+}
+
+// ========================================
+// CMS — EVENTS
+// ========================================
+function renderCmsEvents() {
+    cmsLoading('cms-events-list');
+    gsawDB.getCmsEvents().then(function(items) {
+        if (!items || !items.length) { cmsEmpty('cms-events-list', 'No events yet. Click "New Event" to add one.'); return; }
+        var html = '<table style="width:100%;border-collapse:collapse;font-size:0.83rem;">';
+        html += '<thead><tr style="border-bottom:2px solid #e5e7eb;">' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Title</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Type</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Date</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Location</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Status</th>' +
+            '<th style="text-align:right;padding:10px 12px;color:#6c757d;font-weight:600;">Actions</th></tr></thead><tbody>';
+        items.forEach(function(ev) {
+            var badge = ev.is_archived
+                ? '<span style="background:#f3f4f6;color:#6b7280;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;">Archived</span>'
+                : '<span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;">Live</span>';
+            var dateStr = ev.event_date ? new Date(ev.event_date + 'T00:00:00').toLocaleDateString('en-ZA') : '—';
+            html += '<tr style="border-bottom:1px solid #f3f4f6;" onmouseover="this.style.background=\'#f9fafb\'" onmouseout="this.style.background=\'\'">' +
+                '<td style="padding:10px 12px;font-weight:600;">' + cmsEsc(ev.title) + '</td>' +
+                '<td style="padding:10px 12px;text-transform:capitalize;">' + (ev.event_type || '—') + '</td>' +
+                '<td style="padding:10px 12px;">' + dateStr + '</td>' +
+                '<td style="padding:10px 12px;">' + cmsEsc(ev.location || '—') + '</td>' +
+                '<td style="padding:10px 12px;">' + badge + '</td>' +
+                '<td style="padding:10px 12px;text-align:right;white-space:nowrap;">' +
+                '<button onclick="openCmsModal(\'event\',' + JSON.stringify(ev).replace(/"/g,'&quot;') + ')" style="padding:5px 12px;border:none;background:#e5e7eb;color:#374151;border-radius:6px;cursor:pointer;font-size:0.78rem;margin-right:4px;"><i class="fas fa-edit"></i></button>' +
+                '<button onclick="toggleCmsEvent(\'' + ev.id + '\',' + !ev.is_archived + ')" style="padding:5px 12px;border:none;background:#fef3c7;color:#374151;border-radius:6px;cursor:pointer;font-size:0.78rem;margin-right:4px;" title="' + (ev.is_archived ? 'Unarchive' : 'Archive') + '"><i class="fas fa-archive"></i></button>' +
+                '<button onclick="deleteCmsEvent(\'' + ev.id + '\',\'' + cmsEsc(ev.image_path || '') + '\')" style="padding:5px 12px;border:none;background:#fee2e2;color:#E31E24;border-radius:6px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash"></i></button>' +
+                '</td></tr>';
+        });
+        html += '</tbody></table>';
+        document.getElementById('cms-events-list').innerHTML = html;
+    }).catch(function() { cmsEmpty('cms-events-list', 'Failed to load. Try refreshing.'); });
+}
+
+function toggleCmsEvent(id, archiveState) {
+    gsawDB.updateCmsEvent(id, { is_archived: archiveState }).then(renderCmsEvents);
+}
+
+function deleteCmsEvent(id, imagePath) {
+    if (!confirm('Delete this event? This cannot be undone.')) return;
+    gsawDB.deleteCmsEvent(id).then(function() {
+        if (imagePath) gsawDB.deleteStorageFile(imagePath);
+        renderCmsEvents();
+    });
+}
+
+// ========================================
+// CMS — NEWS
+// ========================================
+function renderCmsNews() {
+    cmsLoading('cms-news-list');
+    gsawDB.getCmsNews().then(function(items) {
+        if (!items || !items.length) { cmsEmpty('cms-news-list', 'No articles yet. Click "New Article" to add one.'); return; }
+        var html = '<table style="width:100%;border-collapse:collapse;font-size:0.83rem;">';
+        html += '<thead><tr style="border-bottom:2px solid #e5e7eb;">' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Title</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Category</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Author</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Published</th>' +
+            '<th style="text-align:left;padding:10px 12px;color:#6c757d;font-weight:600;">Status</th>' +
+            '<th style="text-align:right;padding:10px 12px;color:#6c757d;font-weight:600;">Actions</th></tr></thead><tbody>';
+        items.forEach(function(a) {
+            var badge = a.is_published
+                ? '<span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;">Published</span>'
+                : '<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600;">Draft</span>';
+            var pubDate = a.published_at ? new Date(a.published_at).toLocaleDateString('en-ZA') : '—';
+            html += '<tr style="border-bottom:1px solid #f3f4f6;" onmouseover="this.style.background=\'#f9fafb\'" onmouseout="this.style.background=\'\'">' +
+                '<td style="padding:10px 12px;font-weight:600;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + cmsEsc(a.title) + '</td>' +
+                '<td style="padding:10px 12px;">' + cmsEsc(a.category || '—') + '</td>' +
+                '<td style="padding:10px 12px;">' + cmsEsc(a.author || '—') + '</td>' +
+                '<td style="padding:10px 12px;">' + pubDate + '</td>' +
+                '<td style="padding:10px 12px;">' + badge + '</td>' +
+                '<td style="padding:10px 12px;text-align:right;white-space:nowrap;">' +
+                '<button onclick="openCmsModal(\'news\',' + JSON.stringify(a).replace(/"/g,'&quot;') + ')" style="padding:5px 12px;border:none;background:#e5e7eb;color:#374151;border-radius:6px;cursor:pointer;font-size:0.78rem;margin-right:4px;"><i class="fas fa-edit"></i></button>' +
+                '<button onclick="toggleCmsNews(\'' + a.id + '\',' + !a.is_published + ')" style="padding:5px 12px;border:none;background:#dbeafe;color:#1d4ed8;border-radius:6px;cursor:pointer;font-size:0.78rem;margin-right:4px;" title="' + (a.is_published ? 'Unpublish' : 'Publish') + '"><i class="fas fa-' + (a.is_published ? 'eye-slash' : 'eye') + '"></i></button>' +
+                '<button onclick="deleteCmsNews(\'' + a.id + '\',\'' + cmsEsc(a.cover_image_path || '') + '\')" style="padding:5px 12px;border:none;background:#fee2e2;color:#E31E24;border-radius:6px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash"></i></button>' +
+                '</td></tr>';
+        });
+        html += '</tbody></table>';
+        document.getElementById('cms-news-list').innerHTML = html;
+    }).catch(function() { cmsEmpty('cms-news-list', 'Failed to load. Try refreshing.'); });
+}
+
+function toggleCmsNews(id, publishState) {
+    gsawDB.updateCmsNews(id, { is_published: publishState }).then(renderCmsNews);
+}
+
+function deleteCmsNews(id, imagePath) {
+    if (!confirm('Delete this article? This cannot be undone.')) return;
+    gsawDB.deleteCmsNews(id).then(function() {
+        if (imagePath) gsawDB.deleteStorageFile(imagePath);
+        renderCmsNews();
+    });
+}
+
+// ========================================
+// CMS — GALLERY
+// ========================================
+function renderCmsGallery() {
+    var grid = document.getElementById('cms-gallery-grid');
+    if (!grid) return;
+    grid.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;"><i class="fas fa-spinner fa-spin" style="font-size:1.8rem;"></i></div>';
+    gsawDB.getGalleryPhotos().then(function(items) {
+        if (!items || !items.length) {
+            grid.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;grid-column:1/-1;"><i class="fas fa-images" style="font-size:2rem;"></i><p style="margin-top:10px;font-size:0.85rem;">No photos yet. Select an album and click "Upload Photos".</p></div>';
+            return;
+        }
+        var html = '';
+        items.forEach(function(p) {
+            html += '<div style="position:relative;border-radius:10px;overflow:hidden;background:#f3f4f6;aspect-ratio:1;box-shadow:0 2px 6px rgba(0,0,0,0.08);">' +
+                '<img src="' + p.image_url + '" alt="' + cmsEsc(p.caption || '') + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">' +
+                '<div style="position:absolute;inset:0;background:rgba(0,0,0,0);transition:background 0.2s;" onmouseover="this.style.background=\'rgba(0,0,0,0.4)\';this.querySelector(\'.gallery-actions\').style.opacity=\'1\'" onmouseout="this.style.background=\'rgba(0,0,0,0)\';this.querySelector(\'.gallery-actions\').style.opacity=\'0\'">' +
+                '<div class="gallery-actions" style="opacity:0;transition:opacity 0.2s;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:6px;align-items:center;">' +
+                (p.caption ? '<div style="background:rgba(0,0,0,0.7);color:#fff;font-size:0.72rem;padding:3px 8px;border-radius:4px;max-width:130px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + cmsEsc(p.caption) + '</div>' : '') +
+                '<button onclick="deleteCmsGalleryPhoto(\'' + p.id + '\',\'' + cmsEsc(p.image_path) + '\')" style="padding:6px 14px;border:none;background:#E31E24;color:#fff;border-radius:6px;cursor:pointer;font-size:0.75rem;font-weight:600;"><i class="fas fa-trash"></i> Delete</button>' +
+                '</div></div></div>';
+        });
+        grid.innerHTML = html;
+    }).catch(function() {
+        grid.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;grid-column:1/-1;">Failed to load. Try refreshing.</div>';
+    });
+}
+
+function handleGalleryUpload(input) {
+    var files = Array.from(input.files);
+    if (!files.length) return;
+    var album = document.getElementById('gallery-album-input').value || 'General';
+    var progressWrap = document.getElementById('gallery-upload-progress');
+    var progressBar = document.getElementById('gallery-progress-bar');
+    var progressText = document.getElementById('gallery-progress-text');
+    progressWrap.style.display = 'block';
+    var total = files.length;
+    var done = 0;
+    var maxMB = 5;
+
+    function uploadNext(i) {
+        if (i >= files.length) {
+            progressText.textContent = 'All photos uploaded!';
+            progressBar.style.width = '100%';
+            setTimeout(function() { progressWrap.style.display = 'none'; progressBar.style.width = '0%'; }, 2000);
+            input.value = '';
+            renderCmsGallery();
+            return;
+        }
+        var file = files[i];
+        if (file.size > maxMB * 1024 * 1024) {
+            progressText.textContent = 'Skipping ' + file.name + ' (over ' + maxMB + 'MB)';
+            done++;
+            progressBar.style.width = Math.round((done / total) * 100) + '%';
+            uploadNext(i + 1);
+            return;
+        }
+        progressText.textContent = 'Uploading ' + (i + 1) + ' of ' + total + ': ' + file.name;
+        gsawDB.cmsUploadFile(file, 'gallery').then(function(result) {
+            return gsawDB.addGalleryPhoto({ image_url: result.url, image_path: result.path, album: album, caption: '', display_order: 0 });
+        }).then(function() {
+            done++;
+            progressBar.style.width = Math.round((done / total) * 100) + '%';
+            uploadNext(i + 1);
+        }).catch(function() {
+            done++;
+            progressText.textContent = 'Failed to upload: ' + file.name;
+            progressBar.style.width = Math.round((done / total) * 100) + '%';
+            uploadNext(i + 1);
+        });
+    }
+    uploadNext(0);
+}
+
+function deleteCmsGalleryPhoto(id, imagePath) {
+    if (!confirm('Delete this photo permanently?')) return;
+    gsawDB.deleteGalleryPhoto(id).then(function() {
+        if (imagePath) gsawDB.deleteStorageFile(imagePath);
+        renderCmsGallery();
+    });
+}
+
+// ========================================
+// CMS — LEADERS
+// ========================================
+function renderCmsLeaders() {
+    var grid = document.getElementById('cms-leaders-grid');
+    if (!grid) return;
+    grid.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;grid-column:1/-1;"><i class="fas fa-spinner fa-spin" style="font-size:1.8rem;"></i></div>';
+    gsawDB.getCmsLeaders().then(function(items) {
+        if (!items || !items.length) {
+            grid.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;grid-column:1/-1;"><i class="fas fa-users" style="font-size:2rem;"></i><p style="margin-top:10px;font-size:0.85rem;">No leaders yet. Click "Add Leader" to add one.</p></div>';
+            return;
+        }
+        var html = '';
+        items.forEach(function(l) {
+            var avatarHtml = l.photo_url
+                ? '<img src="' + l.photo_url + '" alt="' + cmsEsc(l.name) + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid ' + (l.is_primary ? '#E31E24' : '#1B7A3D') + ';margin:0 auto 12px;display:block;" onerror="this.style.display=\'none\'">'
+                : '<div style="width:80px;height:80px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="fas fa-user" style="color:#9ca3af;font-size:1.8rem;"></i></div>';
+            var primaryBadge = l.is_primary ? '<span style="background:#fee2e2;color:#E31E24;font-size:0.7rem;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px;">Primary</span>' : '';
+            var activeBadge = l.is_active
+                ? '<span style="background:#d1fae5;color:#065f46;font-size:0.7rem;padding:2px 8px;border-radius:10px;font-weight:600;">Active</span>'
+                : '<span style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;padding:2px 8px;border-radius:10px;font-weight:600;">Hidden</span>';
+            html += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.05);">' +
+                avatarHtml +
+                '<div style="font-weight:700;font-size:0.9rem;color:#111827;">' + cmsEsc(l.name) + primaryBadge + '</div>' +
+                '<div style="font-size:0.8rem;color:#6c757d;margin-top:3px;">' + cmsEsc(l.title) + '</div>' +
+                '<div style="margin-top:8px;">' + activeBadge + '</div>' +
+                '<div style="margin-top:12px;display:flex;gap:8px;justify-content:center;">' +
+                '<button onclick="openCmsModal(\'leader\',' + JSON.stringify(l).replace(/"/g,'&quot;') + ')" style="flex:1;padding:7px;border:none;background:#e5e7eb;color:#374151;border-radius:8px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-edit"></i> Edit</button>' +
+                '<button onclick="deleteCmsLeader(\'' + l.id + '\',\'' + cmsEsc(l.photo_path || '') + '\')" style="padding:7px 12px;border:none;background:#fee2e2;color:#E31E24;border-radius:8px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash"></i></button>' +
+                '</div></div>';
+        });
+        grid.innerHTML = html;
+    }).catch(function() {
+        grid.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9ca3af;grid-column:1/-1;">Failed to load. Try refreshing.</div>';
+    });
+}
+
+function deleteCmsLeader(id, photoPath) {
+    if (!confirm('Delete this leader? This cannot be undone.')) return;
+    gsawDB.deleteCmsLeader(id).then(function() {
+        if (photoPath) gsawDB.deleteStorageFile(photoPath);
+        renderCmsLeaders();
+    });
+}
+

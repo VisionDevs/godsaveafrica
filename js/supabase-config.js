@@ -149,5 +149,183 @@ var gsawDB = {
         return fetch(SUPABASE_URL + '/rest/v1/contact_messages?order=created_at.desc', {
             headers: this.headers()
         }).then(function (r) { return r.json(); });
+    },
+
+    // ---- CMS STORAGE HELPERS ----
+
+    // Delete a file from gsaw-media bucket by its path (e.g. "events/123_photo.jpg")
+    deleteStorageFile: function (path) {
+        if (!path) return Promise.resolve();
+        return fetch(SUPABASE_URL + '/storage/v1/object/gsaw-media/' + path, {
+            method: 'DELETE',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+            }
+        });
+    },
+
+    // Upload a file to gsaw-media bucket under a given folder.
+    // Generates a unique path: folder/timestamp_sanitizedname
+    // Returns Promise<{path: string, url: string}>
+    cmsUploadFile: function (file, folder) {
+        var sanitized = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        var path = folder + '/' + Date.now() + '_' + sanitized;
+        var self = this;
+        return fetch(SUPABASE_URL + '/storage/v1/object/gsaw-media/' + path, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Content-Type': file.type || 'application/octet-stream',
+                'x-upsert': 'false'
+            },
+            body: file
+        }).then(function (r) {
+            if (!r.ok) return r.json().then(function (e) { throw new Error(e.message || 'Upload failed'); });
+            return { path: path, url: self.getFileUrl('gsaw-media', path) };
+        });
+    },
+
+    // ---- SITE ANNOUNCEMENTS ----
+    getAnnouncements: function () {
+        return fetch(SUPABASE_URL + '/rest/v1/site_announcements?order=created_at.desc', {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); });
+    },
+
+    addAnnouncement: function (data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_announcements', {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    updateAnnouncement: function (id, data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_announcements?id=eq.' + id, {
+            method: 'PATCH',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    deleteAnnouncement: function (id) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_announcements?id=eq.' + id, {
+            method: 'DELETE',
+            headers: this.headers()
+        });
+    },
+
+    // ---- SITE EVENTS ----
+    getCmsEvents: function () {
+        return fetch(SUPABASE_URL + '/rest/v1/site_events?order=event_date.desc', {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); });
+    },
+
+    addCmsEvent: function (data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_events', {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    updateCmsEvent: function (id, data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_events?id=eq.' + id, {
+            method: 'PATCH',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    deleteCmsEvent: function (id) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_events?id=eq.' + id, {
+            method: 'DELETE',
+            headers: this.headers()
+        });
+    },
+
+    // ---- SITE NEWS ----
+    getCmsNews: function () {
+        return fetch(SUPABASE_URL + '/rest/v1/site_news?order=published_at.desc', {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); });
+    },
+
+    addCmsNews: function (data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_news', {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    updateCmsNews: function (id, data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_news?id=eq.' + id, {
+            method: 'PATCH',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    deleteCmsNews: function (id) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_news?id=eq.' + id, {
+            method: 'DELETE',
+            headers: this.headers()
+        });
+    },
+
+    // ---- GALLERY PHOTOS ----
+    getGalleryPhotos: function () {
+        return fetch(SUPABASE_URL + '/rest/v1/gallery_photos?order=display_order.asc,created_at.desc', {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); });
+    },
+
+    addGalleryPhoto: function (data) {
+        return fetch(SUPABASE_URL + '/rest/v1/gallery_photos', {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    deleteGalleryPhoto: function (id) {
+        return fetch(SUPABASE_URL + '/rest/v1/gallery_photos?id=eq.' + id, {
+            method: 'DELETE',
+            headers: this.headers()
+        });
+    },
+
+    // ---- SITE LEADERS ----
+    getCmsLeaders: function () {
+        return fetch(SUPABASE_URL + '/rest/v1/site_leaders?order=display_order.asc', {
+            headers: this.headers()
+        }).then(function (r) { return r.json(); });
+    },
+
+    addCmsLeader: function (data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_leaders', {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    updateCmsLeader: function (id, data) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_leaders?id=eq.' + id, {
+            method: 'PATCH',
+            headers: this.headers(),
+            body: JSON.stringify(data)
+        }).then(function (r) { return r.json(); });
+    },
+
+    deleteCmsLeader: function (id) {
+        return fetch(SUPABASE_URL + '/rest/v1/site_leaders?id=eq.' + id, {
+            method: 'DELETE',
+            headers: this.headers()
+        });
     }
 };

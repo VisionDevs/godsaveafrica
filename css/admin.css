@@ -903,3 +903,48 @@ a:focus-visible, button:focus-visible {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ======================================
+   CMS ADMIN STYLES
+====================================== */
+
+/* CMS modal overlay uses inline display:flex */
+#cms-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#cms-modal {
+    animation: modalSlideIn 0.22s ease both;
+}
+
+/* Gallery grid admin */
+#cms-gallery-grid .gallery-actions button:hover {
+    opacity: 0.85;
+}
+
+/* Leaders grid admin */
+#cms-leaders-grid > div:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+/* Sidebar CMS section divider label */
+.sidebar-nav .nav-divider-label {
+    padding: 8px 20px 4px;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+}
+
