@@ -93,7 +93,7 @@ INSERT INTO site_leaders (name, title, bio, is_primary, photo_url, photo_path, d
   true
 ),
 (
-  'Mr Lutendo Ramalana',
+  'Mr Lutendo Ramanala',
   'Spokesperson',
   NULL,
   false,
