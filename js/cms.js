@@ -139,7 +139,10 @@
                 html += '<div class="news-meta"><span class="news-category">' + escHtml(a.category || 'News') + '</span><span class="news-date">' + pubDate + '</span></div>';
                 html += '<h3 class="news-title">' + escHtml(a.title) + '</h3>';
                 if (a.summary) html += '<p class="news-excerpt">' + escHtml(a.summary) + '</p>';
+                html += '<div class="news-footer" style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;">';
                 html += '<div class="news-author">By ' + escHtml(a.author || 'GSAW NEC') + '</div>';
+                if (a.link_url) html += '<a href="' + escHtml(a.link_url) + '" class="news-link" style="font-size:0.82rem;font-weight:700;color:var(--green,#1B7A3D);text-decoration:none;">' + escHtml(a.link_text || 'Read More') + ' <i class="fas fa-arrow-right"></i></a>';
+                html += '</div>';
                 html += '</div></div>';
             });
             container.innerHTML = html;
@@ -173,6 +176,9 @@
         if (!dynamicContainer) return;
         cmsGet('site_leaders', 'is_active=eq.true&order=display_order.asc').then(function (leaders) {
             if (!leaders || !leaders.length) return; // keep static content
+            // Hide hardcoded leaders and show CMS-managed section
+            var staticContent = document.getElementById('leaders-static-content');
+            if (staticContent) staticContent.style.display = 'none';
             var section = document.getElementById('dynamic-leaders-section');
             if (section) section.style.display = '';
             var html = '';

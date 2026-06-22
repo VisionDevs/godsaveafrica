@@ -1857,8 +1857,12 @@ function buildCmsForm(type, r) {
         html += row2(
             inp('Author', 'author', r.author || 'GSAW NEC', 'text'),
             sel('Category', 'category',
-                ['General','Announcement','Press Release','Community','Policy'],
+                ['General','Announcement','Press Release','Community','Policy','Volunteer','Elections','Gospel Event','Party News'],
                 r.category || 'General')
+        );
+        html += row2(
+            inp('Link URL (optional article page)', 'link_url', r.link_url, 'text', false, 'e.g. news/article-slug'),
+            inp('Link Button Text', 'link_text', r.link_text, 'text', false, 'Read Full Article')
         );
         html += inp('Published Date', 'published_at', r.published_at ? r.published_at.slice(0,16) : new Date().toISOString().slice(0,16), 'datetime-local');
         html += imgUpload(r.cover_image_url);
