@@ -13,6 +13,11 @@ ALTER TABLE site_news ADD COLUMN IF NOT EXISTS link_text TEXT;
 -- images are served from GitHub Pages, not Supabase Storage.
 -- Only records with Supabase Storage images need image_path set.
 
+-- Allow NULL image_path (GitHub Pages images don't have a Supabase Storage path)
+ALTER TABLE gallery_photos ALTER COLUMN image_path DROP NOT NULL;
+ALTER TABLE site_events ALTER COLUMN image_url DROP NOT NULL;
+ALTER TABLE site_events ALTER COLUMN image_path DROP NOT NULL;
+
 -- ============================================================
 -- 1. SITE LEADERS (all current NEC members)
 -- ============================================================

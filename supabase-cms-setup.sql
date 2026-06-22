@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS gallery_photos (
     caption TEXT,
     album TEXT DEFAULT 'General',
     image_url TEXT NOT NULL,
-    image_path TEXT NOT NULL,
+    image_path TEXT,
     display_order INT DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
