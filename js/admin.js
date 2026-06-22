@@ -571,7 +571,6 @@ function renderApplications() {
             html += '<button class="btn-sm btn-approve" onclick="approveApplication(' + realIndex + ')" title="Approve"><i class="fas fa-check"></i> Approve</button>';
         }
         html += '<button class="btn-sm btn-danger" onclick="removeApplication(' + realIndex + ')" title="Delete"><i class="fas fa-trash"></i></button>';
-        html += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>';
         html += '</td></tr>';
     });
 
