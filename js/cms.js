@@ -192,7 +192,7 @@
                 html += '<div class="leader-info">';
                 html += '<h3>' + escHtml(l.title) + '</h3>';
                 html += '<p class="leader-name">' + escHtml(l.name) + '</p>';
-                if (l.bio) html += '<p class="leader-bio">' + escHtml(l.bio) + '</p>';
+                if (l.bio) html += '<p class="leader-desc">' + escHtml(l.bio) + '</p>';
                 html += '</div></div>';
             });
             dynamicContainer.innerHTML = html;
