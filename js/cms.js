@@ -182,6 +182,7 @@
             var section = document.getElementById('dynamic-leaders-section');
             if (section) section.style.display = '';
             var html = '';
+            leaders.forEach(function (l) {
                 var cls = 'leader-card' + (l.is_primary ? ' leader-primary' : '');
                 var photoHtml = l.photo_url
                     ? '<div class="leader-avatar"><img src="' + escHtml(l.photo_url) + '" alt="' + escHtml(l.name) + '" onerror="this.parentElement.innerHTML=\'<i class=\\\"fas fa-user\\\"></i>\';"></div>'
