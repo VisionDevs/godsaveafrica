@@ -94,8 +94,8 @@
                 var monthStr = evDate.toLocaleDateString('en-ZA', { month: 'short' });
                 var typeLabel = (ev.event_type || 'Event').replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
                 var headerStyle = ev.image_url
-                    ? 'min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.65)),url(' + ev.image_url + ') center/cover no-repeat;'
-                    : 'background:linear-gradient(135deg,#1a1a2e,#1B7A3D);';
+                    ? 'min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 60%,rgba(0,0,0,0.3) 100%),url(' + ev.image_url + ') center/cover no-repeat;'
+                    : 'min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;background:linear-gradient(135deg,#1a1a2e,#1B7A3D);';
                 var statusClass = isPast ? 'past' : isToday ? 'today' : 'upcoming';
                 var statusLabel = isPast ? 'Past Event' : isToday ? 'Happening Today!' : 'Upcoming';
                 html += '<div class="event-card" data-type="' + escHtml(ev.event_type || 'general') + '">';
