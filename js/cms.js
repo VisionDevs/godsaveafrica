@@ -25,12 +25,6 @@
         return d.innerHTML;
     }
 
-    // Fade in a container after CMS content is loaded (or show static fallback)
-    function cmsFadeIn(el) {
-        if (!el) return;
-        el.style.opacity = '1';
-    }
-
     // ---- ANNOUNCEMENT BANNER ----
     function loadAnnouncementBanner() {
         var now = new Date().toISOString();
@@ -87,7 +81,6 @@
         cmsGet('site_events', 'is_archived=eq.false&order=event_date.asc').then(function (events) {
             if (!events || !events.length) {
                 container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#9ca3af;"><i class="fas fa-calendar-times" style="font-size:3rem;"></i><p style="margin-top:16px;font-size:1rem;">No upcoming events at this time.<br>Please check back soon!</p></div>';
-                cmsFadeIn(container);
                 return;
             }
             var html = '';
@@ -101,7 +94,7 @@
                 var monthStr = evDate.toLocaleDateString('en-ZA', { month: 'short' });
                 var typeLabel = (ev.event_type || 'Event').replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
                 var headerStyle = ev.image_url
-                    ? 'background:linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.6)),url(' + ev.image_url + ') center/cover;'
+                    ? 'min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(rgba(0,0,0,0.35),rgba(0,0,0,0.65)),url(' + ev.image_url + ') center/cover no-repeat;'
                     : 'background:linear-gradient(135deg,#1a1a2e,#1B7A3D);';
                 var statusClass = isPast ? 'past' : isToday ? 'today' : 'upcoming';
                 var statusLabel = isPast ? 'Past Event' : isToday ? 'Happening Today!' : 'Upcoming';
@@ -124,17 +117,18 @@
                 html += '</div>';
             });
             container.innerHTML = html;
-            cmsFadeIn(container);
-            // Filter buttons still work via data-type on the newly rendered cards
-        }).catch(function () { cmsFadeIn(container); /* fail silently, static fallback stays */ });
+        }).catch(function () { /* fail silently */ });
     }
 
     // ---- NEWS PAGE ----
     function loadCmsNews() {
-        var container = document.querySelector('.news-grid');
+        var container = document.getElementById('news-grid') || document.querySelector('.news-grid');
         if (!container) return;
         cmsGet('site_news', 'is_published=eq.true&order=published_at.desc').then(function (articles) {
-            if (!articles || !articles.length) { cmsFadeIn(container); return; } // keep static content
+            if (!articles || !articles.length) {
+                container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#9ca3af;"><i class="fas fa-newspaper" style="font-size:3rem;"></i><p style="margin-top:16px;">No articles yet.</p></div>';
+                return;
+            }
             var html = '';
             articles.forEach(function (a) {
                 var pubDate = new Date(a.published_at || a.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -156,8 +150,7 @@
                 html += '</div>';
             });
             container.innerHTML = html;
-            cmsFadeIn(container);
-        }).catch(function () { cmsFadeIn(container); /* fail silently */ });
+        }).catch(function () { /* fail silently */ });
     }
 
     // ---- GALLERY PAGE ----
@@ -165,7 +158,10 @@
         var container = document.querySelector('.gallery-grid');
         if (!container) return;
         cmsGet('gallery_photos', 'order=display_order.asc,created_at.desc').then(function (photos) {
-            if (!photos || !photos.length) { cmsFadeIn(container); return; } // keep static content
+            if (!photos || !photos.length) {
+                container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#9ca3af;"><i class="fas fa-images" style="font-size:3rem;"></i><p style="margin-top:16px;">No photos yet.</p></div>';
+                return;
+            }
             var html = '';
             photos.forEach(function (p) {
                 var cat = (p.album || 'General').toLowerCase();
@@ -177,9 +173,7 @@
                 html += '</div>';
             });
             container.innerHTML = html;
-            cmsFadeIn(container);
-            // Gallery filter buttons still work via data-category on the newly rendered items
-        }).catch(function () { cmsFadeIn(container); /* fail silently */ });
+        }).catch(function () { /* fail silently */ });
     }
 
     // ---- LEADERSHIP PAGE ----
@@ -190,7 +184,7 @@
             if (!leaders || !leaders.length) {
                 // No DB leaders — show static content
                 var sc = document.getElementById('leaders-static-content');
-                cmsFadeIn(sc);
+                if (sc) sc.style.opacity = '1';
                 return;
             }
             // Hide hardcoded leaders and show CMS-managed section
@@ -216,7 +210,7 @@
         }).catch(function () {
             // Failed to load — show static content
             var sc = document.getElementById('leaders-static-content');
-            cmsFadeIn(sc);
+            if (sc) sc.style.opacity = '1';
         });
     }
 
