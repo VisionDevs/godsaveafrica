@@ -132,21 +132,20 @@
             var html = '';
             articles.forEach(function (a) {
                 var pubDate = new Date(a.published_at || a.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
-                var linkOpen = a.link_url ? '<a href="' + escHtml(a.link_url) + '">' : '';
-                var linkClose = a.link_url ? '</a>' : '';
+                var articleUrl = 'article?id=' + a.id;
                 var imgHtml = a.cover_image_url
                     ? '<img src="' + escHtml(a.cover_image_url) + '" alt="' + escHtml(a.title) + '" class="news-image">'
                     : '<div class="news-image-placeholder"><i class="fas fa-newspaper"></i></div>';
                 html += '<div class="news-card">';
-                html += linkOpen;
+                html += '<a href="' + articleUrl + '">';
                 html += imgHtml;
                 html += '<div class="news-body">';
                 html += '<div class="news-meta"><span class="news-tag">' + escHtml(a.category || 'News') + '</span><span class="news-date-text">' + pubDate + '</span></div>';
                 html += '<h3>' + escHtml(a.title) + '</h3>';
                 if (a.summary) html += '<p>' + escHtml(a.summary) + '</p>';
-                if (a.link_url) html += '<span class="news-link">' + escHtml(a.link_text || 'Read More') + ' <i class="fas fa-arrow-right"></i></span>';
+                html += '<span class="news-link">Read Full Article <i class="fas fa-arrow-right"></i></span>';
                 html += '</div>';
-                html += linkClose;
+                html += '</a>';
                 html += '</div>';
             });
             container.innerHTML = html;

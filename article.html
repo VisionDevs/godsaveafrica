@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - GSAW</title>
+    <meta name="description" content="Read the full article from God Save Africa & The World.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ6DY1TVB5"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BQ6DY1TVB5');</script>
+    <style>
+        .article-container { max-width: 800px; margin: 0 auto; }
+        .article-cover { width: 100%; max-height: 420px; object-fit: cover; border-radius: 14px; margin-bottom: 28px; }
+        .article-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; font-size: 0.88rem; color: #6c757d; }
+        .article-meta .tag { background: #1B7A3D; color: #fff; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+        .article-body { font-size: 1.05rem; line-height: 1.9; color: #2d3748; white-space: pre-line; }
+        .article-body p { margin-bottom: 18px; }
+        .article-back { display: inline-flex; align-items: center; gap: 8px; color: #1B7A3D; font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-bottom: 20px; }
+        .article-back:hover { text-decoration: underline; }
+        .article-share { margin-top: 36px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+        .article-share span { font-size: 0.85rem; color: #6c757d; margin-right: 12px; }
+        .article-share a { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; color: #fff; text-decoration: none; margin-right: 8px; font-size: 1rem; transition: transform 0.2s; }
+        .article-share a:hover { transform: scale(1.1); }
+        .article-not-found { text-align: center; padding: 80px 20px; color: #9ca3af; }
+        .article-not-found i { font-size: 4rem; margin-bottom: 16px; }
+        .article-not-found h2 { color: #374151; margin-bottom: 10px; }
+        .article-not-found a { color: #1B7A3D; text-decoration: none; font-weight: 600; }
+        .article-loading { text-align: center; padding: 80px 0; color: #ccc; }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone"></i> +27 73 585 0365</span>
+                <span><i class="fas fa-envelope"></i> info@gsaw.org.za</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="/" class="nav-logo">
+                <img src="images/logo.jpg" alt="GSAW Logo">
+                <div class="nav-logo-text">
+                    <span class="logo-name">GSAW</span>
+                    <span class="logo-tagline">God Save Africa &amp; The World</span>
+                </div>
+            </a>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="about" class="nav-link">About</a></li>
+                <li><a href="manifesto" class="nav-link">Manifesto</a></li>
+                <li><a href="leadership" class="nav-link">Leadership</a></li>
+                <li><a href="constitution" class="nav-link">Constitution</a></li>
+                <li><a href="news" class="nav-link active">News</a></li>
+                <li><a href="events" class="nav-link">Events</a></li>
+                <li><a href="contact" class="nav-link">Contact</a></li>
+                <li><a href="donate" class="nav-link">Donate</a></li>
+                <li><a href="membership" class="nav-link nav-cta">Join GSAW</a></li>
+            </ul>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <a href="news">News</a> <span>/</span> <span id="breadcrumb-title">Article</span></div>
+            <h1 id="article-page-title">Loading...</h1>
+        </div>
+    </div>
+
+    <!-- Article Content -->
+    <section class="section">
+        <div class="container">
+            <div class="article-container" id="article-container">
+                <div class="article-loading"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="GSAW Logo" class="footer-logo">
+                    <h3>God Save Africa &amp; The World</h3>
+                    <p class="footer-tagline">Founded 2025 | Restoring God's will through quality service delivery to the people of South Africa.</p>
+                    <p style="font-size: 0.85rem; font-weight: 700; color: var(--orange); margin-bottom: 10px;">#AllPowerBelongsToJesus</p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/groups/7831634076854510" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.tiktok.com/@gsaw.political.pa" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://wa.me/27735850365" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                        <a href="mailto:info@gsaw.org.za"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about">About GSAW</a></li>
+                        <li><a href="manifesto">Manifesto</a></li>
+                        <li><a href="leadership">Leadership</a></li>
+                        <li><a href="constitution">Constitution</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Get Involved</h4>
+                    <ul>
+                        <li><a href="membership">Become a Member</a></li>
+                        <li><a href="volunteer">Volunteer</a></li>
+                        <li><a href="events">Events</a></li>
+                        <li><a href="contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="news">News &amp; Updates</a></li>
+                        <li><a href="gallery">Photo Gallery</a></li>
+                        <li><a href="donate">Donate</a></li>
+                        <li><a href="https://www.elections.org.za" target="_blank" rel="noopener">IEC South Africa</a></li>
+                        <li><a href="https://registertovote.elections.org.za/" target="_blank" rel="noopener">Register to Vote</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025&ndash;2026 God Save Africa &amp; The World (GSAW). All rights reserved.</p>
+                <p class="footer-legal">Registered political party in South Africa | POPIA Compliant</p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+    <script src="js/script.js"></script>
+    <script>
+    (function() {
+        var CMS_URL = 'https://nvgoaikzidtpyvmffmxq.supabase.co';
+        var CMS_KEY = 'sb_publishable__cGi8xiV0Il-9tAan7QUAQ_wqQY_Q0K';
+
+        var params = new URLSearchParams(window.location.search);
+        var articleId = params.get('id');
+        var container = document.getElementById('article-container');
+        var pageTitle = document.getElementById('article-page-title');
+        var breadcrumbTitle = document.getElementById('breadcrumb-title');
+
+        function esc(str) {
+            var d = document.createElement('div');
+            d.appendChild(document.createTextNode(String(str || '')));
+            return d.innerHTML;
+        }
+
+        function showNotFound() {
+            pageTitle.textContent = 'Article Not Found';
+            breadcrumbTitle.textContent = 'Not Found';
+            document.title = 'Article Not Found - GSAW';
+            container.innerHTML = '<div class="article-not-found">' +
+                '<i class="fas fa-newspaper"></i>' +
+                '<h2>Article Not Found</h2>' +
+                '<p>The article you\'re looking for doesn\'t exist or has been removed.</p>' +
+                '<br><a href="news"><i class="fas fa-arrow-left"></i> Back to News</a></div>';
+        }
+
+        if (!articleId) { showNotFound(); return; }
+
+        // Validate UUID format to prevent injection
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(articleId)) {
+            showNotFound(); return;
+        }
+
+        fetch(CMS_URL + '/rest/v1/site_news?id=eq.' + articleId + '&is_published=eq.true&limit=1', {
+            headers: { 'apikey': CMS_KEY, 'Authorization': 'Bearer ' + CMS_KEY }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data || !data.length) { showNotFound(); return; }
+            var a = data[0];
+            document.title = a.title + ' - GSAW News';
+            pageTitle.textContent = a.title;
+            breadcrumbTitle.textContent = a.title;
+
+            var pubDate = new Date(a.published_at || a.created_at).toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            var pageUrl = encodeURIComponent(window.location.href);
+            var shareTitle = encodeURIComponent(a.title);
+
+            var html = '<a href="news" class="article-back"><i class="fas fa-arrow-left"></i> Back to News</a>';
+
+            if (a.cover_image_url) {
+                html += '<img src="' + esc(a.cover_image_url) + '" alt="' + esc(a.title) + '" class="article-cover">';
+            }
+
+            html += '<div class="article-meta">';
+            html += '<span class="tag">' + esc(a.category || 'News') + '</span>';
+            html += '<span><i class="fas fa-calendar"></i> ' + pubDate + '</span>';
+            if (a.author) html += '<span><i class="fas fa-user"></i> ' + esc(a.author) + '</span>';
+            html += '</div>';
+
+            // Article body — use body field, fallback to summary
+            var bodyText = a.body || a.summary || '';
+            html += '<div class="article-body">' + esc(bodyText) + '</div>';
+
+            // Share buttons
+            html += '<div class="article-share">';
+            html += '<span>Share this article:</span>';
+            html += '<a href="https://www.facebook.com/sharer/sharer.php?u=' + pageUrl + '" target="_blank" rel="noopener" style="background:#1877F2;" title="Share on Facebook"><i class="fab fa-facebook-f"></i></a>';
+            html += '<a href="https://twitter.com/intent/tweet?url=' + pageUrl + '&text=' + shareTitle + '" target="_blank" rel="noopener" style="background:#1DA1F2;" title="Share on X"><i class="fab fa-twitter"></i></a>';
+            html += '<a href="https://wa.me/?text=' + shareTitle + '%20' + pageUrl + '" target="_blank" rel="noopener" style="background:#25D366;" title="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>';
+            html += '</div>';
+
+            container.innerHTML = html;
+        })
+        .catch(function() { showNotFound(); });
+    })();
+    </script>
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/27735850365?text=Hi%20GSAW%2C%20I%20have%20a%20question" class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="whatsapp-tooltip">Chat with us</span></a>
+</body>
+</html>

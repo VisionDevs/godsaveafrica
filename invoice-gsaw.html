@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice VDI-2026-001 | Vision Devs Inc.</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a1a; background: #f5f5f5; padding: 40px; }
+        .invoice { max-width: 800px; margin: 0 auto; background: #fff; padding: 50px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 25px; border-bottom: 3px solid #1a1a1a; }
+        .company h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .company p { font-size: 0.85rem; color: #555; margin-top: 4px; line-height: 1.6; }
+        .invoice-title { text-align: right; }
+        .invoice-title h2 { font-size: 2rem; font-weight: 800; color: #1a1a1a; letter-spacing: 2px; }
+        .invoice-title p { font-size: 0.85rem; color: #555; margin-top: 4px; }
+        .meta { display: flex; justify-content: space-between; margin-bottom: 35px; }
+        .meta-block h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin-bottom: 6px; }
+        .meta-block p { font-size: 0.9rem; line-height: 1.6; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        thead th { background: #1a1a1a; color: #fff; padding: 12px 15px; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
+        thead th:last-child { text-align: right; }
+        tbody td { padding: 14px 15px; border-bottom: 1px solid #eee; font-size: 0.85rem; vertical-align: top; }
+        tbody td:first-child { width: 35px; color: #999; text-align: center; }
+        tbody td:last-child { text-align: right; white-space: nowrap; font-weight: 600; }
+        tbody td strong { display: block; margin-bottom: 3px; font-size: 0.88rem; }
+        tbody td span { color: #666; font-size: 0.8rem; }
+        .summary { margin-left: auto; width: 320px; margin-bottom: 35px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 0.9rem; border-bottom: 1px solid #f0f0f0; }
+        .summary-row.discount { color: #d32f2f; }
+        .summary-row.discount span:first-child { font-size: 0.82rem; }
+        .summary-row.less { color: #666; font-size: 0.85rem; }
+        .summary-row.total { border-top: 2px solid #1a1a1a; border-bottom: none; padding-top: 14px; font-size: 1.1rem; font-weight: 800; }
+        .banking { background: #f9f9f9; border-radius: 8px; padding: 20px 25px; margin-bottom: 30px; }
+        .banking h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin-bottom: 12px; }
+        .banking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 30px; }
+        .banking-grid p { font-size: 0.85rem; }
+        .banking-grid p span { color: #777; }
+        .terms { font-size: 0.8rem; color: #777; line-height: 1.8; padding-top: 20px; border-top: 1px solid #eee; }
+        .terms strong { color: #1a1a1a; }
+        @media print {
+            body { padding: 0; background: #fff; }
+            .invoice { box-shadow: none; padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice">
+        <div class="header">
+            <div class="company">
+                <h1>Vision Devs Inc.</h1>
+                <p>Vision Mavhungu — Software Engineer<br>
+                Cell: 072 183 2918<br>
+                Email: Vision.mavhungu@icloud.com</p>
+            </div>
+            <div class="invoice-title">
+                <h2>INVOICE</h2>
+                <p><strong>No:</strong> VDI-2026-001<br>
+                <strong>Date:</strong> 24 June 2026<br>
+                <strong>Due:</strong> 07 July 2026</p>
+            </div>
+        </div>
+
+        <div class="meta">
+            <div class="meta-block">
+                <h4>Bill To</h4>
+                <p><strong>God Save Africa &amp; The World (GSAW)</strong></p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>
+                        <strong>Custom Website Design &amp; Development</strong>
+                        <span>13 responsive pages — Home, About, Manifesto, Leadership, Events, News, Gallery, Join, Donate, Contact, Constitution, Documents, Membership</span>
+                    </td>
+                    <td>R5,350.00</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>
+                        <strong>Admin Panel &amp; CMS Development</strong>
+                        <span>5 content modules: Announcements/Banners, Events Management, News/Articles, Photo Gallery, Leadership Directory — full CRUD, image upload, category filtering</span>
+                    </td>
+                    <td>R4,000.00</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>
+                        <strong>Supabase Backend Integration</strong>
+                        <span>Database schema design, Row-Level Security, Storage bucket with auto-delete on replace, REST API, authentication (free tier)</span>
+                    </td>
+                    <td>R800.00</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>
+                        <strong>Resend Email Integration</strong>
+                        <span>Transactional emails for contact forms, membership confirmations, donation receipts — domain DNS configuration (free tier)</span>
+                    </td>
+                    <td>R500.00</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>
+                        <strong>Google Analytics Integration</strong>
+                        <span>Tracking code setup, event tracking, page view monitoring</span>
+                    </td>
+                    <td>R200.00</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>
+                        <strong>SEO &amp; Search Engine Submission</strong>
+                        <span>Google Search Console &amp; Bing Webmaster Tools — verification, sitemap submission</span>
+                    </td>
+                    <td>R300.00</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>
+                        <strong>Domain &amp; Web Hosting Setup</strong>
+                        <span>Afrihost hosting, DNS management, SSL, GitHub deployment pipeline</span>
+                    </td>
+                    <td>R200.00</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>
+                        <strong>Email Domain Hosting</strong>
+                        <span>2 accounts — admin@gsaw.org.za &amp; info@gsaw.org.za — Afrihost configuration</span>
+                    </td>
+                    <td>R150.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>R11,500.00</span>
+            </div>
+            <div class="summary-row discount">
+                <span>Developer Discount (61%) — In support of GSAW's mission &amp; vision</span>
+                <span>–R7,000.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Discounted Subtotal</span>
+                <span>R4,500.00</span>
+            </div>
+            <div class="summary-row less">
+                <span>Less: Hosting costs paid by client (Domain R110 + Email R30)</span>
+                <span>–R140.00</span>
+            </div>
+            <div class="summary-row total">
+                <span>TOTAL DUE</span>
+                <span>R4,360.00</span>
+            </div>
+        </div>
+
+        <div class="banking">
+            <h4>Banking Details</h4>
+            <div class="banking-grid">
+                <p><span>Bank:</span> Capitec</p>
+                <p><span>Account Holder:</span> Vision Mavhungu</p>
+                <p><span>Account Number:</span> 1758988078</p>
+                <p><span>Reference:</span> GSAW-WEB-2026</p>
+            </div>
+        </div>
+
+        <div class="terms">
+            <p><strong>Terms:</strong> Payment due before COB <strong>07 July 2026</strong>. Please use <strong>GSAW-WEB-2026</strong> as payment reference.</p>
+        </div>
+    </div>
+</body>
+</html>
