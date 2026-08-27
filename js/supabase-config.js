@@ -5,7 +5,7 @@
 ======================================== */
 
 var SUPABASE_URL = 'https://nvgoaikzidtpyvmffmxq.supabase.co';
-var SUPABASE_ANON_KEY = 'sb_publishable__cGi8xiV0Il-9tAan7QUAQ_wqQY_Q0K';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52Z29haWt6aWR0cHl2bWZmbXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDIzMTEsImV4cCI6MjA5NzE3ODMxMX0.IU3qETKZtgjOC9hHnqBVZKLiThVmVpNtaMcyq4u-2-Q';
 
 // Email notification helper (calls Supabase Edge Function)
 // To enable: Deploy the notify-admin edge function in Supabase Dashboard

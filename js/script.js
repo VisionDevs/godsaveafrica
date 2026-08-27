@@ -466,6 +466,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // ========================================
     // 8. FORM VALIDATION
     // ========================================
+
+    // Offline fallback: save to localStorage for retry
+    function storeLocally(data) {
+        try {
+            var pending = JSON.parse(localStorage.getItem('gsaw_pending_apps') || '[]');
+            pending.push(data);
+            localStorage.setItem('gsaw_pending_apps', JSON.stringify(pending));
+        } catch (e) { /* storage full or unavailable */ }
+    }
+
     function validateForm() {
         var valid = true;
 
