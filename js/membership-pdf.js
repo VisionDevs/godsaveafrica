@@ -187,10 +187,10 @@ function downloadMembershipPDF() {
     doc.line(margin + 22, y, margin + 90, y);
 
     // If we have signature data, draw it
-    if (data.signature) {
+    if (data.signature && data.signature.indexOf('data:image') === 0) {
         try {
             doc.addImage(data.signature, 'PNG', margin + 22, y - 12, 60, 14);
-        } catch (e) { /* signature render failed, skip */ }
+        } catch (e) { console.error('Signature render error:', e); }
     }
 
     // ---- DEPOSIT DETAILS ----

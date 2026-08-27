@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     skills: getValue('skills'),
                     referralSource: Array.from(document.querySelectorAll('input[name="referralSource"]:checked')).map(function(cb){return cb.value;}).join(', '),
                     reason: getValue('reason'),
-                    signature: window.signaturePad ? window.signaturePad.getData() : '',
+                    signature: (window.signaturePad && !window.signaturePad.isEmpty()) ? window.signaturePad.getData() : (getValue('signatureData') || ''),
                     status: 'pending',
                     submittedAt: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
                 };
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     skills: getValue('skills'),
                     referralSource: Array.from(document.querySelectorAll('input[name="referralSource"]:checked')).map(function(cb){return cb.value;}).join(', '),
                     reason: getValue('reason'),
-                    signature: window.signaturePad ? window.signaturePad.getData() : '',
+                    signature: (window.signaturePad && !window.signaturePad.isEmpty()) ? window.signaturePad.getData() : (getValue('signatureData') || ''),
                     status: 'pending',
                     submittedAt: new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })
                 };
@@ -592,8 +592,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Upload signature if available
         var signaturePromise;
-        if (data.signatureData) {
-            var signatureBlob = dataURItoBlob(data.signatureData);
+        if (data.signature) {
+            var signatureBlob = dataURItoBlob(data.signature);
             var sigPath = 'signatures/' + data.membershipNumber + '_signature.png';
             signaturePromise = gsawDB.uploadFile('documents', sigPath, signatureBlob).then(function (result) {
                 if (!result.error) {
