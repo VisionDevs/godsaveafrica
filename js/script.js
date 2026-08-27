@@ -401,6 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .catch(function () {
                         storeLocally(formData);
+                        window._lastMembershipData = formData;
                         form.style.display = 'none';
                         formSuccess.style.display = 'block';
                     })
@@ -445,6 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .catch(function () {
                         storeLocally(formData);
+                        window._lastMembershipData = formData;
                         form.style.display = 'none';
                         formSuccess.style.display = 'block';
                     })

@@ -47,7 +47,9 @@ function downloadMembershipPDF() {
         return;
     }
 
+    try {
     var jsPDF = window.jspdf.jsPDF;
+    if (!jsPDF) { alert('PDF library failed to load. Please refresh and try again.'); return; }
     var doc = new jsPDF('p', 'mm', 'a4');
     var pageWidth = 210;
     var margin = 20;
@@ -148,7 +150,7 @@ function downloadMembershipPDF() {
         if (checked) {
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(green[0], green[1], green[2]);
-            doc.text('✓', checkX + 0.5, y - 0.2);
+            doc.text('X', checkX + 0.7, y - 0.2);
             doc.setFont('helvetica', 'normal');
         }
         doc.setTextColor(dark[0], dark[1], dark[2]);
@@ -255,6 +257,11 @@ function downloadMembershipPDF() {
     // Save
     var filename = 'GSAW-Membership-' + (data.firstName || 'Form') + '-' + (data.lastName || '') + '.pdf';
     doc.save(filename.replace(/\s+/g, '_'));
+
+    } catch (err) {
+        console.error('PDF generation error:', err);
+        alert('PDF download failed: ' + err.message + '. Please try again.');
+    }
 }
 
 // Helper: draw a labeled field with underline
