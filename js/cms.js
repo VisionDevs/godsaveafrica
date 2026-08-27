@@ -8,7 +8,7 @@
     'use strict';
 
     var CMS_URL = 'https://nvgoaikzidtpyvmffmxq.supabase.co';
-    var CMS_KEY = 'sb_publishable__cGi8xiV0Il-9tAan7QUAQ_wqQY_Q0K';
+    var CMS_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52Z29haWt6aWR0cHl2bWZmbXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDIzMTEsImV4cCI6MjA5NzE3ODMxMX0.IU3qETKZtgjOC9hHnqBVZKLiThVmVpNtaMcyq4u-2-Q';
 
     function cmsGet(table, query) {
         return fetch(CMS_URL + '/rest/v1/' + table + '?' + (query || ''), {
