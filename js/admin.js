@@ -577,6 +577,7 @@ function renderApplications() {
         html += '<td><span class="status-badge status-' + status + '">' + status + '</span></td>';
         html += '<td class="action-btns">';
         html += '<button class="btn-sm btn-view" onclick="viewApplication(' + realIndex + ')" title="View Details"><i class="fas fa-eye"></i></button>';
+        html += '<button class="btn-sm" onclick="downloadAdminMemberPDF(' + realIndex + ')" title="Download PDF" style="background:#F47920;color:#fff;"><i class="fas fa-file-pdf"></i></button>';
         if (status === 'pending') {
             html += '<button class="btn-sm btn-approve" onclick="approveApplication(' + realIndex + ')" title="Approve"><i class="fas fa-check"></i> Approve</button>';
         }
@@ -738,9 +739,12 @@ function viewApplication(index) {
         { label: 'Last Name', value: app.last_name || '' },
         { label: 'Email', value: app.email || '' },
         { label: 'Phone', value: app.phone || '' },
+        { label: 'Work Phone', value: app.work_phone || 'Not specified' },
         { label: 'ID Number', value: app.id_number || '' },
         { label: 'Gender', value: app.gender || 'Not specified' },
         { label: 'Date of Birth', value: app.date_of_birth || 'Not specified' },
+        { label: 'Race', value: app.race || 'Not specified' },
+        { label: 'Languages', value: app.languages || 'Not specified' },
         { label: 'Address', value: app.address || 'Not specified' },
         { label: 'Province', value: app.province || '' },
         { label: 'Municipality', value: app.municipality || '' },
@@ -749,6 +753,7 @@ function viewApplication(index) {
         { label: 'Occupation', value: app.occupation || 'Not specified' },
         { label: 'Qualification', value: app.qualification || 'Not specified' },
         { label: 'Skills', value: app.skills || 'Not specified' },
+        { label: 'Referral Source', value: app.referral_source || 'Not specified' },
         { label: 'Reason', value: app.reason || 'Not specified' },
         { label: 'Status', value: app.status || 'pending' },
         { label: 'Submitted', value: app.submitted_at ? new Date(app.submitted_at).toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }) : 'N/A' },
@@ -773,6 +778,7 @@ function viewApplication(index) {
     if (status === 'approved') {
         footerHtml += '<button class="btn-sm" onclick="downloadMembershipCard(' + index + ')" style="background:#F47920;color:#fff;"><i class="fas fa-id-card"></i> Download Card</button>';
     }
+    footerHtml += '<button class="btn-sm" onclick="downloadAdminMemberPDF(' + index + ')" style="background:#F47920;color:#fff;"><i class="fas fa-file-pdf"></i> Download PDF</button>';
     footerHtml += '<a class="btn-sm btn-whatsapp" href="https://wa.me/' + encodeURIComponent(phone) + '" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
     footerHtml += '<button class="btn-sm btn-danger" onclick="removeApplication(' + index + '); closeModal();"><i class="fas fa-trash"></i> Remove</button>';
 

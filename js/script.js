@@ -363,9 +363,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     lastName: getValue('lastName'),
                     email: email,
                     phone: phone,
+                    workPhone: getValue('workPhone'),
                     idNumber: idNumber,
                     gender: getValue('gender'),
                     dob: getValue('dob'),
+                    race: getValue('race'),
+                    languages: getValue('languages'),
                     address: getValue('address'),
                     province: getValue('province'),
                     municipality: getValue('municipality'),
@@ -374,6 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     occupation: getValue('occupation'),
                     qualification: getValue('qualification'),
                     skills: getValue('skills'),
+                    referralSource: Array.from(document.querySelectorAll('input[name="referralSource"]:checked')).map(function(cb){return cb.value;}).join(', '),
                     reason: getValue('reason'),
                     signature: window.signaturePad ? window.signaturePad.getData() : '',
                     status: 'pending',
@@ -386,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             showNotification('Submission failed: ' + result.message, 'error');
                             return;
                         }
+                        window._lastMembershipData = formData;
                         form.style.display = 'none';
                         formSuccess.style.display = 'block';
                         formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -411,9 +416,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     lastName: getValue('lastName'),
                     email: email,
                     phone: phone,
+                    workPhone: getValue('workPhone'),
                     idNumber: idNumber,
                     gender: getValue('gender'),
                     dob: getValue('dob'),
+                    race: getValue('race'),
+                    languages: getValue('languages'),
                     address: getValue('address'),
                     province: getValue('province'),
                     municipality: getValue('municipality'),
@@ -422,6 +430,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     occupation: getValue('occupation'),
                     qualification: getValue('qualification'),
                     skills: getValue('skills'),
+                    referralSource: Array.from(document.querySelectorAll('input[name="referralSource"]:checked')).map(function(cb){return cb.value;}).join(', '),
                     reason: getValue('reason'),
                     signature: window.signaturePad ? window.signaturePad.getData() : '',
                     status: 'pending',
@@ -430,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 submitApplication(formData)
                     .then(function () {
+                        window._lastMembershipData = formData;
                         form.style.display = 'none';
                         formSuccess.style.display = 'block';
                     })
@@ -458,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var valid = true;
 
         // Required text fields
-        var required = ['firstName', 'lastName', 'email', 'phone', 'idNumber', 'gender', 'dob', 'address', 'province', 'municipality', 'occupation'];
+        var required = ['firstName', 'lastName', 'email', 'phone', 'idNumber', 'gender', 'dob', 'race', 'address', 'province', 'municipality', 'occupation'];
         required.forEach(function (id) {
             var el = document.getElementById(id);
             if (!el || !el.value.trim()) {
@@ -545,10 +555,13 @@ document.addEventListener('DOMContentLoaded', function () {
             last_name: data.lastName || '',
             full_name: (data.firstName || '') + ' ' + (data.lastName || ''),
             id_number: data.idNumber || '',
-            date_of_birth: data.dateOfBirth || '',
+            date_of_birth: data.dob || '',
             gender: data.gender || '',
+            race: data.race || '',
+            languages: data.languages || '',
             email: data.email || '',
             phone: data.phone || '',
+            work_phone: data.workPhone || '',
             address: data.address || '',
             city: data.city || '',
             province: data.province || '',
@@ -559,6 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
             occupation: data.occupation || '',
             qualification: data.qualification || '',
             skills: data.skills || '',
+            referral_source: data.referralSource || '',
             reason: data.reason || '',
             membership_number: data.membershipNumber || '',
             status: 'pending'

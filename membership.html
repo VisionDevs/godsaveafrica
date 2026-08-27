@@ -168,9 +168,13 @@
                                 <input type="tel" id="phone" name="phone" required placeholder="e.g. 071 234 5678">
                             </div>
                             <div class="form-group">
-                                <label for="idNumber">SA ID Number *</label>
-                                <input type="text" id="idNumber" name="idNumber" required placeholder="13-digit ID number" maxlength="13" pattern="[0-9]{13}">
+                                <label for="workPhone">Telephone (Work)</label>
+                                <input type="tel" id="workPhone" name="workPhone" placeholder="e.g. 041 123 4567">
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="idNumber">SA ID Number *</label>
+                            <input type="text" id="idNumber" name="idNumber" required placeholder="13-digit ID number" maxlength="13" pattern="[0-9]{13}">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -184,6 +188,23 @@
                             <div class="form-group">
                                 <label for="dob">Date of Birth *</label>
                                 <input type="date" id="dob" name="dob" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="race">Race *</label>
+                                <select id="race" name="race" required>
+                                    <option value="">Select Race</option>
+                                    <option value="Black">Black</option>
+                                    <option value="Coloured">Coloured</option>
+                                    <option value="Indian">Indian</option>
+                                    <option value="White">White</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="languages">Languages</label>
+                                <input type="text" id="languages" name="languages" placeholder="e.g. English, isiXhosa, Afrikaans">
                             </div>
                         </div>
                         <div class="form-group">
@@ -247,6 +268,15 @@
                             <input type="text" id="skills" name="skills" placeholder="e.g. Teaching, Legal, IT, Media, Ministry, Accounting...">
                         </div>
                         <div class="form-group">
+                            <label>Where did you hear about GSAW?</label>
+                            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;">
+                                <label class="donor-type-option"><input type="checkbox" name="referralSource" value="Social network"><span><i class="fab fa-facebook"></i> Social Network</span></label>
+                                <label class="donor-type-option"><input type="checkbox" name="referralSource" value="TV/Radio"><span><i class="fas fa-tv"></i> TV / Radio</span></label>
+                                <label class="donor-type-option"><input type="checkbox" name="referralSource" value="Newspaper"><span><i class="fas fa-newspaper"></i> Newspaper</span></label>
+                                <label class="donor-type-option"><input type="checkbox" name="referralSource" value="From a member"><span><i class="fas fa-user-friends"></i> From a Member</span></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="reason">Why do you want to join GSAW?</label>
                             <textarea id="reason" name="reason" rows="3" placeholder="Tell us briefly why you want to join..."></textarea>
                         </div>
@@ -298,6 +328,7 @@
 
                         <p class="success-note"><i class="fas fa-clock"></i> Please be patient &mdash; our branch leaders are volunteers serving their communities.</p>
                         <a href="status" class="btn btn-primary" style="margin-bottom:10px;"><i class="fas fa-search"></i> Check Application Status</a>
+                        <button class="btn btn-green" id="download-pdf-btn" onclick="downloadMembershipPDF()" style="margin-bottom:10px;"><i class="fas fa-file-pdf"></i> Download Application (PDF)</button>
                         <button class="btn btn-outline-dark" onclick="resetForm()">Submit Another Application</button>
                     </div>
                 </div>
@@ -358,8 +389,10 @@
     </footer>
 
     <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/membership-pdf.js"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/cms.js"></script>
     <script src="js/animations.js"></script>
